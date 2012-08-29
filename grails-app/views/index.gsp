@@ -1,122 +1,77 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
-		<title>Welcome to Grails</title>
+    <r:require module='jqueryui' />
+    <r:require module='openlayers' />
+
+		<meta name="layout" content="soils2sat"/>
+		<title>Soils to Satellites</title>
 		<style type="text/css" media="screen">
-			#status {
-				background-color: #eee;
-				border: .2em solid #fff;
-				margin: 2em 2em 1em;
-				padding: 1em;
-				width: 12em;
-				float: left;
-				-moz-box-shadow: 0px 0px 1.25em #ccc;
-				-webkit-box-shadow: 0px 0px 1.25em #ccc;
-				box-shadow: 0px 0px 1.25em #ccc;
-				-moz-border-radius: 0.6em;
-				-webkit-border-radius: 0.6em;
-				border-radius: 0.6em;
-			}
+      #content {
+        top: 63px;
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+      }
 
-			.ie6 #status {
-				display: inline; /* float double margin fix http://www.positioniseverything.net/explorer/doubled-margin.html */
-			}
+      #mapContent {
+        width: 100%;
+        height: 100%;
+      }
 
-			#status ul {
-				font-size: 0.9em;
-				list-style-type: none;
-				margin-bottom: 0.6em;
-				padding: 0;
-			}
-            
-			#status li {
-				line-height: 1.3;
-			}
-
-			#status h1 {
-				text-transform: uppercase;
-				font-size: 1.1em;
-				margin: 0 0 0.3em;
-			}
-
-			#page-body {
-				margin: 2em 1em 1.25em 18em;
-			}
-
-			h2 {
-				margin-top: 1em;
-				margin-bottom: 0.3em;
-				font-size: 1em;
-			}
-
-			p {
-				line-height: 1.5;
-				margin: 0.25em 0;
-			}
-
-			#controller-list ul {
-				list-style-position: inside;
-			}
-
-			#controller-list li {
-				line-height: 1.3;
-				list-style-position: inside;
-				margin: 0.25em 0;
-			}
-
-			@media screen and (max-width: 480px) {
-				#status {
-					display: none;
-				}
-
-				#page-body {
-					margin: 0 1em 1em;
-				}
-
-				#page-body h1 {
-					margin-top: 0;
-				}
-			}
 		</style>
+
+    <link rel="stylesheet" href="${resource(dir: 'js/openlayers/theme/default', file: 'style.css')}" type="text/css">
+
+    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
 	</head>
 	<body>
-		<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		<div id="status" role="complementary">
-			<h1>Application Status</h1>
-			<ul>
-				<li>App version: <g:meta name="app.version"/></li>
-				<li>Grails version: <g:meta name="app.grails.version"/></li>
-				<li>Groovy version: ${org.codehaus.groovy.runtime.InvokerHelper.getVersion()}</li>
-				<li>JVM version: ${System.getProperty('java.version')}</li>
-				<li>Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</li>
-				<li>Controllers: ${grailsApplication.controllerClasses.size()}</li>
-				<li>Domains: ${grailsApplication.domainClasses.size()}</li>
-				<li>Services: ${grailsApplication.serviceClasses.size()}</li>
-				<li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
-			</ul>
-			<h1>Installed Plugins</h1>
-			<ul>
-				<g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
-					<li>${plugin.name} - ${plugin.version}</li>
-				</g:each>
-			</ul>
-		</div>
-		<div id="page-body" role="main">
-			<h1>Welcome to Grails</h1>
-			<p>Congratulations, you have successfully started your first Grails application! At the moment
-			   this is the default page, feel free to modify it to either redirect to a controller or display whatever
-			   content you may choose. Below is a list of controllers that are currently deployed in this application,
-			   click on each to execute its default action:</p>
+    <script type="text/javascript">
+      $(document).ready( function (e) {
+        initMap();
+      });
 
-			<div id="controller-list" role="navigation">
-				<h2>Available Controllers:</h2>
-				<ul>
-					<g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-						<li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
-					</g:each>
-				</ul>
-			</div>
-		</div>
+      var map;
+
+      function initMap() {
+
+          map = new OpenLayers.Map('mapContent', {controls: [
+            new OpenLayers.Control.Navigation({ mouseWheelOptions: {interval: 50, cumulative: false}, zoomBoxEnabled: true } ),
+            new OpenLayers.Control.ArgParser(),
+            new OpenLayers.Control.PanZoom(),
+            new OpenLayers.Control.PanZoomBar()
+
+          ]});
+          map.addControl(new OpenLayers.Control.LayerSwitcher());
+          // map.addControl();
+
+          var gphy = new OpenLayers.Layer.Google(
+              "Google Physical",
+              {type: G_PHYSICAL_MAP}
+          );
+          var gmap = new OpenLayers.Layer.Google(
+              "Google Streets", // the default
+              {numZoomLevels: 20}
+          );
+          var ghyb = new OpenLayers.Layer.Google(
+              "Google Hybrid",
+              {type: G_HYBRID_MAP, numZoomLevels: 20}
+          );
+          var gsat = new OpenLayers.Layer.Google(
+              "Google Satellite",
+              {type: G_SATELLITE_MAP, numZoomLevels: 22}
+          );
+
+
+          map.addLayers([gphy, gmap, ghyb, gsat]);
+
+          map.setCenter(new OpenLayers.LonLat(149, -27), 5);
+      }
+
+    </script>
+    <div id="content">
+      <div id="mapContent">
+      </div>
+    </div>
 	</body>
 </html>
