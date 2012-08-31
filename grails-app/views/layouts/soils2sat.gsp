@@ -25,13 +25,20 @@
         width: 100%;
         height: 100%;
       }
+
+      .footer {
+        height: 90px;
+        color: white;
+      }
     </Style>
 	</head>
 	<body>
 		<div id="header"><a href="${createLink(uri: '/index.gsp')}"><img src="${resource(dir: 'images', file: 'logo.png')}" alt="Soils to Satellites"/></a>
     </div>
 		<g:layoutBody/>
-		<div class="footer" role="contentinfo"></div>
+		<div class="footer" role="contentinfo">
+    Footer
+		</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 		<g:javascript library="application"/>
 		<r:layoutResources />

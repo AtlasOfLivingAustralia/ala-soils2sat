@@ -9,7 +9,7 @@
 		<style type="text/css" media="screen">
       #content {
         top: 63px;
-        bottom: 0;
+        bottom: 90px;
         position: absolute;
         width: 100%;
       }
@@ -23,7 +23,7 @@
 
     <link rel="stylesheet" href="${resource(dir: 'js/openlayers/theme/default', file: 'style.css')}" type="text/css">
 
-    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
+    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyDAqE0sOMHNienA0zFIUMlY53ztEDiv0d8'></script>
 	</head>
 	<body>
     <script type="text/javascript">
