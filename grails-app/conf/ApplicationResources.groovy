@@ -15,18 +15,29 @@ modules = {
 
     openlayers {
         defaultBundle false
-        resource url: 'js/openlayers/OpenLayers.js'
-        def allowedExtensions = ['png']
-        getFilesForPath('/js/openlayers/img').each {
-            def path = it as String
-            if (!path.contains(".svn")) {
-                def extension = path.substring(path.lastIndexOf(".") + 1)?.toLowerCase()
-                if (allowedExtensions.contains(extension)) {
-                    println "Adding resource: " + it
-                    resource url: it
-                }
-            }
-        }
+        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.11/OpenLayers.js'
+        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.11/theme/default/style.css'
+    }
+
+    fancybox {
+        resource url:'/fancybox/jquery.fancybox.css'
+        resource url:'/fancybox/jquery.fancybox.pack.js'
+        resource url:'/fancybox/blank.gif'
+        resource url:'/fancybox/fancybox_loading.gif'
+        resource url:'/fancybox/fancybox_overlay.png'
+        resource url:'/fancybox/fancybox_sprite.png'
+    }
+
+    bootstrap {
+        resource url: '/bootstrap/js/bootstrap.min.js'
+        resource url: '/bootstrap/css/bootstrap.min.css'
+        resource url: '/bootstrap/img/glyphicons-halflings-white.png'
+        resource url: '/bootstrap/img/glyphicons-halflings.png'
+    }
+
+    bootstrap_responsive {
+        dependsOn 'bootstrap'
+        resource url: '/bootstrap/css/bootstrap-responsive.min.css'
     }
 
 }

@@ -145,7 +145,7 @@ OpenLayers.Geometry = OpenLayers.Class({
      * 
      * Returns:
      * {Number | Object} The distance between this geometry and the target.
-     *     If details is true, the return will be an object with distance,
+     *     If detailsFragment is true, the return will be an object with distance,
      *     x0, y0, x1, and x2 properties.  The x0 and y0 properties represent
      *     the coordinates of the closest point on this geometry. The x1 and y1
      *     properties represent the coordinates of the closest point on the

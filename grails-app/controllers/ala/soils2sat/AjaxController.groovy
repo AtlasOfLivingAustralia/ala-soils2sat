@@ -17,7 +17,6 @@ class AjaxController {
 
     }
 
-
     private def proxyServiceCall(String servicePath, HttpServletResponse response) {
         BufferedReader reader = null;
         String url = "${grailsApplication.config.aekosServiceRoot}/${servicePath}"

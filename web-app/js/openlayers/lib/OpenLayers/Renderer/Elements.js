@@ -335,7 +335,7 @@ OpenLayers.ElementsIndexer.IndexingMethods = {
  * 
  * The highlevel bits of code that are implemented here are the adding and 
  *  removing of geometries, which is essentially the same for any 
- *  element-based renderer. The details of creating each node and drawing the
+ *  element-based renderer. The detailsFragment of creating each node and drawing the
  *  paths are of course different, but the machinery is the same. 
  * 
  * Inherits:

@@ -426,18 +426,18 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
      *     calculation.
      *
      * Valid options:
-     * details - {Boolean} Return details from the distance calculation.
+     * detailsFragment - {Boolean} Return detailsFragment from the distance calculation.
      *     Default is false.
      * edge - {Boolean} Calculate the distance from this geometry to the
      *     nearest edge of the target geometry.  Default is true.  If true,
      *     calling distanceTo from a geometry that is wholly contained within
      *     the target will result in a non-zero distance.  If false, whenever
      *     geometries intersect, calling distanceTo will return 0.  If false,
-     *     details cannot be returned.
+     *     detailsFragment cannot be returned.
      *
      * Returns:
      * {Number | Object} The distance between this geometry and the target.
-     *     If details is true, the return will be an object with distance,
+     *     If detailsFragment is true, the return will be an object with distance,
      *     x0, y0, x1, and y1 properties.  The x0 and y0 properties represent
      *     the coordinates of the closest point on this geometry. The x1 and y1
      *     properties represent the coordinates of the closest point on the

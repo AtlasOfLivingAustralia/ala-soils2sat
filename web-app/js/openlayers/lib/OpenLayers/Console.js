@@ -143,7 +143,7 @@ OpenLayers.Console = {
     /**
      * APIFunction: trace
      * Prints an interactive stack trace of JavaScript execution at the point
-     * where it is called.  The stack trace details the functions on the stack,
+     * where it is called.  The stack trace detailsFragment the functions on the stack,
      * as well as the values that were passed as arguments to each function.
      * You can click each function to take you to its source in the Script tab,
      * and click each argument value to inspect it in the DOM or HTML tabs.

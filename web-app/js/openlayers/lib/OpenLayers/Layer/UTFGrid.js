@@ -133,7 +133,7 @@ OpenLayers.Layer.UTFGrid = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
     /**
      * APIProperty: getFeatureInfo
-     * Get details about a feature associated with a map location.  The object
+     * Get detailsFragment about a feature associated with a map location.  The object
      *     returned will have id and data properties.  If the given location
      *     doesn't correspond to a feature, null will be returned.
      *

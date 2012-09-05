@@ -13,7 +13,7 @@
  * Methods for coordinate transforms between coordinate systems.  By default,
  *     OpenLayers ships with the ability to transform coordinates between
  *     geographic (EPSG:4326) and web or spherical mercator (EPSG:900913 et al.)
- *     coordinate reference systems.  See the <transform> method for details
+ *     coordinate reference systems.  See the <transform> method for detailsFragment
  *     on usage.
  *
  * Additional transforms may be added by using the <proj4js at http://proj4js.org/>

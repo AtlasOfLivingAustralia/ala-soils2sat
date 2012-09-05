@@ -16,7 +16,7 @@
  * rendered image; only a 'hit grid' that can be used to 
  * look up feature attributes.
  *
- * See the <OpenLayers.Tile.UTFGrid> constructor for details on constructing a
+ * See the <OpenLayers.Tile.UTFGrid> constructor for detailsFragment on constructing a
  * new instance.
  *
  * Inherits from:
