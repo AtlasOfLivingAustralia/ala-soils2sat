@@ -17,18 +17,24 @@
     <r:require module="bootstrap" />
 		<r:layoutResources />
     <Style type="text/css">
-      #header {
-        width: 100%;
-        height: 60px;
-        position: fixed;
-        top: 0px;
-      }
 
-      html, body {
-        margin: 0px;
-        width: 100%;
-        height: 100%;
-      }
+    body {
+        padding-top: 60px;
+        padding-bottom: 90px;
+    }
+
+      /*#header {*/
+        /*width: 100%;*/
+        /*height: 60px;*/
+        /*position: fixed;*/
+        /*top: 0px;*/
+      /*}*/
+
+      /*html, body {*/
+        /*margin: 0px;*/
+        /*width: 100%;*/
+        /*height: 100%;*/
+      /*}*/
 
       .footer {
         height: 80px;
@@ -46,19 +52,19 @@
     </Style>
 	</head>
 	<body style="overflow: hidden">
-    <div class="navbar">
-      <div id="header" class="navbar-inner">
-        <div class="container" style="height: 100%">
-            <table style="width: 95%; height: 100%">
-              <tr>
-                <td>
-                  <span style="font-size: 1.6em;">Soils2Satellites</span>
-                </td>
-                <td style="text-align: right; vertical-align: middle;">
-                  <span id="buttonBar"><g:pageProperty name="page.buttonBar" /></span>
-                </td>
-              </tr>
-            </table>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand">Soils2Satellite</a>
+          <div class="nav-collapse collapse">
+            <div class="navbar-text pull-right">
+              <span id="buttonBar"><g:pageProperty name="page.buttonBar" /></span>
+            </div>
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>

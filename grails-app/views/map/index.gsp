@@ -11,13 +11,18 @@
       #content {
         top: 62px;
         bottom: 80px;
-        position: fixed;
+        position: absolute;
         width: 100%;
       }
 
       #mapContent {
-        width: 100%;
-        height: 100%;
+        height: 600px;
+      }
+
+      #layersContent {
+        float: right;
+        display: inline-block;
+        width: 200px;
       }
 
       .info-popup {
@@ -51,7 +56,19 @@
 	<body>
     <script type="text/javascript">
 
+      $(window).resize(function(e) {
+        resizeMap();
+      });
+
+      function resizeMap() {
+        var height = $(window).height() - (63 + 90);
+         $("#mapContent").height(height);
+      }
+
       $(document).ready( function (e) {
+
+        resizeMap();
+
         initMap();
 
         $("#btnLayerAdd").click(function(e) {
@@ -137,9 +154,6 @@
 
         map.addLayers([gphy,gmap,ghyb,gsat]);
 
-
-        loadWMSLayer("elevation");
-
         var latLongProj = new OpenLayers.Projection("EPSG:4326");
 
         $.ajax("${createLink(controller: 'ajax', action: 'getPlots')}").done(function(data) {
@@ -216,8 +230,67 @@
       }
 
     </script>
-    <div id="content">
-      <div id="mapContent">
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span9">
+          <div id="mapContent">
+          </div>
+        </div>
+        <div class="span3">
+
+          <h4>Selected plots</h4>
+          <div style="height: 100px;">
+            <table class="table table-bordered table-condensed">
+              <tr>
+                <td>Plot 1 <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Plot 2 <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="" style="margin-top: 5px">
+            <button class="btn btn-small btn-primary">Compare selected</button>
+            <button class="btn btn-small">Clear selection</button>
+          </div>
+
+          <h4>Environmental layers</h4>
+          <div style="height: 150px; overflow-y: scroll;">
+
+            <table class="table table-striped table-condensed">
+              <tr>
+                <td>Layer name 1</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td><button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 2</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td><button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 3</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td><button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 4</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 5</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 6</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 7</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+              <tr>
+                <td>Layer name 8</td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="" style="margin-top: 5px">
+            <button id="btnLayerAdd" class="btn btn-small btn-success">Add Layer <i class="icon-plus icon-white"></button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -241,7 +314,7 @@
 
     <content tag="buttonBar">
       <button class="btn" id="btnFindPlot">Find Plots <i class="icon-search"></i></button>
-      <button class="btn btn-success" id="btnLayerAdd">Add layer <i class="icon-plus icon-white"></i></button>
+      %{--<button class="btn btn-success" id="btnLayerAdd">Add layer <i class="icon-plus icon-white"></i></button>--}%
     </content>
 	</body>
 </html>
