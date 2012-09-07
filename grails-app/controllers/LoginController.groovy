@@ -11,6 +11,9 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import au.org.ala.soils2sat.User
+import au.org.ala.soils2sat.Role
+import au.org.ala.soils2sat.UserRole
 
 class LoginController {
 
@@ -50,8 +53,7 @@ class LoginController {
 
         String view = 'auth'
         String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
-        render view: view, model: [postUrl: postUrl,
-                rememberMeParameter: config.rememberMe.parameter]
+        render view: view, model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
     }
 
     /**
@@ -130,5 +132,47 @@ class LoginController {
      */
     def ajaxDenied = {
         render([error: 'access denied'] as JSON)
+    }
+
+    def register = {
+    }
+
+    def registerSubmit = {
+
+        def model = [email: params.email, password: params.password, password2: params.password2]
+
+        flash.message = ""
+
+        if (!params.email || !params.password || !params.password2) {
+            flash.message = "You must supply an email address and a password!"
+            render(view: 'register', model: model)
+            return
+        }
+        
+        def user = User.findByUsernameIlike(params.email)
+
+        if (user) {
+            flash.message = "This email address has already been registered!"
+        } else if (params.password != params.password2) {
+            flash.message = "The supplied passwords do not match"
+        } else {
+            user = new User(username: params.email.toLowerCase(), password: params.password, accountExpired: false, accountLocked: false, enabled: true)
+            user.save(validate: true, flush: true)
+            if (user.errors.hasErrors()) {
+                flash.message = user.errors.toString()
+            } else {
+                def role = Role.findByAuthority("ROLE_USER");
+                if (role) {
+                    def userRole = new UserRole(user: user, role: role)
+                    userRole.save(flush: true, failOnError: true)
+                }
+            }
+        }
+
+        if (flash.message) {
+            render(view: 'register', model:model)
+        } else {
+            redirect uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
+        }
     }
 }
