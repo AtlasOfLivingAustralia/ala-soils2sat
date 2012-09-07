@@ -1,4 +1,4 @@
-package ala.soils2sat
+package au.org.ala.soils2sat
 
 import javax.servlet.Filter
 import javax.servlet.FilterConfig
@@ -8,7 +8,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import java.util.regex.Pattern
 import java.util.regex.Matcher
-import ala.soils2sat.LogService
+import au.org.ala.soils2sat.LogService
 
 class S2SServletFilter implements Filter  {
 

@@ -1,4 +1,4 @@
-package ala.soils2sat
+package au.org.ala.soils2sat
 
 class SpatialProxyController {
 

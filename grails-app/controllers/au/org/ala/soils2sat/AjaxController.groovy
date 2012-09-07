@@ -1,7 +1,8 @@
-package ala.soils2sat
+package au.org.ala.soils2sat
 
 import grails.converters.JSON
 import javax.servlet.http.HttpServletResponse
+import ala.soils2sat.CodeTimer
 
 class AjaxController {
 

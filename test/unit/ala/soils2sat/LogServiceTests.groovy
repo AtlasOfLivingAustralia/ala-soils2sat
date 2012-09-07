@@ -3,7 +3,7 @@ package ala.soils2sat
 
 
 import grails.test.mixin.*
-import org.junit.*
+import au.org.ala.soils2sat.LogService
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
