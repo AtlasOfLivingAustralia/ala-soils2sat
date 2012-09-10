@@ -10,10 +10,16 @@ class User {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
+    List<String> selectedPlots
+    List<String> layers
+
+    static hasMany = [selectedPlots:String, layers: String]
+
 
 	static constraints = {
 		username blank: false, unique: true
 		password blank: false
+        selectedPlots nullable: true
 	}
 
 	static mapping = {

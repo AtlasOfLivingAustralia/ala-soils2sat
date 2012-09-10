@@ -116,7 +116,8 @@ class LoginController {
         }
         else {
             flash.message = msg
-            redirect action: 'auth', params: params
+            render(view: 'auth', model:[username: params.j_username])
+            // redirect action: 'auth', mo params: params
         }
     }
 
@@ -135,6 +136,8 @@ class LoginController {
     }
 
     def register = {
+        flash.message = ""
+        []
     }
 
     def registerSubmit = {
@@ -172,7 +175,10 @@ class LoginController {
         if (flash.message) {
             render(view: 'register', model:model)
         } else {
-            redirect uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
+            def config = SpringSecurityUtils.securityConfig
+            String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+            render(controller:'login', view: 'auth', model:[username: user.username, password: params.password, postUrl: postUrl])
+            // redirect uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
         }
     }
 }

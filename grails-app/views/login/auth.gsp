@@ -10,6 +10,7 @@
 </head>
 
 <body>
+<content tag="topLevelNav">home</content>
 <div id='login' class="container-fluid">
 	<div class="row-fluid">
         <div class="hero-unit">
@@ -25,14 +26,14 @@
                 <div class="control-group">
                     <label class="control-label" for='username'><g:message code="springSecurity.login.username.label"/>:</label>
                     <div class="controls">
-                        <input type='text' name='j_username' id='username' placeholder="Email"/>
+                        <input type='text' name='j_username' id='username' placeholder="Email" value="${username}"/>
                     </div>
                 </div>
 
                 <div class="control-group">
                     <label class="control-label" for='password'><g:message code="springSecurity.login.password.label"/>:</label>
                     <div class="controls">
-                        <input type='password' name='j_password' id='password' placeholder="password" />
+                        <input type='password' name='j_password' id='password' placeholder="password" value="${password}" />
                     </div>
                 </div>
 

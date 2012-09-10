@@ -23,33 +23,28 @@
         padding-bottom: 90px;
     }
 
-      /*#header {*/
-        /*width: 100%;*/
-        /*height: 60px;*/
-        /*position: fixed;*/
-        /*top: 0px;*/
-      /*}*/
-
-      /*html, body {*/
-        /*margin: 0px;*/
-        /*width: 100%;*/
-        /*height: 100%;*/
-      /*}*/
-
-      .footer {
+    .footer {
         height: 80px;
-        /*color: white;*/
         bottom: 0px;
         position: fixed;
         width: 100%;
         background-color: #efefef;
 
-      }
+    }
 
-      #buttonBar .btn {
+    #buttonBar .btn {
         margin-top: 0px;
-      }
+    }
+
     </Style>
+
+    <script type="text/javascript">
+      $(document).ready(function(e) {
+        $("#btnLogout").click(function(e) {
+           window.location = "${createLink(controller: 'logout', action:'index')}";
+        });
+      });
+    </script>
 	</head>
 	<body style="overflow: hidden">
     <div class="navbar navbar-fixed-top">
@@ -58,12 +53,15 @@
           <a class="brand">Soils2Satellite</a>
           <div class="nav-collapse collapse">
             <div class="navbar-text pull-right">
-              <span id="buttonBar"><g:pageProperty name="page.buttonBar" /></span>
+              <span id="buttonBar">
+                <sec:ifLoggedIn>
+                  <span><sec:username/>&nbsp;<button class="btn" id="btnLogout">Logout</button></span>
+                </sec:ifLoggedIn>
+
+                <g:pageProperty name="page.buttonBar" />
+              </span>
             </div>
-            <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-            </ul>
+            <sts:navbar active="${pageProperty(name: 'page.topLevelNav')}" />
           </div><!--/.nav-collapse -->
         </div>
       </div>

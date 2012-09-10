@@ -106,6 +106,7 @@ grails.plugins.springsecurity.rejectIfNoRule = true
 grails.plugins.springsecurity.interceptUrlMap = [
         '/login/**':                                        ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/logout/**':                                       ['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/about/**':                                        ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/**':                                              ['ROLE_USER']
 ]
 

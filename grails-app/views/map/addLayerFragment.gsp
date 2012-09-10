@@ -16,12 +16,16 @@
     $.fancybox.close();
   });
 
-  $('#btnLoadLayer').click(function(e) {
+  function loadSelectedLayer() {
     var layerName = $("#selectedLayer").attr("layerName");
     if (layerName) {
-      loadWMSLayer(layerName);
+      addLayer(layerName, true);
       $.fancybox.close();
     }
+  }
+
+  $('#btnLoadLayer').click(function(e) {
+    loadSelectedLayer();
   });
 
   $("#layer").autocomplete({
@@ -59,5 +63,13 @@
         $('#layerInfo').html(html);
       }
   });
+
+  $("#layer").keydown(function(e) {
+    if (e.keyCode == 13) {
+      loadSelectedLayer();
+    }
+  });
+
+  $("#layer").focus();
 
 </script>

@@ -29,7 +29,7 @@
         position: absolute;
         bottom: 100px;
         right: 10px;
-        width: 200px;
+        width: 250px;
         height:100px;
         background: #393939;
         border: 3px solid #393939;
@@ -65,17 +65,62 @@
          $("#mapContent").height(height);
       }
 
+      function refreshSidebar() {
+        $.ajax('${createLink(controller:'map', action:'sideBarFragment')}').done(function(html) {
+          $("#sidebarContent").html(html);
+        });
+      }
+
+      function selectPlot(plotName) {
+        $.ajax("${createLink(controller:'map', action:'selectPlot')}?plotName=" + plotName).done(function(data) {
+          refreshSidebar();
+        });
+      }
+
+      function deselectPlot(plotName) {
+        $.ajax("${createLink(controller:'map', action:'deselectPlot')}?plotName=" + plotName).done(function(data) {
+          refreshSidebar();
+        });
+      }
+
+      function clearSelectedPlots() {
+        $.ajax("${createLink(controller:'map', action:'clearSelectedPlots')}").done(function(data) {
+          refreshSidebar();
+        });
+
+      }
+
+      function findPlot() {
+        $("#findPlotLink").click();
+        return true;
+      }
+
+      function addLayerClicked() {
+        $("#addLayerLink").click();
+        return true;
+      }
+
+      function removeLayer(layerName) {
+        $.ajax("${createLink(controller: 'map', action:'removeLayer')}?layerName=" + layerName).done(function(e) {
+
+          var candidates = map.getLayersByName(layerName);
+          if (candidates) {
+            for (var i in candidates) {
+              var layer = candidates[i];
+              layer.destroy();
+              // map.removeLayer(layer);
+            }
+          }
+
+          refreshSidebar();
+        });
+      }
+
       $(document).ready( function (e) {
 
         resizeMap();
-
         initMap();
-
-        $("#btnLayerAdd").click(function(e) {
-          e.preventDefault();
-          $("#addLayerLink").click();
-          return true;
-        });
+        refreshSidebar();
 
         $("#addLayerLink").fancybox({
             beforeLoad: function() {
@@ -92,10 +137,32 @@
               $("#plotDetailsContent").html(data);
             });
           }
-
         });
 
+        $("#findPlotLink").fancybox({
+          beforeLoad: function() {
+            $.ajax("${createLink(controller: 'plot', action:'findPlotFragment')}").done(function(html) {
+              $("#findPlotContent").html(html);
+            });
+          }
+
+        });
+        
+        <g:each in="${userInstance?.layers}">
+          loadWMSLayer("${it}");
+        </g:each>
       });
+
+      function addLayer(name, addToMap) {
+        $.ajax("${createLink(controller: 'map', action: 'addLayer')}?layerName=" + name).done(function (data) {
+
+          refreshSidebar();
+          if (addToMap) {
+            loadWMSLayer(name);
+          }
+        });
+
+      }
 
       function loadWMSLayer(name) {
 
@@ -180,7 +247,7 @@
             });
 
             marker.events.register('click', marker, function(evt) {
-              showPlotDetails(this.tag);
+              showPlotDetails(this.tag.siteName);
             });
 
           }
@@ -199,14 +266,14 @@
         map.setCenter(point, 5);
       }
 
-      function showPlotDetails(plot) {
-        $("#plotDetailsContent").attr("plotName", plot.siteName);
+      function showPlotDetails(plotName) {
+        $("#plotDetailsContent").attr("plotName", plotName);
         $("#plotDetailsLink").click();
         return true;
       }
 
       function showPlotSummary(plot) {
-        var html = "<h4>Plot " + plot.siteName + "</h4>"
+        var html = "<h4>Study Location " + plot.siteName + "</h4>"
         html += "<table>"
         html += "<tr><td>Date:</td><td>" + plot.date + "</td></tr>";
         html += "<tr><td>Longitude:</td><td>" + plot.longitude + "</td></tr>";
@@ -238,58 +305,7 @@
           </div>
         </div>
         <div class="span3">
-
-          <h4>Selected plots</h4>
-          <div style="height: 100px;">
-            <table class="table table-bordered table-condensed">
-              <tr>
-                <td>Plot 1 <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Plot 2 <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="" style="margin-top: 5px">
-            <button class="btn btn-small btn-primary">Compare selected</button>
-            <button class="btn btn-small">Clear selection</button>
-          </div>
-
-          <h4>Environmental layers</h4>
-          <div style="height: 150px; overflow-y: scroll;">
-
-            <table class="table table-striped table-condensed">
-              <tr>
-                <td>Layer name 1</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td><button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 2</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td><button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 3</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td><button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 4</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 5</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 6</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 7</td><td><button class="btn btn-mini pull-right"><i class="icon-eye-open" /></button></td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-              <tr>
-                <td>Layer name 8</td><td> <button class="btn btn-mini pull-right"><i class="icon-trash"/></button></td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="" style="margin-top: 5px">
-            <button id="btnLayerAdd" class="btn btn-small btn-success">Add Layer <i class="icon-plus icon-white"></button>
-          </div>
+          <div id="sidebarContent"></div>
         </div>
       </div>
     </div>
@@ -299,22 +315,24 @@
     </div>
 
     <a id="addLayerLink" href="#addLayerDetails" style="display: none"></a>
-
     <div id="addLayerDetails" style="display:none; width: 600px; height: 300px">
       <div id="addLayerContent">
       </div>
     </div>
 
     <a id="plotDetailsLink" href="#plotDetails" style="display: none"></a>
-
     <div id="plotDetails" style="display:none; width: 600px; height: 300px">
       <div id="plotDetailsContent">
       </div>
     </div>
 
+    <a id="findPlotLink" href="#findPlot" style="display: none"></a>
+    <div id="findPlot" style="display:none; width: 600px; height: 500px">
+      <div id="findPlotContent">
+      </div>
+    </div>
+
     <content tag="buttonBar">
-      <button class="btn" id="btnFindPlot">Find Plots <i class="icon-search"></i></button>
-      %{--<button class="btn btn-success" id="btnLayerAdd">Add layer <i class="icon-plus icon-white"></i></button>--}%
     </content>
 	</body>
 </html>
