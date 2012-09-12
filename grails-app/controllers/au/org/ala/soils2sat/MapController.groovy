@@ -5,6 +5,8 @@ import grails.converters.JSON
 class MapController {
     
     def springSecurityService
+    def plotService
+    def layerService
 
     def index() {
         [userInstance: springSecurityService.currentUser]
@@ -48,6 +50,20 @@ class MapController {
         render([status:'ok'] as JSON)
     }
 
+    def selectPlots() {
+        def plotNames = params.plotNames?.split(",");
+        if (plotNames) {
+            User userInstance = springSecurityService.currentUser
+            plotNames.each {
+                if (!userInstance.selectedPlots?.contains(it)) {
+                    userInstance.addToSelectedPlots(it)
+                }
+            }
+            userInstance.save(flush: true)
+        }
+        render([status:'ok'] as JSON)
+    }
+
     def deselectPlot() {
         def plotName = params.plotName
         if (plotName) {
@@ -67,6 +83,37 @@ class MapController {
             userInstance.save(flush: true)
         }
         render([status:'ok'] as JSON)
+    }
+
+    def ajaxSearch() {
+        BoundingBox bbox = null
+        if (params.top && params.bottom && params.left && params.right) {
+            bbox = new BoundingBox(left: params.double("left"), right: params.double("right"), top: params.double("top"), bottom: params.double("bottom"))
+            println "*** " + bbox
+        }
+
+        def results = plotService.searchPlots(params.q, bbox)
+
+        [results: results]
+    }
+
+    def ajaxPlotHover() {
+        def plotName = params.plotName
+        PlotSearchResult plot = null
+        if (plotName) {
+            plot = plotService.getPlotSummary(plotName)
+        }
+
+        [plot: plot, plotName: plotName]
+    }
+
+    def layerInfoFragment() {
+        def layerName = params.layerName;
+        def info = [:]
+        if (layerName) {
+            info = layerService.getLayerInfo(layerName)
+        }
+        [layerName: layerName, layerInfo: info]
     }
 
 }

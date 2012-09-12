@@ -77,6 +77,13 @@
         });
       }
 
+      function selectPlots(plotNames) {
+        var plotstring = plotNames.join(",");
+        $.ajax("${createLink(controller:'map', action:'selectPlots')}?plotNames=" + plotstring).done(function(data) {
+          refreshSidebar();
+        });
+      }
+
       function deselectPlot(plotName) {
         $.ajax("${createLink(controller:'map', action:'deselectPlot')}?plotName=" + plotName).done(function(data) {
           refreshSidebar();
@@ -88,6 +95,12 @@
           refreshSidebar();
         });
 
+      }
+
+      function displayLayerInfo(layerName) {
+        $("#layerInfoContent").attr("layerName", layerName);
+        $("#layerInfoLink").click();
+        return true;
       }
 
       function findPlot() {
@@ -137,6 +150,7 @@
               $("#plotDetailsContent").html(data);
             });
           }
+
         });
 
         $("#findPlotLink").fancybox({
@@ -145,8 +159,17 @@
               $("#findPlotContent").html(html);
             });
           }
-
         });
+
+        $("#layerInfoLink").fancybox({
+          beforeLoad: function() {
+            var layerName = $("#layerInfoContent").attr("layerName");
+            $.ajax("${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName).done(function(html) {
+              $("#layerInfoContent").html(html);
+            });
+          }
+        });
+
         
         <g:each in="${userInstance?.layers}">
           loadWMSLayer("${it}");
@@ -226,7 +249,7 @@
         $.ajax("${createLink(controller: 'ajax', action: 'getPlots')}").done(function(data) {
 
           var plots = new OpenLayers.Layer.Markers("Plots");
-          var results = data.results;
+          var results = data; // .results;
           for (resultKey in results) {
 
             var result = results[resultKey];
@@ -236,18 +259,18 @@
 
             var marker = new OpenLayers.Marker(location);
             plots.addMarker(marker);
-            marker.tag = result;
+            marker.tag = result.siteName;
 
             marker.events.register('mouseover', marker, function(evt) {
-              showPlotSummary(this.tag);
+              showPlotHover(this.tag);
             });
 
             marker.events.register('mouseout', marker, function(evt) {
-              hidePlotSummary(this.tag);
+              hidePlotHover(this.tag);
             });
 
             marker.events.register('click', marker, function(evt) {
-              showPlotDetails(this.tag.siteName);
+              showPlotDetails(this.tag);
             });
 
           }
@@ -270,6 +293,19 @@
         $("#plotDetailsContent").attr("plotName", plotName);
         $("#plotDetailsLink").click();
         return true;
+      }
+
+      function showPlotHover(plotName) {
+
+        var url = "${createLink(controller:'map', action:'ajaxPlotHover')}?plotName=" + plotName;
+        $.ajax(url).done(function(html) {
+          $("#plotSummary").css("display", "block").html(html);
+        });
+
+      }
+
+      function hidePlotHover(plotName) {
+        hideMessagePanel();
       }
 
       function showPlotSummary(plot) {
@@ -331,6 +367,13 @@
       <div id="findPlotContent">
       </div>
     </div>
+
+    <a id="layerInfoLink" href="#layerInfo" style="display: none"></a>
+    <div id="layerInfo" style="display:none; width: 600px; height: 500px">
+      <div id="layerInfoContent">
+      </div>
+    </div>
+
 
     <content tag="buttonBar">
     </content>

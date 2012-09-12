@@ -6,8 +6,13 @@ import ala.soils2sat.CodeTimer
 
 class AjaxController {
 
+    def plotService
+
     def getPlots() {
-        proxyServiceCall("getPlots", response)
+
+        def results = plotService.getPlots()
+        render (results as JSON)
+        // proxyServiceCall("getPlots", response)
     }
 
     def getPlotSummary() {
