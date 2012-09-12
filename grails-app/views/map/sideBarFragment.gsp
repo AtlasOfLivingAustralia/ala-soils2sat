@@ -1,8 +1,11 @@
 <div class="well well-small">
-  <h5>Selected Study Locations</h5>
+  <h5>Selected Study Locations
+    <g:if test="${userInstance.selectedPlots}">
+      (${userInstance.selectedPlots.size()})
+    </g:if>
+  </h5>
   <p>
     <button class="btn btn-small btn-info" id="btnFindPlot">Find Study Location <i class="icon-search icon-white"></i></button>
-    <button class="btn btn-small" id="btnClearSelection">Remove All</button>
   </p>
   %{--<br /></br/>--}%
 
@@ -25,6 +28,7 @@
   <p>
     <button class="btn btn-small btn-primary">Compare</button>
     <button class="btn btn-small">Export</button>
+    <button class="btn btn-small" id="btnClearSelection">Remove All</button>
   </p>
 
 </div>

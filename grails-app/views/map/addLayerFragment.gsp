@@ -2,10 +2,10 @@
   <h3>Add an environmental layer</h3>
   <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
   <br />
-  <button id="btnLoadLayer" class="btn btn-primary">Load layer</button>
-  <button id="btnCancelLoadLayer" class="btn">Cancel</button>
+  <button id="btnLoadLayer" class="btn btn-small btn-primary">Load layer</button>
+  <button id="btnCancelLoadLayer" class="btn btn-small">Cancel</button>
 
-  <div id="layerInfo" class="well well-large" style="margin-top:10px">
+  <div id="layerInfoPanel" class="well well-large" style="margin-top:10px">
 
   </div>
 </div>
@@ -59,8 +59,13 @@
       html : true,
       select : function(event, ui) {
         var item = ui.item;
-        var html= '<div id="selectedLayer" layerName="' + item.name + '"><strong>' + item.label + " (" + item.name + ")</strong><br/>" + item.description + '<br /><small><span class="label">' + item.classification1 + '</span>&nbsp;<span class="label">' + item.classification2 + "</span></small></div>";
-        $('#layerInfo').html(html);
+        var html= '<div id="selectedLayer" layerName="' + item.name + '"><strong>' + item.label + " (" + item.name + ")</strong><br/>" + item.description + '<br /><small><span class="label">' + item.classification1 + '</span>'
+        if (item.classification2) {
+            html += '&nbsp;<span class="label">' + item.classification2 + '</span>';
+        }
+        html += '</small></div>';
+
+        $("#layerInfoPanel").html(html);
       }
   });
 

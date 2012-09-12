@@ -261,15 +261,15 @@
             plots.addMarker(marker);
             marker.tag = result.siteName;
 
-            marker.events.register('mouseover', marker, function(evt) {
+            marker.events.register('mouseover', marker, function(e) {
               showPlotHover(this.tag);
             });
 
-            marker.events.register('mouseout', marker, function(evt) {
+            marker.events.register('mouseout', marker, function(e) {
               hidePlotHover(this.tag);
             });
 
-            marker.events.register('click', marker, function(evt) {
+            marker.events.register('click', marker, function(e) {
               showPlotDetails(this.tag);
             });
 
@@ -290,36 +290,27 @@
       }
 
       function showPlotDetails(plotName) {
+
         $("#plotDetailsContent").attr("plotName", plotName);
         $("#plotDetailsLink").click();
         return true;
       }
 
-      function showPlotHover(plotName) {
+      var plotHoverFlag = false;
 
+      function showPlotHover(plotName) {
+        plotHoverFlag = true;
         var url = "${createLink(controller:'map', action:'ajaxPlotHover')}?plotName=" + plotName;
         $.ajax(url).done(function(html) {
-          $("#plotSummary").css("display", "block").html(html);
+          if (plotHoverFlag) {
+            $("#plotSummary").css("display", "block").html(html);
+          }
         });
 
       }
 
       function hidePlotHover(plotName) {
-        hideMessagePanel();
-      }
-
-      function showPlotSummary(plot) {
-        var html = "<h4>Study Location " + plot.siteName + "</h4>"
-        html += "<table>"
-        html += "<tr><td>Date:</td><td>" + plot.date + "</td></tr>";
-        html += "<tr><td>Longitude:</td><td>" + plot.longitude + "</td></tr>";
-        html += "<tr><td>Latitude:</td><td>" + plot.latitude + "</td></tr>";
-        html += "</table>"
-
-        $("#plotSummary").css("display", "block").html(html);
-      }
-
-      function hidePlotSummary(plot) {
+        plotHoverFlag = false;
         hideMessagePanel();
       }
 

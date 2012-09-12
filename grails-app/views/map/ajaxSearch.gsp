@@ -18,6 +18,7 @@
     </div>
     <div>
       <button id="btnSelectAllSearchResults" class="btn btn-small btn-warning pull-right">Select all</button>
+      <button id="btnClearCurrentSelection" class="btn btn-small pull-right" style="margin-right:5px">Clear all selected</button>
     </div>
   </g:else>
 </div>
@@ -50,6 +51,10 @@
       }
     });
     selectPlots(plotNames);
+  });
+
+  $("#btnClearCurrentSelection").click(function(e) {
+    clearSelectedPlots();
   });
 
 </script>
