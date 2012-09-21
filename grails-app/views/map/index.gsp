@@ -56,13 +56,19 @@
 	<body>
     <script type="text/javascript">
 
+      var map;
+
       $(window).resize(function(e) {
         resizeMap();
       });
 
       function resizeMap() {
         var height = $(window).height() - (63 + 90);
-         $("#mapContent").height(height);
+        $("#mapContent").height(height);
+        if (map) {
+          setTimeout( function() { map.updateSize();}, 200);
+        }
+
       }
 
       function refreshSidebar() {
@@ -108,6 +114,11 @@
         return true;
       }
 
+      function compareSelectedPlots() {
+        $("#comparePlotsLink").click();
+        return true;
+      }
+
       function addLayerClicked() {
         $("#addLayerLink").click();
         return true;
@@ -121,7 +132,6 @@
             for (var i in candidates) {
               var layer = candidates[i];
               layer.destroy();
-              // map.removeLayer(layer);
             }
           }
 
@@ -161,6 +171,15 @@
           }
         });
 
+        $("#comparePlotsLink").fancybox({
+          beforeLoad: function() {
+            $.ajax("${createLink(controller: 'plot', action:'comparePlotsFragment')}").done(function(html) {
+              $("#comparePlotsContent").html(html);
+            });
+          }
+        });
+
+
         $("#layerInfoLink").fancybox({
           beforeLoad: function() {
             var layerName = $("#layerInfoContent").attr("layerName");
@@ -170,7 +189,10 @@
           }
         });
 
-        
+        $("#btnToggleSidebar").click(function(e) {
+          toggleSidebar();
+        });
+
         <g:each in="${userInstance?.layers}">
           loadWMSLayer("${it}");
         </g:each>
@@ -323,15 +345,28 @@
         $("#plotSummary").css("display", "block").html(html);
       }
 
+      function toggleSidebar() {
+        if ($('#mapContainer').hasClass("span8")) {
+          $('#mapContainer').removeClass("span8").addClass("span12");
+          $('#sidebarContainer').removeClass("span4").addClass("span0");
+          $("#btnToggleSidebar").html("Show sidebar");
+        } else {
+          $('#mapContainer').removeClass("span12").addClass("span8");
+          $('#sidebarContainer').removeClass("span0").addClass("span4");
+          $("#btnToggleSidebar").html("Hide sidebar");
+        }
+        resizeMap();
+      }
+
     </script>
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span9">
+        <div id="mapContainer" class="span8">
           <div id="mapContent">
           </div>
         </div>
-        <div class="span3">
+        <div id="sidebarContainer" class="span4">
           <div id="sidebarContent"></div>
         </div>
       </div>
@@ -365,8 +400,14 @@
       </div>
     </div>
 
+    <a id="comparePlotsLink" href="#comparePlots" style="display: none"></a>
+    <div id="comparePlots" style="display:none; width: 800px; height: 600px">
+      <div id="comparePlotsContent">
+      </div>
+    </div>
 
     <content tag="buttonBar">
+        <button id="btnToggleSidebar" class="btn">Hide sidebar</button>
     </content>
 	</body>
 </html>

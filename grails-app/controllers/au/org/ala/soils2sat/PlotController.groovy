@@ -20,6 +20,7 @@ class PlotController {
     }
 
     def plotDataFragment() {
+
         def layers = springSecurityService.currentUser.layers.join(",")
 
         def plotName = params.plotName
@@ -32,6 +33,9 @@ class PlotController {
         }
 
         [results:results, userInstance: springSecurityService.currentUser]
+    }
 
+    def comparePlotsFragment = {
+        [userInstance: springSecurityService.currentUser]
     }
 }

@@ -1,9 +1,15 @@
 <div class="well well-small">
-  <h5>Selected Study Locations
-    <g:if test="${userInstance.selectedPlots}">
-      (${userInstance.selectedPlots.size()})
-    </g:if>
-  </h5>
+  <table style="width: 100%">
+    <tr>
+      <td>
+        <h5>Selected Study Locations
+          <g:if test="${userInstance.selectedPlots}">
+            (${userInstance.selectedPlots.size()})
+          </g:if>
+        </h5>
+      </td>
+    </tr>
+  </table>
   <p>
     <button class="btn btn-small btn-info" id="btnFindPlot">Find Study Location <i class="icon-search icon-white"></i></button>
   </p>
@@ -25,8 +31,8 @@
       </g:else>
     </table>
   </div>
-  <p>
-    <button class="btn btn-small btn-primary">Compare</button>
+  <p style="margin-top: 15px">
+    <button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>
     <button class="btn btn-small">Export</button>
     <button class="btn btn-small" id="btnClearSelection">Remove All</button>
   </p>
@@ -34,7 +40,13 @@
 </div>
 
 <div id="layersPanel" class="well well-small">
-    <h4>Environmental layers</h4>
+    <table style="width: 100%">
+      <tr>
+        <td><h5>Environmental layers</h5></td>
+        <td><button id="btnLayerAdd" class="btn btn-mini btn-success pull-right">Add Layer <i class="icon-plus icon-white"/></button></td>
+      </tr>
+    </table>
+
     <div id="layersTable" style="overflow-y: scroll;">
       <g:if test="${userInstance.layers}">
       <table class="table table-striped table-condensed">
@@ -44,9 +56,11 @@
             <td><a href="#" class="btnLayerInfo" layerName="${it}">${it}</a></td>
             %{--<td><button class="btn btn-mini pull-right" layerName="${it}"><i class="icon-eye-open" /></button></td>--}%
             <td>
-            <button class="btn btn-mini pull-right btnRemoveLayer" layerName="${it}" title="Remove layer"><i class="icon-trash"/></button>
-            <button class="btn btn-mini pull-right btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it}"><i class="icon-info-sign"/></button>
-          </td>
+              <button class="btn btn-mini pull-right btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it}"><i class="icon-info-sign"/></button>
+            </td>
+            <td>
+              <button class="btn btn-mini pull-right btnRemoveLayer" layerName="${it}" title="Remove layer"><i class="icon-trash"/></button>
+            </td>
           </tr>
         </g:each>
       </table>
@@ -55,12 +69,15 @@
         No layers have been added
       </g:else>
     </div>
-    <p>
-      <button id="btnLayerAdd" class="btn btn-small btn-success">Add Layer <i class="icon-plus icon-white"/></button>
-    </p>
 </div>
 
 <script type="text/javascript">
+
+  $("#btnComparePlots").click(function(e) {
+    e.preventDefault();
+    compareSelectedPlots();
+  });
+
   $(".btnRemoveSelectedPlot").click(function(e) {
     e.preventDefault();
     var plotName = $(this).attr("plotName");
@@ -116,7 +133,7 @@
     var panelTop = $("#layersPanel").offset().top;
     var height = mapHeight - 20 - panelTop;
     $("#layersPanel").height(height);
-    $("#layersTable").height(height - 70);
+    $("#layersTable").height(height - 40);
   }
 
   $(window).resize(function(e) {
