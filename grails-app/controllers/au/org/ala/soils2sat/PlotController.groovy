@@ -12,7 +12,7 @@ class PlotController {
         def plotName = params.plotName;
         def userInstance = springSecurityService.currentUser as User
 
-        [plotName:plotName, userInstance: userInstance]
+        [plotName:plotName, userInstance: userInstance, results: results]
     }
 
     def findPlotFragment() {
@@ -36,6 +36,22 @@ class PlotController {
     }
 
     def comparePlotsFragment = {
-        [userInstance: springSecurityService.currentUser]
+
+        def userInstance = springSecurityService.currentUser as User
+
+        def results =[:]
+        def layers = userInstance.layers.join(",")
+        for (String plotName : userInstance.selectedPlots) {
+            def plot = plotService.getPlotSummary(plotName)
+            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${plot.latitude}/${plot.longitude}")
+            def plotResults = JSON.parse(url.text)
+            def temp = [:]
+            plotResults.each {
+                temp[it.field ?: it.layername] = it.value
+            }
+            results[plotName] = temp
+        }
+
+        [userInstance: springSecurityService.currentUser, results: results]
     }
 }

@@ -173,6 +173,7 @@
 
         $("#comparePlotsLink").fancybox({
           beforeLoad: function() {
+            $("#comparePlotsContent").html('<h5>Please wait while study location data is retrieved...</h5><img src="${resource(dir:'/images', file:'spinner.gif')}"></img>');
             $.ajax("${createLink(controller: 'plot', action:'comparePlotsFragment')}").done(function(html) {
               $("#comparePlotsContent").html(html);
             });
@@ -401,7 +402,7 @@
     </div>
 
     <a id="comparePlotsLink" href="#comparePlots" style="display: none"></a>
-    <div id="comparePlots" style="display:none; width: 800px; height: 600px">
+    <div id="comparePlots" style="display:none; width: 800px; height: 550px">
       <div id="comparePlotsContent">
       </div>
     </div>
