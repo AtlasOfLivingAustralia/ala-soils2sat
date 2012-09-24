@@ -12,7 +12,7 @@ class PlotController {
         def plotName = params.plotName;
         def userInstance = springSecurityService.currentUser as User
 
-        [plotName:plotName, userInstance: userInstance, results: results]
+        [plotName:plotName, userInstance: userInstance]
     }
 
     def findPlotFragment() {
@@ -40,16 +40,18 @@ class PlotController {
         def userInstance = springSecurityService.currentUser as User
 
         def results =[:]
-        def layers = userInstance.layers.join(",")
-        for (String plotName : userInstance.selectedPlots) {
-            def plot = plotService.getPlotSummary(plotName)
-            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${plot.latitude}/${plot.longitude}")
-            def plotResults = JSON.parse(url.text)
-            def temp = [:]
-            plotResults.each {
-                temp[it.field ?: it.layername] = it.value
+        if (userInstance.layers && userInstance.selectedPlots && userInstance.selectedPlots.size() > 1) {
+            def layers = userInstance.layers.join(",")
+            for (String plotName : userInstance.selectedPlots) {
+                def plot = plotService.getPlotSummary(plotName)
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${plot.latitude}/${plot.longitude}")
+                def plotResults = JSON.parse(url.text)
+                def temp = [:]
+                plotResults.each {
+                    temp[it.field ?: it.layername] = it.value
+                }
+                results[plotName] = temp
             }
-            results[plotName] = temp
         }
 
         [userInstance: springSecurityService.currentUser, results: results]

@@ -43,7 +43,12 @@
     <table style="width: 100%">
       <tr>
         <td><h5>Environmental layers</h5></td>
-        <td><button id="btnLayerAdd" class="btn btn-mini btn-success pull-right">Add Layer <i class="icon-plus icon-white"/></button></td>
+        <td style="width: 90px;">
+          <button id="btnLayerRemoveAll" class="btn btn-mini btn-danger pull-right">Remove All&nbsp;<i class="icon-trash icon-white"/></button>
+        </td>
+        <td style="width: 90px;">
+          <button id="btnLayerAdd" class="btn btn-mini btn-success pull-right">Add Layer&nbsp;<i class="icon-plus icon-white"/></button>
+        </td>
       </tr>
     </table>
 
@@ -55,10 +60,10 @@
           <tr>
             <td><a href="#" class="btnLayerInfo" layerName="${it}">${it}</a></td>
             %{--<td><button class="btn btn-mini pull-right" layerName="${it}"><i class="icon-eye-open" /></button></td>--}%
-            <td>
+            <td style="width:30px;">
               <button class="btn btn-mini pull-right btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it}"><i class="icon-info-sign"/></button>
             </td>
-            <td>
+            <td style="width:30px;">
               <button class="btn btn-mini pull-right btnRemoveLayer" layerName="${it}" title="Remove layer"><i class="icon-trash"/></button>
             </td>
           </tr>
@@ -120,6 +125,11 @@
   $("#btnLayerAdd").click(function(e) {
     e.preventDefault();
     addLayerClicked();
+  });
+
+  $("#btnLayerRemoveAll").click(function(e) {
+    e.preventDefault();
+    clearAllLayers();
   });
 
   $(".btnRemoveLayer").click(function(e) {

@@ -31,7 +31,15 @@ class MapController {
             userInstance.removeFromLayers(layerName)
         }
         render([status:'ok'] as JSON)
+    }
 
+    def removeAllLayers() {
+        User userInstance = springSecurityService.currentUser as User
+        if (userInstance) {
+            userInstance.layers.clear();
+            userInstance.save(flush: true, failOnError: true)
+        }
+        render([status:'ok'] as JSON)
     }
 
     def sideBarFragment() {

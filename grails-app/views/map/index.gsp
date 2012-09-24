@@ -173,7 +173,7 @@
 
         $("#comparePlotsLink").fancybox({
           beforeLoad: function() {
-            $("#comparePlotsContent").html('<h5>Please wait while study location data is retrieved...</h5><img src="${resource(dir:'/images', file:'spinner.gif')}"></img>');
+            $("#comparePlotsContent").html('<h5>Please wait while study location data is retrieved...<img src="${resource(dir:'/images', file:'spinner.gif')}"/></h5>');
             $.ajax("${createLink(controller: 'plot', action:'comparePlotsFragment')}").done(function(html) {
               $("#comparePlotsContent").html(html);
             });
@@ -201,13 +201,18 @@
 
       function addLayer(name, addToMap) {
         $.ajax("${createLink(controller: 'map', action: 'addLayer')}?layerName=" + name).done(function (data) {
-
           refreshSidebar();
           if (addToMap) {
             loadWMSLayer(name);
           }
         });
 
+      }
+
+      function clearAllLayers() {
+        $.ajax("${createLink(controller: 'map', action: 'removeAllLayers')}").done(function (data) {
+          refreshSidebar();
+        });
       }
 
       function loadWMSLayer(name) {
