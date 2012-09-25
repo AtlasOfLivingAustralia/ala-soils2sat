@@ -77,28 +77,41 @@
         });
       }
 
-      function selectPlot(plotName) {
+      function selectPlot(plotName, successCallback) {
         $.ajax("${createLink(controller:'map', action:'selectPlot')}?plotName=" + plotName).done(function(data) {
           refreshSidebar();
+          if (successCallback) {
+            successCallback();
+          }
         });
       }
 
-      function selectPlots(plotNames) {
+      function selectPlots(plotNames, successCallback) {
         var plotstring = plotNames.join(",");
         $.ajax("${createLink(controller:'map', action:'selectPlots')}?plotNames=" + plotstring).done(function(data) {
           refreshSidebar();
+          if (successCallback) {
+            successCallback();
+          }
         });
       }
 
-      function deselectPlot(plotName) {
+      function deselectPlot(plotName, successCallback) {
         $.ajax("${createLink(controller:'map', action:'deselectPlot')}?plotName=" + plotName).done(function(data) {
           refreshSidebar();
+          if (successCallback) {
+            successCallback();
+          }
         });
       }
 
-      function clearSelectedPlots() {
+      function clearSelectedPlots(successCallback) {
         $.ajax("${createLink(controller:'map', action:'clearSelectedPlots')}").done(function(data) {
           refreshSidebar();
+          if (successCallback) {
+            console.log("calling callback")
+            successCallback();
+          }
         });
 
       }
@@ -124,17 +137,19 @@
         return true;
       }
 
+      function unloadWMSLayer(layerName) {
+        var candidates = map.getLayersByName(layerName);
+        if (candidates) {
+          for (var i in candidates) {
+            var layer = candidates[i];
+            layer.destroy();
+          }
+        }
+      }
+
       function removeLayer(layerName) {
         $.ajax("${createLink(controller: 'map', action:'removeLayer')}?layerName=" + layerName).done(function(e) {
-
-          var candidates = map.getLayersByName(layerName);
-          if (candidates) {
-            for (var i in candidates) {
-              var layer = candidates[i];
-              layer.destroy();
-            }
-          }
-
+          unloadWMSLayer(layerName);
           refreshSidebar();
         });
       }
@@ -165,6 +180,7 @@
 
         $("#findPlotLink").fancybox({
           beforeLoad: function() {
+            $("#findPlotContent").html("");
             $.ajax("${createLink(controller: 'plot', action:'findPlotFragment')}").done(function(html) {
               $("#findPlotContent").html(html);
             });
@@ -194,15 +210,21 @@
           toggleSidebar();
         });
 
-        <g:each in="${userInstance?.layers}">
-          loadWMSLayer("${it}");
+        <g:each in="${appState?.layers}" var="layer">
+          <g:if test="${layer.visible}">
+            loadWMSLayer("${layer.name}");
+          </g:if>
         </g:each>
       });
 
       function addLayer(name, addToMap) {
-        $.ajax("${createLink(controller: 'map', action: 'addLayer')}?layerName=" + name).done(function (data) {
+        var showInMap = false;
+        if (addToMap) {
+          showInMap = true;
+        }
+        $.ajax("${createLink(controller: 'map', action: 'addLayer')}?layerName=" + name + "&addToMap=" + showInMap).done(function (data) {
           refreshSidebar();
-          if (addToMap) {
+          if (showInMap) {
             loadWMSLayer(name);
           }
         });
@@ -413,7 +435,7 @@
     </div>
 
     <content tag="buttonBar">
-        <button id="btnToggleSidebar" class="btn">Hide sidebar</button>
+        <button id="btnToggleSidebar" class="btn btn-small">Hide sidebar</button>
     </content>
 	</body>
 </html>

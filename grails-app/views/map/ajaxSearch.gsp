@@ -11,13 +11,17 @@
       <g:each in="${results}" var="result">
         <tr>
           <td class="plotSearchResultRow" plotName="${result.siteName}">${result.siteName} (${result.longitude}, ${result.latitude})</td>
-          <td><button class="button btn-mini selectSearchResult pull-right" plotName="${result.siteName}">select</button></td>
+          <td>
+            <g:set var="selected" value="${!appState.containsPlot(result.siteName)}"/>
+              <button style="display:${selected ? 'block' : 'none'}" class="btn btn-mini selectSearchResult pull-right" plotName="${result.siteName}">Select</button>
+              <button style="display:${selected ? 'none' : 'block'}" class="btn btn-mini btn-warning deselectSearchResult pull-right" plotName="${result.siteName}">Deselect</button>
+          </td>
         </tr>
       </g:each>
       </table>
     </div>
     <div>
-      <button id="btnSelectAllSearchResults" class="btn btn-small btn-warning pull-right">Select all</button>
+      <button id="btnSelectAllSearchResults" class="btn btn-small btn-info pull-right">Select all</button>
       <button id="btnClearCurrentSelection" class="btn btn-small pull-right" style="margin-right:5px">Clear all selected</button>
     </div>
   </g:else>
@@ -30,7 +34,20 @@
     var plotName = $(this).attr("plotName");
     if (plotName) {
       selectPlot(plotName);
+      $(this).css("display", "none");
+      $(this).siblings(".deselectSearchResult").css("display", "block");
     }
+  });
+
+  $(".deselectSearchResult").click(function(e) {
+    e.preventDefault();
+    var plotName = $(this).attr("plotName");
+    if (plotName) {
+      deselectPlot(plotName);
+      $(this).css("display", "none");
+      $(this).siblings(".selectSearchResult").css("display", "block");
+    }
+
   });
 
   $(".plotSearchResultRow").mouseover(function(e) {
@@ -50,11 +67,11 @@
         plotNames.push(plotName);
       }
     });
-    selectPlots(plotNames);
+    selectPlots(plotNames, function() { doSearch(); });
   });
 
   $("#btnClearCurrentSelection").click(function(e) {
-    clearSelectedPlots();
+    clearSelectedPlots(function() { doSearch() });
   });
 
 </script>

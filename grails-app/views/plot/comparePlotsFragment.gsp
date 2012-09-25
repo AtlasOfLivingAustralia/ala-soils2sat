@@ -1,21 +1,20 @@
-<h4>Compare Study Locations (${userInstance.selectedPlots?.size()})</h4>
-
-<g:if test="${userInstance.layers && userInstance.selectedPlots?.size() > 1}">
+<h4>Compare Study Locations (${appState?.selectedPlots?.size()})</h4>
+<g:if test="${appState?.layers && appState?.selectedPlots?.size() > 1}">
   <table class="table table-striped table-condensed table-bordered" style="max-height: 540px; width:780px; overflow: scroll;">
     <thead>
       <tr>
         <th></th>
-        <g:each in="${userInstance.selectedPlots}" var="plotName">
-          <th>${plotName}</th>
+        <g:each in="${appState.selectedPlots}" var="plot">
+          <th>${plot.name}</th>
         </g:each>
       </tr>
     </thead>
     <tbody>
-      <g:each in="${userInstance.layers}" var="layerName">
+      <g:each in="${appState?.layers}" var="layer">
         <tr>
-          <td>${layerName}</td>
-          <g:each in="${userInstance.selectedPlots}" var="plotName">
-            <td>${results[plotName][layerName]}</td>
+          <td>${layer.name}</td>
+          <g:each in="${appState?.selectedPlots}" var="plot">
+            <td>${results[plot.name][layer.name]}</td>
           </g:each>
         </tr>
       </g:each>

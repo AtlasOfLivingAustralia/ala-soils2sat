@@ -9,7 +9,8 @@ class MapController {
     def layerService
 
     def index() {
-        [userInstance: springSecurityService.currentUser]
+        def userInstance = springSecurityService.currentUser as User
+        [userInstance: userInstance , appState: userInstance?.applicationState]
     }
 
     def addLayerFragment() {
@@ -18,77 +19,142 @@ class MapController {
     def addLayer() {
         String layerName = params.layerName
         User userInstance = springSecurityService.currentUser as User
-        if (layerName && userInstance && !userInstance.layers?.contains(layerName)) {
-            userInstance.addToLayers(layerName)
+        boolean success = false
+
+        if (layerName && userInstance) {
+            def appState = userInstance.applicationState
+            def existing = appState.layers.find {
+                it.name == layerName
+            }
+            if (!existing) {
+                def visible = params.boolean("addToMap")
+                def layer = new EnvironmentalLayer(name: layerName, visible: visible)
+                appState.addToLayers(layer)
+                appState.save(flush: true, failOnError: true)
+                success = true
+            }
         }
-        render([status:'ok'] as JSON)
+        render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
     def removeLayer() {
         String layerName = params.layerName
         User userInstance = springSecurityService.currentUser as User
-        if (layerName && userInstance && userInstance.layers?.contains(layerName)) {
-            userInstance.removeFromLayers(layerName)
+        def appState = userInstance?.applicationState
+
+        def existing = appState.layers.find {
+            it.name == layerName
         }
-        render([status:'ok'] as JSON)
+        boolean success = false
+        if (layerName && userInstance && existing) {
+            appState.removeFromLayers(existing)
+            success = true
+        }
+        render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
     def removeAllLayers() {
         User userInstance = springSecurityService.currentUser as User
+        def success = false
         if (userInstance) {
-            userInstance.layers.clear();
-            userInstance.save(flush: true, failOnError: true)
+            def appState = userInstance.applicationState
+            appState?.layers?.clear()
+            appState?.save(flush: true, failOnError: true)
+            success = true
         }
-        render([status:'ok'] as JSON)
+        render([status: success ? 'ok':'failed'] as JSON)
     }
 
     def sideBarFragment() {
-        [userInstance: springSecurityService.currentUser]
+        def userInstance = springSecurityService.currentUser as User
+        [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
     def selectPlot() {
         def plotName = params.plotName
+        def success = false
         if (plotName) {
-            User userInstance = springSecurityService.currentUser
-            if (!userInstance.selectedPlots?.contains(plotName)) {
-                userInstance.addToSelectedPlots(plotName)
-                userInstance.save(flush: true)
+            def userInstance = springSecurityService.currentUser as User
+            def appState = userInstance?.applicationState
+
+            appState.lock()
+
+            def existing = appState?.selectedPlots?.find {
+                it.name == plotName
+            }
+            if (!existing) {
+                def plot = new StudyLocation(name:plotName)
+                appState.addToSelectedPlots(plot)
+                appState.save(flush: true)
+                success = true
             }
         }
-        render([status:'ok'] as JSON)
+        render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
     def selectPlots() {
         def plotNames = params.plotNames?.split(",");
+        def success = false
         if (plotNames) {
-            User userInstance = springSecurityService.currentUser
-            plotNames.each {
-                if (!userInstance.selectedPlots?.contains(it)) {
-                    userInstance.addToSelectedPlots(it)
+            def userInstance = springSecurityService.currentUser as User
+            def appState = userInstance.applicationState
+            appState.lock()
+            plotNames.each { plotName ->
+                def existing = appState?.selectedPlots.find {
+                    it.name == plotName
+                }
+                if (!existing) {
+                    def studyLocation = new StudyLocation(name:plotName)
+                    appState.addToSelectedPlots(studyLocation)
                 }
             }
-            userInstance.save(flush: true)
+            appState?.save(flush: true, failOnError: true)
+            success = true
         }
-        render([status:'ok'] as JSON)
+        render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
     def deselectPlot() {
         def plotName = params.plotName
+        def success = false
         if (plotName) {
-            User userInstance = springSecurityService.currentUser
-            if (userInstance.selectedPlots?.contains(plotName)) {
-                userInstance.removeFromSelectedPlots(plotName)
+            def userInstance = springSecurityService.currentUser as User
+            def appState = userInstance?.applicationState
+            appState.lock()
+            def existing = appState?.selectedPlots?.find {
+                it.name == plotName
+            }
+            if (existing) {
+                appState.removeFromSelectedPlots(existing)
                 userInstance.save(flush: true)
+                success = true
             }
         }
-        render([status:'ok'] as JSON)
+        render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
     def clearSelectedPlots() {
-        User userInstance = springSecurityService.currentUser
-        if (userInstance.selectedPlots) {
-            userInstance.selectedPlots?.clear();
-            userInstance.save(flush: true)
+        def success = false
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        if (appState?.selectedPlots) {
+            appState.selectedPlots.clear();
+            appState.save(flush: true)
+        }
+        render([status:success ? 'ok' : 'failed'] as JSON)
+    }
+
+    def ajaxSetLayerVisibility() {
+        def layerName = params.layerName
+        def visibility = params.boolean("visibility") ?: false
+        def userInstance = springSecurityService.currentUser as User
+
+        if (layerName && userInstance) {
+            def layer = userInstance.applicationState?.layers?.find { it.name == layerName }
+            if (layer) {
+                layer.visible = visibility
+                layer.save(flush: true, failOnError: true)
+            }
         }
         render([status:'ok'] as JSON)
     }
@@ -97,12 +163,13 @@ class MapController {
         BoundingBox bbox = null
         if (params.top && params.bottom && params.left && params.right) {
             bbox = new BoundingBox(left: params.double("left"), right: params.double("right"), top: params.double("top"), bottom: params.double("bottom"))
-            println "*** " + bbox
         }
 
         def results = plotService.searchPlots(params.q, bbox)
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
 
-        [results: results]
+        [results: results, userInstance: userInstance, appState: appState]
     }
 
     def ajaxPlotHover() {

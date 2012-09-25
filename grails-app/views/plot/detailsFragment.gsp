@@ -5,7 +5,7 @@
     Retrieving plot data...
   </div>
 
-  <g:if test="${userInstance.selectedPlots?.contains(plotName)}">
+  <g:if test="${appState?.selectedPlots?.find { it.name == plotName }}">
     <button class="btn btn-small btn-warning" id="btnDeselectPlot">Remove from selection</button>
   </g:if>
   <g:else>

@@ -1,10 +1,18 @@
+<style type="text/css">
+
+  td.toolButtonCell {
+    width:20px;
+    padding: 4px 2px;
+  }
+
+</style>
 <div class="well well-small">
   <table style="width: 100%">
     <tr>
       <td>
         <h5>Selected Study Locations
-          <g:if test="${userInstance.selectedPlots}">
-            (${userInstance.selectedPlots.size()})
+          <g:if test="${appState?.selectedPlots}">
+            (${appState.selectedPlots?.size()})
           </g:if>
         </h5>
       </td>
@@ -17,10 +25,10 @@
 
   <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
     <table class="table table-bordered table-condensed table-striped" >
-      <g:if test="${userInstance.selectedPlots}">
-          <g:each in="${userInstance.selectedPlots}">
+      <g:if test="${appState?.selectedPlots}">
+          <g:each in="${appState?.selectedPlots}">
             <tr>
-              <td><a class="plotDetailsLink" href="#" plotName="${it}">${it}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" plotName="${it}" title="Remove study location"><i class="icon-trash"/></button></td>
+              <td><a class="plotDetailsLink" href="#" plotName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" plotName="${it.name}" title="Remove study location"><i class="icon-trash"/></button></td>
             </tr>
           </g:each>
       </g:if>
@@ -53,18 +61,21 @@
     </table>
 
     <div id="layersTable" style="overflow-y: scroll;">
-      <g:if test="${userInstance.layers}">
+      <g:if test="${appState?.layers}">
       <table class="table table-striped table-condensed">
 
-        <g:each in="${userInstance.layers}">
+        <g:each in="${appState?.layers}">
           <tr>
-            <td><a href="#" class="btnLayerInfo" layerName="${it}">${it}</a></td>
-            %{--<td><button class="btn btn-mini pull-right" layerName="${it}"><i class="icon-eye-open" /></button></td>--}%
-            <td style="width:30px;">
-              <button class="btn btn-mini pull-right btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it}"><i class="icon-info-sign"/></button>
+            <td><a href="#" class="btnLayerInfo" layerName="${it.name}">${it.name}</a></td>
+            <td class="toolButtonCell">
+              <button class="btn btn-mini btnToggleLayerVisibility ${it.visible ? 'active' : ''}" layerName="${it.name}" title="Show/Hide this layer in the map"><i class="icon-eye-open" /></button></td>
             </td>
-            <td style="width:30px;">
-              <button class="btn btn-mini pull-right btnRemoveLayer" layerName="${it}" title="Remove layer"><i class="icon-trash"/></button>
+
+            <td class="toolButtonCell">
+              <button class="btn btn-mini btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it.name}" title="Show information about this layer"><i class="icon-info-sign"/></button>
+            </td>
+            <td class="toolButtonCell">
+              <button class="btn btn-mini btnRemoveLayer" layerName="${it.name}" title="Remove layer from the list"><i class="icon-trash"/></button>
             </td>
           </tr>
         </g:each>
@@ -136,6 +147,24 @@
     e.preventDefault();
     var layerName = $(this).attr("layerName");
     removeLayer(layerName);
+  });
+
+  $(".btnToggleLayerVisibility").click(function(e) {
+    var element = $(this);
+    var layerName = element.attr("layerName");
+    if (layerName) {
+      if ($(this).hasClass("active")) {
+        $.ajax("${createLink(controller: 'map', action: 'ajaxSetLayerVisibility')}?layerName=" + layerName + '&visibility=false').done(function(e) {
+          unloadWMSLayer(layerName);
+          element.removeClass("active");
+        });
+      } else {
+        $.ajax("${createLink(controller: 'map', action: 'ajaxSetLayerVisibility')}?layerName=" + layerName + '&visibility=true').done(function(e) {
+          loadWMSLayer(layerName);
+          element.addClass("active");
+        });
+      }
+    }
   });
 
   function resizeLayerPanel() {

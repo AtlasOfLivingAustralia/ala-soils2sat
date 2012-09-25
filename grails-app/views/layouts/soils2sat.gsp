@@ -5,6 +5,9 @@
 <!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"><!--<![endif]-->
 	<head>
+
+    <r:require module="jquery" />
+
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title><g:layoutTitle default="Grails"/></title>
@@ -55,7 +58,7 @@
             <div class="navbar-text pull-right">
               <span id="buttonBar">
                 <sec:ifLoggedIn>
-                  <span><sec:username/>&nbsp;<button class="btn" id="btnLogout">Logout</button></span>
+                  <span><sec:username/>&nbsp;<button class="btn btn-small" id="btnLogout">Logout</button></span>
                 </sec:ifLoggedIn>
 
                 <g:pageProperty name="page.buttonBar" />

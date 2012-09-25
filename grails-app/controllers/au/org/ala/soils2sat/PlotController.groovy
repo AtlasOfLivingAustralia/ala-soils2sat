@@ -12,48 +12,53 @@ class PlotController {
         def plotName = params.plotName;
         def userInstance = springSecurityService.currentUser as User
 
-        [plotName:plotName, userInstance: userInstance]
+        [plotName:plotName, userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
     def findPlotFragment() {
-        [userInstance:  springSecurityService.currentUser]
+        def userInstance = springSecurityService.currentUser as User
+        [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
     def plotDataFragment() {
 
-        def layers = springSecurityService.currentUser.layers.join(",")
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+
+        def layerNames = appState.layers.collect({ it.name }).join(",")
 
         def plotName = params.plotName
 
         def plot = plotService.getPlotSummary(plotName)
         def results = []
-        if (layers && plot) {
-            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${plot.latitude}/${plot.longitude}")
+        if (layerNames && plot) {
+            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${plot.latitude}/${plot.longitude}")
             results = JSON.parse(url.text)
         }
 
-        [results:results, userInstance: springSecurityService.currentUser]
+        [results:results, userInstance: springSecurityService.currentUser, appState: appState]
     }
 
     def comparePlotsFragment = {
 
         def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
 
         def results =[:]
-        if (userInstance.layers && userInstance.selectedPlots && userInstance.selectedPlots.size() > 1) {
-            def layers = userInstance.layers.join(",")
-            for (String plotName : userInstance.selectedPlots) {
-                def plot = plotService.getPlotSummary(plotName)
-                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${plot.latitude}/${plot.longitude}")
+        if (userInstance && appState?.layers && appState?.selectedPlots && appState?.selectedPlots.size() > 1) {
+            def layerNames = appState.layers.collect({ it.name }).join(",")
+            for (StudyLocation plot : appState.selectedPlots) {
+                def plotSummary = plotService.getPlotSummary(plot.name)
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${plotSummary.latitude}/${plotSummary.longitude}")
                 def plotResults = JSON.parse(url.text)
                 def temp = [:]
                 plotResults.each {
                     temp[it.field ?: it.layername] = it.value
                 }
-                results[plotName] = temp
+                results[plot.name] = temp
             }
         }
 
-        [userInstance: springSecurityService.currentUser, results: results]
+        [userInstance: userInstance, results: results, appState: appState ]
     }
 }

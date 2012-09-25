@@ -1,10 +1,11 @@
 <div>
   <h3>Add an environmental layer</h3>
-  <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
-  <br />
+  <div style="vertical-align: top">
+    <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
+    <span style="vertical-align: top">Add layer to map&nbsp;<g:checkBox style="vertical-align: top" id="chkAddToMap" name="chkAddToMap" checked=""/></span>
+  </div>
   <button id="btnLoadLayer" class="btn btn-small btn-primary">Load layer</button>
-  <button id="btnCancelLoadLayer" class="btn btn-small">Cancel</button>
-
+  <button id="btnCancelLoadLayer" class="btn btn-small">Close</button>
   <div id="layerInfoPanel" class="well well-large" style="margin-top:10px">
 
   </div>
@@ -19,8 +20,8 @@
   function loadSelectedLayer() {
     var layerName = $("#selectedLayer").attr("layerName");
     if (layerName) {
-      addLayer(layerName, true);
-      $.fancybox.close();
+      var addToMap = $('#chkAddToMap').attr('checked');
+      addLayer(layerName, addToMap);
     }
   }
 
@@ -30,6 +31,7 @@
 
   $("#layer").autocomplete({
       source : function(request, response) {
+          $("#layerInfoPanel").html("");
           $.ajax({
               url : "${createLink(controller: 'spatialProxy', action:'layersSearch')}",
               dataType : "json",
@@ -69,11 +71,11 @@
       }
   });
 
-  $("#layer").keydown(function(e) {
-    if (e.keyCode == 13) {
-      loadSelectedLayer();
-    }
-  });
+//  $("#layer").keydown(function(e) {
+//    if (e.keyCode == 13) {
+//      loadSelectedLayer();
+//    }
+//  });
 
   $("#layer").focus();
 

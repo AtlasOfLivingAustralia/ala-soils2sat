@@ -33,6 +33,11 @@ class S2SUserDetailsService implements GrailsUserDetailsService {
                 new GrantedAuthorityImpl(it.authority)
             }
 
+            if (!user.applicationState) {
+                def applicationState = new UserApplicationState(user: user)
+                applicationState.save(flush: true, failOnError: true)
+            }
+
             return new GrailsUser(user.username, user.password, user.enabled, !user.accountExpired, !user.passwordExpired, !user.accountLocked, authorities ?: NO_ROLES, user.id)
         }
     }
