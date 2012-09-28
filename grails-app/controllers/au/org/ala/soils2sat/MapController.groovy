@@ -70,80 +70,6 @@ class MapController {
         [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
-    def selectPlot() {
-        def plotName = params.plotName
-        def success = false
-        if (plotName) {
-            def userInstance = springSecurityService.currentUser as User
-            def appState = userInstance?.applicationState
-
-            appState.lock()
-
-            def existing = appState?.selectedPlots?.find {
-                it.name == plotName
-            }
-            if (!existing) {
-                def plot = new StudyLocation(name:plotName)
-                appState.addToSelectedPlots(plot)
-                appState.save(flush: true)
-                success = true
-            }
-        }
-        render([status:success ? 'ok' : 'failed'] as JSON)
-    }
-
-    def selectPlots() {
-        def plotNames = params.plotNames?.split(",");
-        def success = false
-        if (plotNames) {
-            def userInstance = springSecurityService.currentUser as User
-            def appState = userInstance.applicationState
-            appState.lock()
-            plotNames.each { plotName ->
-                def existing = appState?.selectedPlots.find {
-                    it.name == plotName
-                }
-                if (!existing) {
-                    def studyLocation = new StudyLocation(name:plotName)
-                    appState.addToSelectedPlots(studyLocation)
-                }
-            }
-            appState?.save(flush: true, failOnError: true)
-            success = true
-        }
-        render([status: success ? 'ok' : 'failed'] as JSON)
-    }
-
-    def deselectPlot() {
-        def plotName = params.plotName
-        def success = false
-        if (plotName) {
-            def userInstance = springSecurityService.currentUser as User
-            def appState = userInstance?.applicationState
-            appState.lock()
-            def existing = appState?.selectedPlots?.find {
-                it.name == plotName
-            }
-            if (existing) {
-                appState.removeFromSelectedPlots(existing)
-                userInstance.save(flush: true)
-                success = true
-            }
-        }
-        render([status:success ? 'ok' : 'failed'] as JSON)
-    }
-
-    def clearSelectedPlots() {
-        def success = false
-        def userInstance = springSecurityService.currentUser as User
-        def appState = userInstance?.applicationState
-        if (appState?.selectedPlots) {
-            appState.selectedPlots.clear();
-            appState.save(flush: true)
-        }
-        render([status:success ? 'ok' : 'failed'] as JSON)
-    }
-
     def ajaxSetLayerVisibility() {
         def layerName = params.layerName
         def visibility = params.boolean("visibility") ?: false
@@ -157,19 +83,6 @@ class MapController {
             }
         }
         render([status:'ok'] as JSON)
-    }
-
-    def ajaxSearch() {
-        BoundingBox bbox = null
-        if (params.top && params.bottom && params.left && params.right) {
-            bbox = new BoundingBox(left: params.double("left"), right: params.double("right"), top: params.double("top"), bottom: params.double("bottom"))
-        }
-
-        def results = plotService.searchPlots(params.q, bbox)
-        def userInstance = springSecurityService.currentUser as User
-        def appState = userInstance?.applicationState
-
-        [results: results, userInstance: userInstance, appState: appState]
     }
 
     def ajaxPlotHover() {
@@ -189,6 +102,36 @@ class MapController {
             info = layerService.getLayerInfo(layerName)
         }
         [layerName: layerName, layerInfo: info]
+    }
+
+    def ajaxSaveCurrentExtent = {
+        def top = params.double("top")
+        def left = params.double("left")
+        def bottom = params.double("bottom")
+        def right = params.double("right")
+
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        appState.lock()
+        def success = false;
+
+        if (appState && top && left && bottom && right) {
+            if (!appState.viewExtent) {
+                def extent = new Bounds(top: top, left: left, right: right, bottom:bottom)
+                extent.save(flush:true, failOnError: true)
+                appState.setViewExtent(extent)
+            } else {
+                appState.viewExtent.top = top
+                appState.viewExtent.left = left
+                appState.viewExtent.bottom = bottom
+                appState.viewExtent.right = right
+            }
+
+            appState.save(flush: true, failOnError: true)
+            success = true
+        }
+
+        render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
 }

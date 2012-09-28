@@ -4,7 +4,7 @@
     <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
     <span style="vertical-align: top">Add layer to map&nbsp;<g:checkBox style="vertical-align: top" id="chkAddToMap" name="chkAddToMap" checked=""/></span>
   </div>
-  <button id="btnLoadLayer" class="btn btn-small btn-primary">Load layer</button>
+  <button id="btnLoadLayer" class="btn btn-small btn-primary"><i class="icon-plus icon-white"></i> Add layer</button>
   <button id="btnCancelLoadLayer" class="btn btn-small">Close</button>
   <div id="layerInfoPanel" class="well well-large" style="margin-top:10px">
 

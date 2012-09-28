@@ -4,6 +4,8 @@ class UserApplicationState {
 
     List<StudyLocation> selectedPlots
     List<EnvironmentalLayer> layers
+    Boolean plotOnlySelectedLocations
+    Bounds viewExtent
 
     static hasMany = [selectedPlots:StudyLocation, layers: EnvironmentalLayer]
 
@@ -12,6 +14,8 @@ class UserApplicationState {
     static constraints = {
         selectedPlots nullable: true
         layers nullable: true
+        plotOnlySelectedLocations nullable:true
+        viewExtent nullable: true
     }
 
     public boolean containsLayerName(String layerName) {

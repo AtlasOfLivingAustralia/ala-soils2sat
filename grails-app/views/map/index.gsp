@@ -78,8 +78,9 @@
       }
 
       function selectPlot(plotName, successCallback) {
-        $.ajax("${createLink(controller:'map', action:'selectPlot')}?plotName=" + plotName).done(function(data) {
+        $.ajax("${createLink(controller:'plot', action:'selectPlot')}?plotName=" + plotName).done(function(data) {
           refreshSidebar();
+
           if (successCallback) {
             successCallback();
           }
@@ -88,8 +89,9 @@
 
       function selectPlots(plotNames, successCallback) {
         var plotstring = plotNames.join(",");
-        $.ajax("${createLink(controller:'map', action:'selectPlots')}?plotNames=" + plotstring).done(function(data) {
+        $.ajax("${createLink(controller:'plot', action:'selectPlots')}?plotNames=" + plotstring).done(function(data) {
           refreshSidebar();
+          refreshStudyLocationPoints();
           if (successCallback) {
             successCallback();
           }
@@ -97,8 +99,9 @@
       }
 
       function deselectPlot(plotName, successCallback) {
-        $.ajax("${createLink(controller:'map', action:'deselectPlot')}?plotName=" + plotName).done(function(data) {
+        $.ajax("${createLink(controller:'plot', action:'deselectPlot')}?plotName=" + plotName).done(function(data) {
           refreshSidebar();
+          refreshStudyLocationPoints();
           if (successCallback) {
             successCallback();
           }
@@ -106,10 +109,10 @@
       }
 
       function clearSelectedPlots(successCallback) {
-        $.ajax("${createLink(controller:'map', action:'clearSelectedPlots')}").done(function(data) {
+        $.ajax("${createLink(controller:'plot', action:'clearSelectedPlots')}").done(function(data) {
           refreshSidebar();
+          refreshStudyLocationPoints();
           if (successCallback) {
-            console.log("calling callback")
             successCallback();
           }
         });
@@ -154,11 +157,59 @@
         });
       }
 
+      function addPlotPointsLayer(plotList) {
+
+        var plots = map.getLayer("Plots");
+        if (plots) {
+          map.removeLayer(plots);
+        }
+
+        var latLongProj = new OpenLayers.Projection("EPSG:4326");
+        plots = new OpenLayers.Layer.Markers("Plots");
+        var results = plotList;
+        for (resultKey in results) {
+
+          var result = results[resultKey];
+          var location = new OpenLayers.LonLat(parseFloat(result.longitude),parseFloat(result.latitude));
+
+          location.transform(latLongProj, map.getProjectionObject());
+
+          var marker = new OpenLayers.Marker(location);
+          plots.addMarker(marker);
+          marker.tag = result.siteName;
+
+          marker.events.register('mouseover', marker, function(e) {
+            showPlotHover(this.tag);
+          });
+
+          marker.events.register('mouseout', marker, function(e) {
+            hidePlotHover(this.tag);
+          });
+
+          marker.events.register('click', marker, function(e) {
+            showPlotDetails(this.tag);
+          });
+
+        }
+        plots.id = "Plots";
+
+        map.addLayer(plots);
+        hideMessagePanel();
+
+      }
+
+      function refreshStudyLocationPoints() {
+        $.ajax("${createLink(controller: 'plot', action: 'getUserDisplayedPlots')}").done(function(data) {
+          addPlotPointsLayer(data);
+        });
+      }
+
       $(document).ready( function (e) {
 
         resizeMap();
         initMap();
         refreshSidebar();
+        refreshStudyLocationPoints();
 
         $("#addLayerLink").fancybox({
             beforeLoad: function() {
@@ -296,47 +347,25 @@
 
         var latLongProj = new OpenLayers.Projection("EPSG:4326");
 
-        $.ajax("${createLink(controller: 'ajax', action: 'getPlots')}").done(function(data) {
+        <g:if test="${appState?.viewExtent}">
+          var extent = new OpenLayers.Bounds(
+            ${appState.viewExtent?.left},
+            ${appState.viewExtent?.bottom},
+            ${appState.viewExtent?.right},
+            ${appState.viewExtent?.top}
+          );
+//          extent.transform(latLongProj, map.getProjectionObject());
+          map.zoomToExtent(extent);
+        </g:if>
+        <g:else>
+          var point = new OpenLayers.LonLat(133, -28);
+          point.transform(latLongProj, map.getProjectionObject());
+          map.setCenter(point, 5);
+        </g:else>
 
-          var plots = new OpenLayers.Layer.Markers("Plots");
-          var results = data; // .results;
-          for (resultKey in results) {
+        map.events.register("moveend", null, onMapMoved);
+        map.events.register("zoomend", null, onMapMoved);
 
-            var result = results[resultKey];
-            var location = new OpenLayers.LonLat(parseFloat(result.longitude),parseFloat(result.latitude));
-
-            location.transform(latLongProj, map.getProjectionObject());
-
-            var marker = new OpenLayers.Marker(location);
-            plots.addMarker(marker);
-            marker.tag = result.siteName;
-
-            marker.events.register('mouseover', marker, function(e) {
-              showPlotHover(this.tag);
-            });
-
-            marker.events.register('mouseout', marker, function(e) {
-              hidePlotHover(this.tag);
-            });
-
-            marker.events.register('click', marker, function(e) {
-              showPlotDetails(this.tag);
-            });
-
-          }
-          plots.id ="Plots";
-
-          map.addLayer(plots);
-          map.zoomToExtent(plots.getDataExtent());
-          // map.setLayerIndex(plots, 999); //set the marker layer to an arbitrarily high layer index
-
-          hideMessagePanel();
-        });
-
-
-        var point = new OpenLayers.LonLat(133, -28);
-        point.transform(latLongProj, map.getProjectionObject());
-        map.setCenter(point, 5);
       }
 
       function showPlotDetails(plotName) {
@@ -384,6 +413,16 @@
           $("#btnToggleSidebar").html("Hide sidebar");
         }
         resizeMap();
+      }
+
+      function onMapMoved(e) {
+        if (map) {
+          var extent = map.getExtent();
+          var latLongProj = new OpenLayers.Projection("EPSG:4326");
+//          extent.transform(map.getProjectionObject(), latLongProj);
+          var url = "${createLink(controller: 'map', action:'ajaxSaveCurrentExtent')}?top=" + extent.top + "&left=" + extent.left + "&bottom=" + extent.bottom + "&right=" + extent.right;
+          $.ajax(url).done(function(e) { });
+        }
       }
 
     </script>

@@ -16,6 +16,9 @@
           </g:if>
         </h5>
       </td>
+      <td style="text-align: right">
+        <button id="btnTogglePlotSelected" class="btn btn-mini ${appState.plotOnlySelectedLocations ? 'active' : ''}">Show only selected locations on map</button>
+      </td>
     </tr>
   </table>
   <p>
@@ -88,6 +91,21 @@
 </div>
 
 <script type="text/javascript">
+
+  $("#btnTogglePlotSelected").click(function(e) {
+    e.preventDefault();
+    var currentState = $(this).hasClass('active');
+    if ($(this).hasClass('active')) {
+      $(this).removeClass('active');
+    } else {
+      $(this).addClass('active');
+    }
+
+    $.ajax("${createLink(controller: 'plot', action: 'ajaxSetPlotSelectedOnly')}?plotSelected=" + !currentState).done(function(e) {
+      refreshStudyLocationPoints();
+    });
+
+  });
 
   $("#btnComparePlots").click(function(e) {
     e.preventDefault();

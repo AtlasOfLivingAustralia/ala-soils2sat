@@ -1,5 +1,5 @@
 <h4>Compare Study Locations (${appState?.selectedPlots?.size()})</h4>
-<g:if test="${appState?.layers && appState?.selectedPlots?.size() > 1}">
+<g:if test="${appState?.layers?.size() >= 1 && appState?.selectedPlots?.size() > 1}">
   <table class="table table-striped table-condensed table-bordered" style="max-height: 540px; width:780px; overflow: scroll;">
     <thead>
       <tr>

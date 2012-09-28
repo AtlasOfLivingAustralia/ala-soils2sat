@@ -12,6 +12,7 @@ class User {
 	boolean passwordExpired
     UserApplicationState applicationState
 
+    static hasOne = [applicationState: UserApplicationState]
 
 	static constraints = {
 		username blank: false, unique: true
