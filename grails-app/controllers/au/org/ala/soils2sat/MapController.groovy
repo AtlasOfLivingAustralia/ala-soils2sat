@@ -134,4 +134,27 @@ class MapController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
+    def browseLayersFragment = {
+        def layers = layerService.getAllLayers()
+        def layerMap = layers.groupBy { it.classification1 }
+
+        [layerMap: layerMap]
+    }
+
+    def layerSummaryFragment = {
+        def layerName = params.layerName;
+        def info = [:]
+        LayerDefinition layerDefinition = null
+        if (layerName) {
+            info = layerService.getLayerInfo(layerName)
+            layerDefinition = new LayerDefinition()
+            info.each {
+                if (it.value && layerDefinition.hasProperty(it.key)) {
+                    layerDefinition[it.key] = it.value
+                }
+            }
+        }
+        [layerName: layerName, layerDefinition: layerDefinition]
+    }
+
 }

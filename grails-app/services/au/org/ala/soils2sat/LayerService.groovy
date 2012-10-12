@@ -16,7 +16,33 @@ class LayerService {
         } finally {
             timer.stop(true)
         }
+
         return JSON.parse(results)
+    }
+
+    List<LayerDefinition> getAllLayers() {
+        def results = new ArrayList<LayerDefinition>()
+        def timer = new CodeTimer("getAllLayers")
+        try {
+            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/layers")
+            def layerJson = url.getText()
+            def layerData = JSON.parse(layerJson)
+
+            layerData.each {
+                def layer = new LayerDefinition()
+                it.each {
+                    if (it.value && layer.hasProperty(it.key)) {
+                        layer[it.key] = it.value
+                    }
+                }
+                results.add(layer)
+            }
+
+            return results
+        } finally {
+            timer.stop(true)
+        }
+
     }
 
 }

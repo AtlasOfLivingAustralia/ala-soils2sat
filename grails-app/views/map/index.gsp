@@ -51,6 +51,7 @@
 
     <script src="http://maps.google.com/maps/api/js?key=AIzaSyDAqE0sOMHNienA0zFIUMlY53ztEDiv0d8&sensor=true" type="text/javascript"></script>
     <link rel="stylesheet" href="${resource(dir: 'js/openlayers/theme/default', file: 'style.css')}" type="text/css">
+    <link rel="stylesheet" href="${resource(dir:'/jqwidgets/styles', file:'jqx.base.css')}" type="text/css" />
 
 	</head>
 	<body>
@@ -444,7 +445,7 @@
     </div>
 
     <a id="addLayerLink" href="#addLayerDetails" style="display: none"></a>
-    <div id="addLayerDetails" style="display:none; width: 600px; height: 300px">
+    <div id="addLayerDetails" style="display:none; width: 800px; height: 500px">
       <div id="addLayerContent">
       </div>
     </div>
@@ -476,5 +477,12 @@
     <content tag="buttonBar">
         <button id="btnToggleSidebar" class="btn btn-small">Hide sidebar</button>
     </content>
+
+    <script src="${resource(dir: '/jqwidgets', file: 'jqxcore.js')}" type="text/javascript" ></script>
+    <script src="${resource(dir: '/jqwidgets', file: 'jqxpanel.js')}" type="text/javascript" ></script>
+    <script src="${resource(dir: '/jqwidgets', file: 'jqxscrollbar.js')}" type="text/javascript" ></script>
+    <script src="${resource(dir: '/jqwidgets', file: 'jqxbuttons.js')}" type="text/javascript" ></script>
+    <script src="${resource(dir: '/jqwidgets', file: 'jqxtree.js')}" type="text/javascript" ></script>
+
 	</body>
 </html>
