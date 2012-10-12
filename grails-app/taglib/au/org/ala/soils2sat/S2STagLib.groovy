@@ -27,4 +27,23 @@ class S2STagLib {
 
     }
 
+    /**
+     * @attr layer
+     */
+    def layerTreeItem = { attrs ->
+        LayerDefinition layer = attrs.layer as LayerDefinition
+
+        if (!layer) {
+            return
+        }
+
+        def mb = new MarkupBuilder(out)
+        mb.li('layerName': layer.name) {
+            mkp.yield(layer.displayname)
+            small {
+                mkp.yield(layer.description)
+            }
+        }
+    }
+
 }

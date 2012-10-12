@@ -482,6 +482,7 @@
     <script src="${resource(dir: '/jqwidgets', file: 'jqxpanel.js')}" type="text/javascript" ></script>
     <script src="${resource(dir: '/jqwidgets', file: 'jqxscrollbar.js')}" type="text/javascript" ></script>
     <script src="${resource(dir: '/jqwidgets', file: 'jqxbuttons.js')}" type="text/javascript" ></script>
+    <script src="${resource(dir: '/jqwidgets', file: 'jqxexpander.js')}" type="text/javascript" ></script>
     <script src="${resource(dir: '/jqwidgets', file: 'jqxtree.js')}" type="text/javascript" ></script>
 
 	</body>

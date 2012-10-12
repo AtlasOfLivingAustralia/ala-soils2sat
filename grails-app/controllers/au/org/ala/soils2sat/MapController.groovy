@@ -136,7 +136,32 @@ class MapController {
 
     def browseLayersFragment = {
         def layers = layerService.getAllLayers()
-        def layerMap = layers.groupBy { it.classification1 }
+        def layerMap = ['_':[]]
+
+        layers.each {
+            if (it.classification1) {
+                def topLevel = layerMap[it.classification1]
+                if (!topLevel) {
+                    topLevel = ['_':[]]
+                    layerMap[it.classification1] = topLevel
+                }
+
+                if (it.classification2) {
+                    def secondLevel = topLevel[it.classification2]
+                    if (!secondLevel) {
+                        secondLevel = []
+                        topLevel[it.classification2] = secondLevel
+                    }
+                    secondLevel << it
+                } else {
+                    topLevel['_'] << it
+                }
+            } else {
+                layerMap['_'] << it
+            }
+        }
+
+        println layerMap
 
         [layerMap: layerMap]
     }

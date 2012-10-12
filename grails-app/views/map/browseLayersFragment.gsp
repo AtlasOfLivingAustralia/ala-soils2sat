@@ -1,17 +1,33 @@
-<div style="max-height: 250px; height: 250px; overflow-y: scroll;">
-  <div id="layerTree">
+<div>
+  <div id="layerTree" style="max-height: 250px; height: 240px; overflow-y: scroll;">
     <ul item-selected="true">
-    <g:each in="${layerMap}" var="kvp">
-      <li><b>${kvp.key}</b>
-        <ul>
-          <g:each in="${layerMap[kvp.key]}" var="layer">
-            <li layerName="${layer.name}">${layer.displayname} <small>- ${layer.description}</small></li>
-          </g:each>
-        </ul>
-      </li>
-    </g:each>
+      <g:each in="${layerMap}" var="topLevel">
+        <g:set value="${topLevel.key}" var="topLevelLabel"/>
+        <g:if test="${topLevel.key == '_'}">
+          <g:set var="topLevelLabel" value="Unclassified"/>
+        </g:if>
+        <g:if test="${topLevel.value}">
+          <li><b>${topLevelLabel}</b>
+            <ul>
+              <g:each in="${topLevel.value}" var="secondLevel">
+                <g:if test="${secondLevel.key != '_'}">
+                  <li><b>${secondLevel.key}</b>
+                    <ul>
+                      <g:each in="${secondLevel.value}" var="layer">
+                        <sts:layerTreeItem layer="${layer}" />
+                      </g:each>
+                    </ul>
+                  </li>
+                </g:if>
+              </g:each>
+              <g:each in="${topLevel.value['_']}" var="unsorted">
+                <sts:layerTreeItem layer="${unsorted}" />
+              </g:each>
+            </ul>
+          </li>
+        </g:if>
+      </g:each>
     </ul>
-  </div>
 </div>
 
 <div class="well well-small" style="margin-top: 10px; margin-bottom: 0px; height:130px;">
@@ -21,9 +37,11 @@
 
 
 <script type="text/javascript">
+  var theme = "ui-smoothness";
+  $("#browseExpander").jqxExpander({ showArrow: false, toggleMode: 'none', width: '300px', height: 'auto', theme: theme });
 
   $("#layerTree").jqxTree({
-    theme: 'ui-smoothness'
+    theme: theme
   }).bind('select', onLayerSelect);
 
   function onLayerSelect(event) {

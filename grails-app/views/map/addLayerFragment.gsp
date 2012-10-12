@@ -1,27 +1,34 @@
+<style type="text/css">
+
+  .tab-content {
+    border-left: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+    border-bottom: 1px solid #d3d3d3;
+    padding: 10px;
+    background-color: white;
+  }
+
+</style>
 <div>
   <h4 style="margin-top: 0px">Add an environmental layer</h4>
 
   <div class="tabbable">
 
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" style="margin-bottom: 0px">
       <li class="active"><a href="#searchTab" data-toggle="tab">Search</a></li>
       <li><a href="#browseTab" data-toggle="tab">Browse</a></li>
       <li><a href="#layerSetsTab" data-toggle="tab">Layer sets</a></li>
     </ul>
 
-    <div class="tab-content">
+    <div class="tab-content" >
 
-      <div class="tab-pane active" id="searchTab" style="vertical-align: top; margin-bottom: 0px;">
-
+      <div class="tab-pane active" id="searchTab" style="vertical-align: top; margin-bottom: 5px;margin-top:30px; back">
         <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
-        <span style="vertical-align: top">Add layer to map&nbsp;<g:checkBox style="vertical-align: top" id="chkAddToMap" name="chkAddToMap" checked=""/></span>
+        %{--<span style="vertical-align: top">Add layer to map&nbsp;<g:checkBox style="vertical-align: top" id="chkAddToMap" name="chkAddToMap" checked=""/></span>--}%
         <br />
-        <button id="btnLoadLayer" class="btn btn-small btn-primary"><i class="icon-plus icon-white"></i> Add layer</button>
-        <button id="btnCancelLoadLayer" class="btn btn-small">Close</button>
-
         <div id="layerInfoPanel" class="well well-small" style="margin-top:10px; height: 130px">
-
         </div>
+
       </div>
 
       <div class="tab-pane" id="browseTab">
@@ -43,19 +50,23 @@
     $.fancybox.close();
   });
 
-  function loadSelectedLayer() {
-    var layerName = $("#selectedLayer").attr("layerName");
-    if (layerName) {
-      var addToMap = $('#chkAddToMap').attr('checked');
-      addLayer(layerName, addToMap);
-    }
-  }
+//  function loadSelectedLayer() {
+//    var layerName = $("#selectedLayer").attr("layerName");
+//    if (layerName) {
+//      var addToMap = $('#chkAddToMap').attr('checked');
+//      addLayer(layerName, addToMap);
+//    }
+//  }
 
   $('a[data-toggle="tab"]').on('shown', function (e) {
 
+    $("#browseTab").html("");
+    $("#layerInfoPanel").html("");
+    $("#layer").val("");
+
     var tabHref = $(this).attr('href');
     if (tabHref == '#browseTab') {
-      $("#browseTab").html("Loading...");
+      $("#browseTab").html("Please wait while the list of layers is Loaded...");
       $.ajax("${createLink(controller: 'map', action: 'browseLayersFragment')}").done(function(html) {
         $("#browseTab").html(html);
       });
@@ -65,9 +76,9 @@
     // e.relatedTarget // previous tab
   });
 
-  $('#btnLoadLayer').click(function(e) {
-    loadSelectedLayer();
-  });
+//  $('#btnLoadLayer').click(function(e) {
+//    loadSelectedLayer();
+//  });
 
   $("#layer").autocomplete({
       source : function(request, response) {
