@@ -264,7 +264,7 @@
 
         <g:each in="${appState?.layers}" var="layer">
           <g:if test="${layer.visible}">
-            loadWMSLayer("${layer.name}");
+            loadWMSLayer("${layer.name}", ${layer.opacity ?: 1.0});
           </g:if>
         </g:each>
       });
@@ -277,7 +277,7 @@
         $.ajax("${createLink(controller: 'map', action: 'addLayer')}?layerName=" + name + "&addToMap=" + showInMap).done(function (data) {
           refreshSidebar();
           if (showInMap) {
-            loadWMSLayer(name);
+            loadWMSLayer(name, 1.0);
           }
         });
 
@@ -289,7 +289,7 @@
         });
       }
 
-      function loadWMSLayer(name) {
+      function loadWMSLayer(name, opacity) {
 
         var wmsLayer = new OpenLayers.Layer.WMS(name, "${grailsApplication.config.spatialPortalRoot}/geoserver/gwc/service/wms/reflect", {
             layers : 'ALA:' + name,
@@ -297,6 +297,10 @@
             format : 'image/png',
             transparent : true
         });
+
+        if (opacity) {
+          wmsLayer.setOpacity(opacity);
+        }
 
         // wmsLayer.visibility = false;
         map.addLayer(wmsLayer);
@@ -389,6 +393,20 @@
 
       }
 
+      function setLayerOpacity(layerName, opacity) {
+        var candidates = map.getLayersByName(layerName);
+
+        if (candidates) {
+          $.ajax("${createLink(controller: 'map', action:'ajaxSaveLayerOpacity')}?layerName=" + layerName + "&opacity=" + opacity).done(function(result) {
+            for (var i in candidates) {
+              var layer = candidates[i];
+              layer.setOpacity(opacity);
+            }
+          });
+        }
+
+      }
+
       function hidePlotHover(plotName) {
         plotHoverFlag = false;
         hideMessagePanel();
@@ -419,8 +437,6 @@
       function onMapMoved(e) {
         if (map) {
           var extent = map.getExtent();
-          var latLongProj = new OpenLayers.Projection("EPSG:4326");
-//          extent.transform(map.getProjectionObject(), latLongProj);
           var url = "${createLink(controller: 'map', action:'ajaxSaveCurrentExtent')}?top=" + extent.top + "&left=" + extent.left + "&bottom=" + extent.bottom + "&right=" + extent.right;
           $.ajax(url).done(function(e) { });
         }

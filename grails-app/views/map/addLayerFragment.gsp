@@ -66,7 +66,7 @@
 
     var tabHref = $(this).attr('href');
     if (tabHref == '#browseTab') {
-      $("#browseTab").html("Please wait while the list of layers is Loaded...");
+      $("#browseTab").html("Retrieving available layers...");
       $.ajax("${createLink(controller: 'map', action: 'browseLayersFragment')}").done(function(html) {
         $("#browseTab").html(html);
       });

@@ -17,7 +17,7 @@
         </h5>
       </td>
       <td style="text-align: right">
-        <button id="btnTogglePlotSelected" class="btn btn-mini ${appState.plotOnlySelectedLocations ? 'active' : ''}">Show only selected locations on map</button>
+        <button id="btnTogglePlotSelected" class="btn btn-mini ${appState.plotOnlySelectedLocations ? 'active' : ''}">Show only selected on map</button>
       </td>
     </tr>
   </table>
@@ -65,24 +65,29 @@
 
     <div id="layersTable" style="overflow-y: scroll;">
       <g:if test="${appState?.layers}">
-      <table class="table table-striped table-condensed">
+        <table class="table table-striped table-condensed">
+          <g:each in="${appState?.layers}">
+            <tr>
+              <td><a href="#" class="btnLayerInfo" layerName="${it.name}">${it.name}</a></td>
+              <td class="toolButtonCell">
+                <button class="btn btn-mini btnToggleLayerVisibility ${it.visible ? 'active' : ''}" layerName="${it.name}" title="Show/Hide this layer in the map"><i class="icon-eye-open" /></button></td>
+              </td>
+              <td class="toolButtonCell">
+                <button class="btn btn-mini btnLayerTools" style="margin-right:5px" title="Toggle layer display settings" layerName="${it.name}"><i class="icon-wrench"/></button>
+              </td>
 
-        <g:each in="${appState?.layers}">
-          <tr>
-            <td><a href="#" class="btnLayerInfo" layerName="${it.name}">${it.name}</a></td>
-            <td class="toolButtonCell">
-              <button class="btn btn-mini btnToggleLayerVisibility ${it.visible ? 'active' : ''}" layerName="${it.name}" title="Show/Hide this layer in the map"><i class="icon-eye-open" /></button></td>
-            </td>
-
-            <td class="toolButtonCell">
-              <button class="btn btn-mini btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it.name}" title="Show information about this layer"><i class="icon-info-sign"/></button>
-            </td>
-            <td class="toolButtonCell">
-              <button class="btn btn-mini btnRemoveLayer" layerName="${it.name}" title="Remove layer from the list"><i class="icon-trash"/></button>
-            </td>
-          </tr>
-        </g:each>
-      </table>
+              <td class="toolButtonCell">
+                <button class="btn btn-mini btnLayerInfo" style="margin-right:5px" title="Display layer information" layerName="${it.name}" ><i class="icon-info-sign"/></button>
+              </td>
+              <td class="toolButtonCell">
+                <button class="btn btn-mini btnRemoveLayer" layerName="${it.name}" title="Remove layer from the list"><i class="icon-trash"/></button>
+              </td>
+            </tr>
+            <tr style="display:none" id="layerTools_${it.name}" class="layerToolsRow">
+              <td colspan="5" class="layerToolsCell"></td>
+            </tr>
+          </g:each>
+        </table>
       </g:if>
       <g:else>
         No layers have been added
@@ -178,11 +183,33 @@
         });
       } else {
         $.ajax("${createLink(controller: 'map', action: 'ajaxSetLayerVisibility')}?layerName=" + layerName + '&visibility=true').done(function(e) {
-          loadWMSLayer(layerName);
+          loadWMSLayer(layerName, e.opacity);
           element.addClass("active");
         });
       }
     }
+  });
+
+  $(".btnLayerTools").click(function(e) {
+    var element = $(this);
+    var layerName = element.attr("layerName");
+
+    var isCurrentActive = $(this).hasClass("active");
+
+    $(".btnLayerTools").removeClass("active");
+    $(".layerToolsRow").hide();
+    $(".layerToolsCell").html("");
+
+    if (layerName) {
+      if (!isCurrentActive) {
+        element.addClass("active");
+        $("#layerTools_" + layerName).show();
+        $.ajax("${createLink(controller: 'map', action: 'layerToolsFragment')}?layerName=" + layerName).done(function(content) {
+          $("#layerTools_" + layerName + " > td").html(content);
+        });
+      }
+    }
+
   });
 
   function resizeLayerPanel() {

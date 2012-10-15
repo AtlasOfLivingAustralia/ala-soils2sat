@@ -37,14 +37,14 @@
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <div class="controls">
-                        <label class="checkbox">
-                            <input type="checkbox" name="${rememberMeParameter}" id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if>>
-                            <g:message code="springSecurity.login.remember.me.label"/>
-                        </label>
-                    </div>
-                </div>
+                %{--<div class="control-group">--}%
+                    %{--<div class="controls">--}%
+                        %{--<label class="checkbox">--}%
+                            %{--<input type="checkbox" name="${rememberMeParameter}" id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if>>--}%
+                            %{--<g:message code="springSecurity.login.remember.me.label"/>--}%
+                        %{--</label>--}%
+                    %{--</div>--}%
+                %{--</div>--}%
 
                 <div class="control-group">
                     <div class="controls">

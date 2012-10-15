@@ -74,15 +74,16 @@ class MapController {
         def layerName = params.layerName
         def visibility = params.boolean("visibility") ?: false
         def userInstance = springSecurityService.currentUser as User
-
+        def opacity = 1.0
         if (layerName && userInstance) {
             def layer = userInstance.applicationState?.layers?.find { it.name == layerName }
             if (layer) {
                 layer.visible = visibility
                 layer.save(flush: true, failOnError: true)
+                opacity = layer.opacity
             }
         }
-        render([status:'ok'] as JSON)
+        render([status:'ok', opacity: opacity] as JSON)
     }
 
     def ajaxPlotHover() {
@@ -134,6 +135,24 @@ class MapController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
+    def ajaxSaveLayerOpacity = {
+        def layerName = params.layerName
+        def opacity = params.float("opacity")
+
+        boolean success = false
+
+        def userInstance = springSecurityService.currentUser as User
+        if (layerName) {
+            def layerInstance = userInstance.applicationState?.layers?.find { it.name == layerName }
+            if (layerInstance) {
+                layerInstance.opacity = opacity
+                layerInstance.save(flush: true, failOnError: true)
+                success= true
+            }
+        }
+        render([status: success ? 'ok' : 'failed'] as JSON)
+    }
+
     def browseLayersFragment = {
         def layers = layerService.getAllLayers()
         def layerMap = ['_':[]]
@@ -180,6 +199,18 @@ class MapController {
             }
         }
         [layerName: layerName, layerDefinition: layerDefinition]
+    }
+
+    def layerToolsFragment = {
+        def layerName = params.layerName;
+        def userInstance = springSecurityService.currentUser as User
+        if (layerName) {
+            def layerInstance = userInstance.applicationState?.layers?.find { it.name == layerName }
+            if (layerInstance) {
+                def layerInfo = layerService.getLayerInfo(layerName)
+                return [layerInstance: layerInstance, layerName: layerName, layerInfo: layerInfo]
+            }
+        }
     }
 
 }
