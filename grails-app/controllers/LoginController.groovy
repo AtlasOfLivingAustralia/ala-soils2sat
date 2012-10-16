@@ -51,8 +51,15 @@ class LoginController {
             return
         }
 
+        if (params.errorMessage) {
+            flash.message = params.errorMessage
+        }
+
         String view = 'auth'
         String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+
+        println flash.message
+
         render view: view, model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
     }
 
@@ -115,10 +122,10 @@ class LoginController {
             render([error: msg] as JSON)
         }
         else {
-            flash.message = msg
-            render(view: 'auth', model:[username: params.j_username])
-            // redirect action: 'auth', mo params: params
+            params.errorMessage = msg
+            redirect(view: 'auth', params: params)
         }
+
     }
 
     /**

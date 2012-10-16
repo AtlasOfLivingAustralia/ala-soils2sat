@@ -10,6 +10,14 @@ class MapController {
 
     def index() {
         def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+
+        if (appState) {
+            appState.lock()
+            appState.lastLogin = Calendar.instance.time
+            appState.save(flush: true, failOnError: true)
+        }
+
         [userInstance: userInstance , appState: userInstance?.applicationState]
     }
 

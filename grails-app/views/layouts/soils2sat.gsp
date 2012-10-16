@@ -10,12 +10,14 @@
 
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title><g:layoutTitle default="Grails"/></title>
+		<title><g:layoutTitle default="Soils2Sat"/></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="shortcut icon" href="https://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" type="image/x-icon">
 		<link rel="apple-touch-icon" href="${resource(dir: 'images', file: 'apple-touch-icon.png')}">
 		<link rel="apple-touch-icon" sizes="114x114" href="${resource(dir: 'images', file: 'apple-touch-icon-retina.png')}">
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'soils2sat.css')}" type="text/css">
+    <link rel="stylesheet" href="${resource(dir:'/jqwidgets/styles', file:'jqx.base.css')}" type="text/css" />
+
 		<g:layoutHead/>
     <r:require module="bootstrap" />
 		<r:layoutResources />
@@ -32,7 +34,10 @@
         position: fixed;
         width: 100%;
         background-color: #efefef;
+    }
 
+    .footer img {
+      max-width: inherit;
     }
 
     #buttonBar .btn {
@@ -45,6 +50,10 @@
       $(document).ready(function(e) {
         $("#btnLogout").click(function(e) {
            window.location = "${createLink(controller: 'logout', action:'index')}";
+        });
+
+        $("#btnAdministration").click(function(e) {
+          window.location = "${createLink(controller: 'admin')}";
         });
       });
     </script>
@@ -60,7 +69,9 @@
                 <sec:ifLoggedIn>
                   <span><sec:username/>&nbsp;<button class="btn btn-small" id="btnLogout">Logout</button></span>
                 </sec:ifLoggedIn>
-
+                <sts:ifAdmin>
+                  <button class="btn btn-warning btn-small" id="btnAdministration">Administration</button>
+                </sts:ifAdmin>
                 <g:pageProperty name="page.buttonBar" />
               </span>
             </div>

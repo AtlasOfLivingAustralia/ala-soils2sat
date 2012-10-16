@@ -9,6 +9,8 @@ class S2STagLib {
 
     static namespace = 'sts'
 
+    def springSecurityService
+
     /**
      * @attr active
      */
@@ -43,6 +45,36 @@ class S2STagLib {
             small {
                 mkp.yield(layer.description)
             }
+        }
+    }
+
+    def ifAdmin = { attrs, body ->
+
+        def user = springSecurityService.currentUser as User
+        if (user) {
+            def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_ADMIN'))
+            if (adminRole) {
+                out << body()
+            }
+        }
+
+    }
+
+    /**
+     * @attr user
+     */
+    def roles = { attrs, body ->
+        def user = attrs.user as User
+        if (!user) {
+            user = springSecurityService.currentUser as User
+        }
+
+        if (user) {
+            def roles = UserRole.findAllByUser(user)
+            def roleNames = roles.collect {
+                it.role.authority
+            }
+            out << roleNames.join(", ")
         }
     }
 
