@@ -18,11 +18,6 @@ class AdminController {
         [userList: userList]
     }
 
-    def layerSets() {
-
-        [:]
-    }
-
     def addUser() {
         [:]
     }
@@ -144,4 +139,87 @@ class AdminController {
 
         redirect(action: 'userList')
     }
+
+    def layerSets() {
+        def layerSets = LayerSet.findAllWhere(user: null)
+
+        [layerSets: layerSets]
+    }
+
+    def newGlobalLayerSet = {
+        def layerSet = new LayerSet(user: null, name:'<new layer set>')
+        layerSet.save(flush: true, failOnError: true)
+        redirect(controller:'admin', action:'layerSets')
+    }
+
+    def deleteLayerSet = {
+        def layerSet = LayerSet.get(params.int("id"))
+        if (layerSet) {
+            layerSet.delete(flush: true)
+        }
+        redirect(controller:'admin', action:'layerSets')
+    }
+
+    def editLayerSet = {
+        def layerSet = LayerSet.get(params.int("id"))
+        if (!layerSet) {
+            flash.errorMessage = "Could not retrieve layer set with id " + params.id
+            redirect(controller:'admin', action:'layerSets')
+            return
+        }
+
+        [layerSet: layerSet]
+    }
+
+    def saveLayerSet = {
+        def layerSet = LayerSet.get(params.int("id"))
+        if (!layerSet) {
+            flash.errorMessage = "Could not retrieve layer set with id " + params.id
+            redirect(controller:'admin', action:'layerSets')
+            return
+        }
+
+        layerSet.name = params.name
+        layerSet.save(flush:true, failOnError: true)
+        redirect(controller:'admin', action:'layerSets')
+    }
+
+    def addLayerToLayerSet = {
+        def layerSet = LayerSet.get(params.int("id"))
+        if (!layerSet) {
+            flash.errorMessage = "Could not retrieve layer set with id " + params.id
+            redirect(controller:'admin', action:'layerSets')
+        } else {
+            def layerName = params.layerName
+            if (!layerName) {
+                flash.errorMessage = "No layer name supplied!"
+            } else {
+                if (!layerSet.layers.contains(layerName)) {
+                    layerSet.addToLayers(layerName)
+                    layerSet.save(flush: true, failOnError: true)
+                }
+            }
+            redirect(controller:'admin', action:'editLayerSet', id: layerSet.id)
+        }
+    }
+
+    def removeLayerFromLayerSet = {
+        def layerSet = LayerSet.get(params.int("id"))
+        if (!layerSet) {
+            flash.errorMessage = "Could not retrieve layer set with id " + params.id
+            redirect(controller:'admin', action:'layerSets')
+        } else {
+            def layerName = params.layerName
+            if (!layerName) {
+                flash.errorMessage = "No layer name supplied!"
+            } else {
+                if (layerSet.layers.contains(layerName)) {
+                    layerSet.removeFromLayers(layerName)
+                    layerSet.save(flush: true, failOnError: true)
+                }
+            }
+            redirect(controller:'admin', action:'editLayerSet', id: layerSet.id)
+        }
+    }
+
 }

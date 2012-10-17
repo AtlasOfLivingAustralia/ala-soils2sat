@@ -58,7 +58,7 @@
       });
     </script>
 	</head>
-	<body style="overflow: hidden">
+	<body style="overflow: auto">
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">

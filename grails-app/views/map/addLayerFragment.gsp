@@ -50,14 +50,6 @@
     $.fancybox.close();
   });
 
-//  function loadSelectedLayer() {
-//    var layerName = $("#selectedLayer").attr("layerName");
-//    if (layerName) {
-//      var addToMap = $('#chkAddToMap').attr('checked');
-//      addLayer(layerName, addToMap);
-//    }
-//  }
-
   $('a[data-toggle="tab"]').on('shown', function (e) {
 
     $("#browseTab").html("");
@@ -71,14 +63,7 @@
         $("#browseTab").html(html);
       });
     }
-
-    // alert(e.target);
-    // e.relatedTarget // previous tab
   });
-
-//  $('#btnLoadLayer').click(function(e) {
-//    loadSelectedLayer();
-//  });
 
   $("#layer").autocomplete({
       source : function(request, response) {
@@ -116,21 +101,8 @@
         $.ajax("${createLink(controller: 'map', action:'layerSummaryFragment')}?layerName=" + item.name).done(function(content) {
           $("#layerInfoPanel").html(content);
         });
-//        var html= '<div id="selectedLayer" layerName="' + item.name + '"><strong>' + item.label + " (" + item.name + ")</strong><br/>" + item.description + '<br /><small><span class="label">' + item.classification1 + '</span>'
-//        if (item.classification2) {
-//            html += '&nbsp;<span class="label">' + item.classification2 + '</span>';
-//        }
-//        html += '</small></div>';
-//
-//        $("#layerInfoPanel").html(html);
       }
   });
-
-//  $("#layer").keydown(function(e) {
-//    if (e.keyCode == 13) {
-//      loadSelectedLayer();
-//    }
-//  });
 
   $("#layer").focus();
 

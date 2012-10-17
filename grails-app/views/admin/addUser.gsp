@@ -33,12 +33,6 @@
                       <label class="control-label" for='email'>Email:</label>
                       <div class="controls">
                           <g:textField id="email" name="email" placeholder="Email" value="${params.email}" />
-                          %{--<g:if test="${!userInstance}">--}%
-                            %{--<g:textField name="email" placeholder="Email" value="${params.email}" />--}%
-                          %{--</g:if>--}%
-                          %{--<g:else>--}%
-                            %{--<span>${userInstance.username}</span>--}%
-                          %{--</g:else>--}%
                       </div>
                   </div>
 

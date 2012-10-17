@@ -207,6 +207,8 @@
 
       $(document).ready( function (e) {
 
+        $("body").css("overflow","hidden");
+
         resizeMap();
         initMap();
         refreshSidebar();
