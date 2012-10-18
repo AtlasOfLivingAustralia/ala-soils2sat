@@ -264,6 +264,8 @@
           toggleSidebar();
         });
 
+
+
         <g:each in="${appState?.layers}" var="layer">
           <g:if test="${layer.visible}">
             loadWMSLayer("${layer.name}", ${layer.opacity ?: 1.0});
@@ -283,6 +285,12 @@
           }
         });
 
+      }
+
+      function addLayerSet(layerSetId, replaceExisting) {
+        $.ajax("${createLink(controller: 'map', action: 'addLayerSet')}?layerSetId=" + layerSetId + "&replaceExisting="+replaceExisting).done(function (data) {
+          refreshSidebar();
+        });
       }
 
       function clearAllLayers() {

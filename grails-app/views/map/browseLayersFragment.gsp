@@ -38,7 +38,7 @@
 
 <script type="text/javascript">
   var theme = "ui-smoothness";
-  $("#browseExpander").jqxExpander({ showArrow: false, toggleMode: 'none', width: '300px', height: 'auto', theme: theme });
+//  $("#browseExpander").jqxExpander({ showArrow: false, toggleMode: 'none', width: '300px', height: 'auto', theme: theme });
 
   $("#layerTree").jqxTree({
     theme: theme

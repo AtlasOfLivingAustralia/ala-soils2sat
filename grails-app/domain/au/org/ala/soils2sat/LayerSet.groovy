@@ -4,6 +4,7 @@ class LayerSet {
 
     String name
     User user
+    String description
 
     static hasMany = [layers:String]
 
@@ -11,6 +12,6 @@ class LayerSet {
         name nullable: false
         user nullable: true
         layers nullable: true
-
+        description nullable: true
     }
 }

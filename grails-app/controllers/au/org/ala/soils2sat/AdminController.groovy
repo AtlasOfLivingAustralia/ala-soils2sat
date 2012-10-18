@@ -141,7 +141,7 @@ class AdminController {
     }
 
     def layerSets() {
-        def layerSets = LayerSet.findAllWhere(user: null)
+        def layerSets = LayerSet.findAllWhere(user: null).sort() { it.id }
 
         [layerSets: layerSets]
     }
@@ -180,6 +180,7 @@ class AdminController {
         }
 
         layerSet.name = params.name
+        layerSet.description = params.description
         layerSet.save(flush:true, failOnError: true)
         redirect(controller:'admin', action:'layerSets')
     }

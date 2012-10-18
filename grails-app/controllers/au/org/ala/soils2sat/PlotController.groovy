@@ -1,6 +1,7 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
+import au.com.bytecode.opencsv.CSVWriter
 
 class PlotController {
 
@@ -84,12 +85,11 @@ class PlotController {
         [results:results, userInstance: springSecurityService.currentUser, appState: appState]
     }
 
-    def comparePlotsFragment = {
-
-        def userInstance = springSecurityService.currentUser as User
+    private Map getCompareData(User userInstance) {
         def appState = userInstance?.applicationState
 
-        def results =[:]
+        def data =[:]
+        def fieldNames = ['latitude', 'longitude']
         if (userInstance && appState?.layers && appState?.selectedPlots && appState?.selectedPlots.size() > 1) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
             for (StudyLocation plot : appState.selectedPlots) {
@@ -97,14 +97,56 @@ class PlotController {
                 def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${plotSummary.latitude}/${plotSummary.longitude}")
                 def plotResults = JSON.parse(url.text)
                 def temp = [:]
+                temp.latitude = plotSummary.latitude
+                temp.longitude = plotSummary.longitude
                 plotResults.each {
-                    temp[it.field ?: it.layername] = it.value
+                    def fieldName = it.field ?: it.layername
+                    if (!fieldNames.contains(fieldName)) {
+                        fieldNames << fieldName
+                    }
+                    temp[fieldName] = it.value
                 }
-                results[plot.name] = temp
+                data[plot.name] = temp
             }
         }
 
+        return [data: data, fieldNames: fieldNames]
+    }
+
+    def comparePlotsFragment = {
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def results = getCompareData(userInstance)
         [userInstance: userInstance, results: results, appState: appState ]
+    }
+
+    def exportComparePlots = {
+
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def results = getCompareData(userInstance)
+
+        response.setHeader("Content-Disposition", "attachment;filename=compare.txt");
+        response.setContentType("text/plain");
+
+        def writer = new CSVWriter(response.writer, (char) ',')
+        def columnHeaders = ["field"]
+
+        appState.selectedPlots.each {
+            columnHeaders << it.name
+        }
+        writer.writeNext(columnHeaders as String[])
+
+        results.fieldNames.each { fieldName ->
+            def lineItems = [fieldName]
+            appState.selectedPlots.each { plot ->
+                def value = results.data[plot.name][fieldName]
+                lineItems << value ?: ''
+            }
+            writer.writeNext(lineItems as String[])
+        }
+
+        writer.flush()
     }
 
     def findPlotsResultsFragment() {

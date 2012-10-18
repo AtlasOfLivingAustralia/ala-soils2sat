@@ -14,10 +14,18 @@
 
       <div class="well well-small">
         <h5>Layer Set Details</h5>
+
         <div class="control-group">
             <label class="control-label" for='name'>Name:</label>
             <div class="controls">
                 <g:textField name="name" placeholder="Name" value="${layerSet?.name}" />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for='name'>Description:</label>
+            <div class="controls">
+                <g:textField class="input-xlarge" name="description" placeholder="Description" value="${layerSet?.description}" />
             </div>
         </div>
 

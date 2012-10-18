@@ -35,7 +35,6 @@
       </div>
 
       <div class="tab-pane" id="layerSetsTab">
-          Coming soon...
       </div>
 
     </div>
@@ -58,10 +57,16 @@
 
     var tabHref = $(this).attr('href');
     if (tabHref == '#browseTab') {
-      $("#browseTab").html("Retrieving available layers...");
+      $("#browseTab").html('Retrieving layer information... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
       $.ajax("${createLink(controller: 'map', action: 'browseLayersFragment')}").done(function(html) {
         $("#browseTab").html(html);
       });
+    } else if (tabHref == "#layerSetsTab") {
+      $("#layerSetsTab").html("Retrieving layer sets...");
+      $.ajax("${createLink(controller: 'map', action: 'layerSetsFragment')}").done(function(html) {
+        $("#layerSetsTab").html(html);
+      });
+
     }
   });
 

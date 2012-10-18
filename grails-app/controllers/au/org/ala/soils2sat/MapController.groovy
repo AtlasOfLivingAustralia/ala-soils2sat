@@ -31,6 +31,7 @@ class MapController {
 
         if (layerName && userInstance) {
             def appState = userInstance.applicationState
+            appState.lock()
             def existing = appState.layers.find {
                 it.name == layerName
             }
@@ -219,6 +220,54 @@ class MapController {
                 return [layerInstance: layerInstance, layerName: layerName, layerInfo: layerInfo]
             }
         }
+    }
+
+    def layerSetsFragment = {
+        def globalLayerSets = LayerSet.findAllWhere(user: null)
+        [globalLayerSets: globalLayerSets]
+    }
+
+    def layerSetSummaryFragment = {
+        def layerSet = LayerSet.get(params.int("layerSetId"))
+        def layerDescriptions = [:]
+        layerSet?.layers?.each {
+            def layerInfo = layerService.getLayerInfo(it)
+            layerDescriptions[it] = layerInfo.displayname
+        }
+        [layerSet: layerSet, layerDescriptions: layerDescriptions]
+    }
+
+    def addLayerSet = {
+        def layerSet = LayerSet.get(params.int("layerSetId"))
+        def replaceExisting = params.boolean("replaceExisting")
+        def user = springSecurityService.currentUser as User
+        def success = false
+        if (user && layerSet) {
+
+            def appState = user.applicationState;
+            appState.lock();
+
+            if (replaceExisting) {
+                appState.layers.clear();
+                appState.save(flush: true)
+            }
+
+            layerSet.layers.each { layerName ->
+
+                def existing = appState.layers.find {
+                    it.name == layerName
+                }
+                if (!existing) {
+                    def layer = new EnvironmentalLayer(name: layerName, visible: false)
+                    appState.addToLayers(layer)
+                }
+            }
+
+            appState.save(flush: true, failOnError: true)
+            success = true
+        }
+
+        render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
 }
