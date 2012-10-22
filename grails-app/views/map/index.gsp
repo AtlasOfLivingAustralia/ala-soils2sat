@@ -495,7 +495,7 @@
     </div>
 
     <a id="comparePlotsLink" href="#comparePlots" style="display: none"></a>
-    <div id="comparePlots" style="display:none; width: 800px; height: 550px">
+    <div id="comparePlots" style="display:none; width: 800px; height: 600px">
       <div id="comparePlotsContent">
       </div>
     </div>

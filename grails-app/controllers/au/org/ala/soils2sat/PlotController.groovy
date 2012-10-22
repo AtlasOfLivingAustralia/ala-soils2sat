@@ -7,6 +7,7 @@ class PlotController {
 
     def springSecurityService
     def plotService
+    def biocacheService
 
     def getPlots() {
         def results = plotService.getPlots()
@@ -118,6 +119,22 @@ class PlotController {
         def appState = userInstance?.applicationState
         def results = getCompareData(userInstance)
         [userInstance: userInstance, results: results, appState: appState ]
+    }
+
+    def compareTaxaFragment = {
+
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+
+        def results = [:]
+
+        appState.selectedPlots.each { plot ->
+            def plotSummary = plotService.getPlotSummary(plot.name)
+            def plotTaxaList = biocacheService.getTaxaNamesForLocation(plotSummary.latitude, plotSummary.longitude, 10, params.rank ?: 'family')
+            results[plot.name] = plotTaxaList
+        }
+
+        [results:results, appState: appState, userInstance: userInstance]
     }
 
     def exportComparePlots = {
