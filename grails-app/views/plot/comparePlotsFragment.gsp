@@ -14,7 +14,7 @@
   <tr>
     <td>Compare Study Locations (${appState?.selectedPlots?.size()})</td>
     <td style="text-align: right">
-      <button id="btnCompareExport" class="btn btn-small">Export as CSV</button>
+      <button id="btnCompareExport" class="btn btn-small">Export data</button>
     </td>
   </tr>
 </table>
@@ -56,7 +56,12 @@
     </div>
 
     <div class="tab-pane" id="taxaData">
-      <div id="taxaContent" style="max-height: ${max_height}px; max-width: ${max_width}px; overflow: scroll;">
+      <div>
+        <button class="btn btn-small active btnDiffMode" title="Show all taxa" diffMode="none"><i class="icon-ok-sign"></i></button>
+        <button class="btn btn-small btnDiffMode" diffMode="intersect" title="Show only taxa that occur at every study location (intersection)"><img src="${resource(dir: '/images', file:'intersect.png')}" height="14" width="14"/></button>
+        <button class="btn btn-small btnDiffMode" diffMode="inverseIntersect" title="Show only unique taxa at each study location (union minus intersection) "><img src="${resource(dir: '/images', file:'inverseIntersect.png')}" height="14" width="14"/></button>
+      </div>
+      <div id="taxaContent" style="max-height: ${Integer.parseInt(max_height) - 40}px; max-width: ${max_width}px; overflow: scroll;">
       </div>
     </div>
 
@@ -77,11 +82,25 @@
   $('a[data-toggle="tab"]').on('shown', function (e) {
     var tabHref = $(this).attr('href');
     if (tabHref == '#taxaData') {
-      $("#taxaContent").html("Loading...");
-      $.ajax("${createLink(controller:'plot', action:'compareTaxaFragment')}").done(function(content) {
-        $("#taxaContent").html(content);
-      });
+      loadTaxaCompare();
     }
 
   });
+
+  $(".btnDiffMode").click(function(e) {
+    $(".btnDiffMode").removeClass('active');
+    $(this).addClass('active');
+    loadTaxaCompare();
+  });
+
+  function loadTaxaCompare() {
+    $("#taxaContent").html("Loading...");
+    var diffMode = $('.btnDiffMode.active').attr("diffMode");
+
+    $.ajax("${createLink(controller:'plot', action:'compareTaxaFragment')}?diffMode=" + diffMode).done(function(content) {
+      $("#taxaContent").html(content);
+    });
+
+  }
+
 </script>
