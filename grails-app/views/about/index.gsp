@@ -15,7 +15,7 @@
 
     <div class="container">
       <div class="hero-unit">
-        <h3>About Soils to Satellites</h3>
+        <h3>About Soils to Satellites&nbsp;<small>Version ${grailsApplication.metadata['app.version']}.${grailsApplication.metadata['app.buildNumber']}&nbsp;(built ${grailsApplication.metadata['app.buildDate']}&nbsp;${grailsApplication.metadata['app.buildProfile']})</small></h3>
         Coming soon...
       </div>
     </div>
