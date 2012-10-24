@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="GrailsWeb">
+      <configuration>
+        <webroots>
+          <root url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/jquery-1.7.2/web-app" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/database-migration-1.1/grails-app/views" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/csv-0.3.1/web-app" relative="/" />
+        </webroots>
+        <sourceRoots />
+      </configuration>
+    </facet>
+    <facet type="hibernate" name="Hibernate">
+      <configuration>
+        <datasource-map>
+          <unit-entry name="Gorm" />
+          <unit-entry name="sessionFactory" />
+        </datasource-map>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/cache-1.0.0">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/cache-1.0.0/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/cache-1.0.0/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/cache-1.0.0/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/cache-1.0.0/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/csv-0.3.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/csv-0.3.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/csv-0.3.1/grails-app/i18n" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/database-migration-1.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/database-migration-1.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/database-migration-1.1/grails-app/controllers" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/hibernate-2.1.0">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/hibernate-2.1.0/grails-app/i18n" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/jquery-1.7.2">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/jquery-1.7.2/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/jquery-1.7.2/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/jquery-1.7.2/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/jquery-1.7.2/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/resources-1.1.6">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/resources-1.1.6/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/resources-1.1.6/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/resources-1.1.6/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/resources-1.1.6/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/spring-security-core-1.2.7.3">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/spring-security-core-1.2.7.3/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/spring-security-core-1.2.7.3/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/spring-security-core-1.2.7.3/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/spring-security-core-1.2.7.3/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/spring-security-core-1.2.7.3/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/tomcat-2.1.0" />
+    <content url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/webxml-1.4.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.1.0/projects/ala-soils2sat/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.1.0" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library name="Grails User Library (ala-soils2sat-grailsPlugins)">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.liquibase/liquibase-core/jars/liquibase-core-2.0.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/postgresql/postgresql/jars/postgresql-9.1-901.jdbc4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-web/jars/spring-security-web-3.0.7.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-core/jars/spring-security-core-3.0.7.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.opencsv/opencsv/jars/opencsv-2.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
+
