@@ -5,7 +5,7 @@ import grails.converters.JSON
 class MapController {
     
     def springSecurityService
-    def plotService
+    def studyLocationService
     def layerService
 
     def index() {
@@ -96,13 +96,13 @@ class MapController {
     }
 
     def ajaxPlotHover() {
-        def plotName = params.plotName
-        PlotSearchResult plot = null
-        if (plotName) {
-            plot = plotService.getPlotSummary(plotName)
+        def studyLocationName = params.studyLocationName
+        StudyLocationSummary studyLocation = null
+        if (studyLocationName) {
+            studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
         }
 
-        [plot: plot, plotName: plotName]
+        [studyLocation: studyLocation, studyLocationName: studyLocationName]
     }
 
     def layerInfoFragment() {

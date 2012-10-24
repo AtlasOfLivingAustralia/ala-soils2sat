@@ -5,21 +5,21 @@ import au.com.bytecode.opencsv.CSVWriter
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 
-class PlotController {
+class StudyLocationController {
 
     def springSecurityService
-    def plotService
+    def studyLocationService
     def biocacheService
 
     def getPlots() {
-        def results = plotService.getPlots()
+        def results = studyLocationService.getStudyLocations()
 
         render (results as JSON)
     }
 
     def getSelectedPlots() {
         def user = springSecurityService.currentUser as User
-        def candidates = plotService.getPlots()
+        def candidates = studyLocationService.getStudyLocations()
         def results = []
         if (user) {
             candidates.each {
@@ -34,7 +34,7 @@ class PlotController {
 
     def getUserDisplayedPlots() {
         def user = springSecurityService.currentUser as User
-        def candidates = plotService.getPlots()
+        def candidates = studyLocationService.getStudyLocations()
         def results = []
         if (user && user.applicationState?.plotOnlySelectedLocations) {
             candidates.each {
@@ -49,39 +49,37 @@ class PlotController {
         render (results as JSON)
     }
 
-    def getPlotSummary() {
-        def plotName = params.plotName
-        if (plotName) {
-
-        }
+    def studyLocationSummary() {
+        def studyLocationName = params.studyLocationName
+        def summary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        [studyLocationName: studyLocationName, studyLocationSummary: summary]
     }
 
     def detailsFragment() {
-
-        def plotName = params.plotName;
+        def studyLocationName = params.studyLocationName;
         def userInstance = springSecurityService.currentUser as User
 
-        [plotName:plotName, userInstance: userInstance, appState: userInstance?.applicationState]
+        [studyLocationName:studyLocationName, userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
-    def findPlotFragment() {
+    def findStudyLocationFragment() {
         def userInstance = springSecurityService.currentUser as User
         [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
-    def plotDataFragment() {
+    def studyLocationDataFragment() {
 
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
         def layerNames = appState.layers.collect({ it.name }).join(",")
 
-        def plotName = params.plotName
+        def studyLocationName = params.studyLocationName
 
-        def plot = plotService.getPlotSummary(plotName)
+        def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
         def results = []
-        if (layerNames && plot) {
-            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${plot.latitude}/${plot.longitude}")
+        if (layerNames && studyLocation) {
+            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocation.latitude}/${studyLocation.longitude}")
             results = JSON.parse(url.text)
         }
 
@@ -95,28 +93,28 @@ class PlotController {
         def fieldNames = ['latitude', 'longitude']
         if (userInstance && appState?.layers && appState?.selectedPlots && appState?.selectedPlots.size() > 1) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
-            for (StudyLocation plot : appState.selectedPlots) {
-                def plotSummary = plotService.getPlotSummary(plot.name)
-                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${plotSummary.latitude}/${plotSummary.longitude}")
-                def plotResults = JSON.parse(url.text)
+            for (StudyLocation studyLocation : appState.selectedPlots) {
+                def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation.name)
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
+                def studyLocationResults = JSON.parse(url.text)
                 def temp = [:]
-                temp.latitude = plotSummary.latitude
-                temp.longitude = plotSummary.longitude
-                plotResults.each {
+                temp.latitude = studyLocationSummary.latitude
+                temp.longitude = studyLocationSummary.longitude
+                studyLocationResults.each {
                     def fieldName = it.field ?: it.layername
                     if (!fieldNames.contains(fieldName)) {
                         fieldNames << fieldName
                     }
                     temp[fieldName] = it.value
                 }
-                data[plot.name] = temp
+                data[studyLocation.name] = temp
             }
         }
 
         return [data: data, fieldNames: fieldNames]
     }
 
-    def comparePlotsFragment = {
+    def compareStudyLocationsFragment = {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
         def results = getCompareData(userInstance)
@@ -130,10 +128,10 @@ class PlotController {
 
         def results = [:]
 
-        appState.selectedPlots.each { plot ->
-            def plotSummary = plotService.getPlotSummary(plot.name)
-            def plotTaxaList = biocacheService.getTaxaNamesForLocation(plotSummary.latitude, plotSummary.longitude, 10, params.rank ?: 'family')
-            results[plot.name] = plotTaxaList
+        appState.selectedPlots.each { studyLocation ->
+            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation.name)
+            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
+            results[studyLocation.name] = studyLocationTaxaList
         }
 
         if (params.diffMode?.toLowerCase() == 'intersect') {
@@ -142,9 +140,9 @@ class PlotController {
             def newList = []
             candidateEntry.value.each { taxa ->
                 def include = true
-                appState.selectedPlots.each { plot ->
-                    if (plot.name != candidateEntry.key) {
-                        def list = results[plot.name]
+                appState.selectedPlots.each { studyLocation ->
+                    if (studyLocation.name != candidateEntry.key) {
+                        def list = results[studyLocation.name]
                         if (!list.contains(taxa)) {
                             include = false
                         }
@@ -156,21 +154,21 @@ class PlotController {
                 }
             }
 
-            appState.selectedPlots.each { plot ->
-                results[plot.name] = newList
+            appState.selectedPlots.each { studyLocation ->
+                results[studyLocation.name] = newList
             }
 
         } else if (params.diffMode?.toLowerCase() == 'inverseintersect') {
 
             def newResults = [:]
 
-            appState.selectedPlots.each { plot ->
+            appState.selectedPlots.each { studyLocation ->
                 def newList = []
-                def candidateList = results[plot.name]
+                def candidateList = results[studyLocation.name]
                 candidateList.each { taxa ->
                     def include = true
                     results.each { kvp ->
-                        if (kvp.key != plot.name) {
+                        if (kvp.key != studyLocation.name) {
                             if (kvp.value.contains(taxa)) {
                                 include = false
                             }
@@ -180,7 +178,7 @@ class PlotController {
                         newList << taxa
                     }
                 }
-                newResults[plot.name] = newList
+                newResults[studyLocation.name] = newList
             }
             results = newResults
         }
@@ -218,15 +216,15 @@ class PlotController {
         zipStream.close();
     }
 
-    def exportCompareTaxa(CSVWriter writer, User userInstance) {
+    private exportCompareTaxa(CSVWriter writer, User userInstance) {
         def appState = userInstance?.applicationState
 
         def results = [:]
 
-        appState.selectedPlots.each { plot ->
-            def plotSummary = plotService.getPlotSummary(plot.name)
-            def plotTaxaList = biocacheService.getTaxaNamesForLocation(plotSummary.latitude, plotSummary.longitude, 10, params.rank ?: 'family')
-            results[plot.name] = plotTaxaList
+        appState.selectedPlots.each { studyLocation ->
+            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation.name)
+            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
+            results[studyLocation.name] = studyLocationTaxaList
         }
 
         def columnHeaders = results.keySet().toArray() as String[]
@@ -238,9 +236,9 @@ class PlotController {
         while (!finished) {
             finished = true
             def values= []
-            appState.selectedPlots.each { plot ->
+            appState.selectedPlots.each { studyLocation ->
                 def value = null
-                def fieldList = results[plot.name] as List
+                def fieldList = results[studyLocation.name] as List
                 if (fieldList.size() > rowIndex) {
                     value = fieldList[rowIndex]
                     finished = false;
@@ -254,7 +252,7 @@ class PlotController {
         }
     }
 
-    def exportCompareLayers(CSVWriter writer, User userInstance) {
+    private exportCompareLayers(CSVWriter writer, User userInstance) {
 
         def appState = userInstance.applicationState
         def results = getCompareData(userInstance)
@@ -265,28 +263,28 @@ class PlotController {
         writer.writeNext(columnHeaders as String[])
         results.fieldNames.each { fieldName ->
             def lineItems = [fieldName]
-            appState.selectedPlots.each { plot ->
-                def value = results.data[plot.name][fieldName]
+            appState.selectedPlots.each { studyLocation ->
+                def value = results.data[studyLocation.name][fieldName]
                 lineItems << value ?: ''
             }
             writer.writeNext(lineItems as String[])
         }
     }
 
-    def findPlotsResultsFragment() {
+    def findStudyLocationResultsFragment() {
         BoundingBox bbox = null
         if (params.top && params.bottom && params.left && params.right) {
             bbox = new BoundingBox(left: params.double("left"), right: params.double("right"), top: params.double("top"), bottom: params.double("bottom"))
         }
 
-        def results = plotService.searchPlots(params.q, bbox)
+        def results = studyLocationService.searchStudyLocations(params.q, bbox)
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
         [results: results, userInstance: userInstance, appState: appState]
     }
 
-    def ajaxSetPlotSelectedOnly() {
+    def ajaxSetStudyLocationSelectedOnly() {
         def visibility = params.boolean("plotSelected") ?: false
         def userInstance = springSecurityService.currentUser as User
         def success = false;
@@ -300,15 +298,15 @@ class PlotController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-    def deselectPlot() {
-        def plotName = params.plotName
+    def deselectStudyLocation() {
+        def studyLocationName = params.studyLocationName
         def success = false
-        if (plotName) {
+        if (studyLocationName) {
             def userInstance = springSecurityService.currentUser as User
             def appState = userInstance?.applicationState
             appState.lock()
             def existing = appState?.selectedPlots?.find {
-                it.name == plotName
+                it.name == studyLocationName
             }
             if (existing) {
                 appState.removeFromSelectedPlots(existing)
@@ -319,21 +317,21 @@ class PlotController {
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
-    def selectPlot() {
-        def plotName = params.plotName
+    def selectStudyLocation() {
+        def studyLocationName = params.studyLocationName
         def success = false
-        if (plotName) {
+        if (studyLocationName) {
             def userInstance = springSecurityService.currentUser as User
             def appState = userInstance?.applicationState
 
             appState.lock()
 
             def existing = appState?.selectedPlots?.find {
-                it.name == plotName
+                it.name == studyLocationName
             }
             if (!existing) {
-                def plot = new StudyLocation(name:plotName)
-                appState.addToSelectedPlots(plot)
+                def studyLocation = new StudyLocation(name:studyLocationName)
+                appState.addToSelectedPlots(studyLocation)
                 appState.save(flush: true)
                 success = true
             }
@@ -341,19 +339,19 @@ class PlotController {
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
-    def selectPlots() {
-        def plotNames = params.plotNames?.split(",");
+    def selectStudyLocations() {
+        def studyLocationNames = params.studyLocationNames?.split(",");
         def success = false
-        if (plotNames) {
+        if (studyLocationNames) {
             def userInstance = springSecurityService.currentUser as User
             def appState = userInstance.applicationState
             appState.lock()
-            plotNames.each { plotName ->
-                def existing = appState?.selectedPlots.find {
-                    it.name == plotName
+            studyLocationNames.each { studyLocationName ->
+                def existing = appState?.selectedPlots?.find {
+                    it.name == studyLocationName
                 }
                 if (!existing) {
-                    def studyLocation = new StudyLocation(name:plotName)
+                    def studyLocation = new StudyLocation(name:studyLocationName)
                     appState.addToSelectedPlots(studyLocation)
                 }
             }
@@ -363,7 +361,7 @@ class PlotController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-    def clearSelectedPlots() {
+    def clearSelectedStudyLocations() {
         def success = false
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
@@ -372,6 +370,15 @@ class PlotController {
             appState.save(flush: true)
         }
         render([status:success ? 'ok' : 'failed'] as JSON)
+    }
+
+    def studyLocationSummary = {
+        def studyLocationName = params.studyLocationName
+        def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
+
+        println studyLocation
+
+        [studyLocation:studyLocation, studyLocationName: studyLocationName ]
     }
 
 }

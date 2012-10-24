@@ -31,7 +31,7 @@
       <g:if test="${appState?.selectedPlots}">
           <g:each in="${appState?.selectedPlots}">
             <tr>
-              <td><a class="plotDetailsLink" href="#" plotName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" plotName="${it.name}" title="Remove study location"><i class="icon-trash"/></button></td>
+              <td><a class="studyLocationDetailsLink" href="#" studyLocationName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" studyLocationName="${it.name}" title="Remove study location"><i class="icon-trash"/></button></td>
             </tr>
           </g:each>
       </g:if>
@@ -106,7 +106,7 @@
       $(this).addClass('active');
     }
 
-    $.ajax("${createLink(controller: 'plot', action: 'ajaxSetPlotSelectedOnly')}?plotSelected=" + !currentState).done(function(e) {
+    $.ajax("${createLink(controller: 'studyLocation', action: 'ajaxSetStudyLocationSelectedOnly')}?plotSelected=" + !currentState).done(function(e) {
       refreshStudyLocationPoints();
     });
 
@@ -119,26 +119,26 @@
 
   $(".btnRemoveSelectedPlot").click(function(e) {
     e.preventDefault();
-    var plotName = $(this).attr("plotName");
-    deselectPlot(plotName);
+    var studyLocationName = $(this).attr("studyLocationName");
+    deselectPlot(studyLocationName);
   });
 
-  $(".plotDetailsLink").click(function(e) {
+  $(".studyLocationDetailsLink").click(function(e) {
     e.preventDefault();
-    var plotName = $(this).attr("plotName");
-    showPlotDetails(plotName);
+    var studyLocationName = $(this).attr("studyLocationName");
+    showPlotDetails(studyLocationName);
   });
 
-  $(".plotDetailsLink").mouseover(function(e) {
+  $(".studyLocationDetailsLink").mouseover(function(e) {
     e.preventDefault();
-    var plotName = $(this).attr("plotName");
-    showPlotHover(plotName);
+    var studyLocationName = $(this).attr("studyLocationName");
+    showPlotHover(studyLocationName);
   });
 
-  $(".plotDetailsLink").mouseout(function(e) {
+  $(".studyLocationDetailsLink").mouseout(function(e) {
     e.preventDefault();
-    var plotName = $(this).attr("plotName");
-    hidePlotHover(plotName);
+    var studyLocationName = $(this).attr("studyLocationName");
+    hidePlotHover(studyLocationName);
   });
 
   $(".btnLayerInfo").click(function(e) {

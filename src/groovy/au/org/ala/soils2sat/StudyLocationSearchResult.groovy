@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class PlotSearchResult {
+class StudyLocationSearchResult {
     String siteName
     String date
     double longitude

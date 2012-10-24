@@ -78,8 +78,8 @@
         });
       }
 
-      function selectPlot(plotName, successCallback) {
-        $.ajax("${createLink(controller:'plot', action:'selectPlot')}?plotName=" + plotName).done(function(data) {
+      function selectPlot(studyLocationName, successCallback) {
+        $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation')}?studyLocationName=" + studyLocationName).done(function(data) {
           refreshSidebar();
 
           if (successCallback) {
@@ -88,9 +88,9 @@
         });
       }
 
-      function selectPlots(plotNames, successCallback) {
-        var plotstring = plotNames.join(",");
-        $.ajax("${createLink(controller:'plot', action:'selectPlots')}?plotNames=" + plotstring).done(function(data) {
+      function selectPlots(studyLocationNames, successCallback) {
+        var studyLocationstring = studyLocationNames.join(",");
+        $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocations')}?studyLocationNames=" + studyLocationstring).done(function(data) {
           refreshSidebar();
           refreshStudyLocationPoints();
           if (successCallback) {
@@ -99,8 +99,8 @@
         });
       }
 
-      function deselectPlot(plotName, successCallback) {
-        $.ajax("${createLink(controller:'plot', action:'deselectPlot')}?plotName=" + plotName).done(function(data) {
+      function deselectPlot(studyLocationName, successCallback) {
+        $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation')}?studyLocationName=" + studyLocationName).done(function(data) {
           refreshSidebar();
           refreshStudyLocationPoints();
           if (successCallback) {
@@ -110,7 +110,7 @@
       }
 
       function clearSelectedPlots(successCallback) {
-        $.ajax("${createLink(controller:'plot', action:'clearSelectedPlots')}").done(function(data) {
+        $.ajax("${createLink(controller:'studyLocation', action:'clearSelectedStudyLocations')}").done(function(data) {
           refreshSidebar();
           refreshStudyLocationPoints();
           if (successCallback) {
@@ -158,16 +158,16 @@
         });
       }
 
-      function addPlotPointsLayer(plotList) {
+      function addPlotPointsLayer(studyLocationList) {
 
-        var plots = map.getLayer("Plots");
-        if (plots) {
-          map.removeLayer(plots);
+        var studyLocations = map.getLayer("Plots");
+        if (studyLocations) {
+          map.removeLayer(studyLocations);
         }
 
         var latLongProj = new OpenLayers.Projection("EPSG:4326");
-        plots = new OpenLayers.Layer.Markers("Plots");
-        var results = plotList;
+        studyLocations = new OpenLayers.Layer.Markers("Plots");
+        var results = studyLocationList;
         for (resultKey in results) {
 
           var result = results[resultKey];
@@ -176,7 +176,7 @@
           location.transform(latLongProj, map.getProjectionObject());
 
           var marker = new OpenLayers.Marker(location);
-          plots.addMarker(marker);
+          studyLocations.addMarker(marker);
           marker.tag = result.siteName;
 
           marker.events.register('mouseover', marker, function(e) {
@@ -192,15 +192,15 @@
           });
 
         }
-        plots.id = "Plots";
+        studyLocations.id = "Plots";
 
-        map.addLayer(plots);
+        map.addLayer(studyLocations);
         hideMessagePanel();
 
       }
 
       function refreshStudyLocationPoints() {
-        $.ajax("${createLink(controller: 'plot', action: 'getUserDisplayedPlots')}").done(function(data) {
+        $.ajax("${createLink(controller: 'studyLocation', action: 'getUserDisplayedPlots')}").done(function(data) {
           addPlotPointsLayer(data);
         });
       }
@@ -222,11 +222,11 @@
             }
         });
 
-        $("#plotDetailsLink").fancybox({
+        $("#studyLocationDetailsLink").fancybox({
           beforeLoad: function() {
-            var plotName = $("#plotDetailsContent").attr("plotName");
-            $.ajax("${createLink(controller: 'plot', action:'detailsFragment')}?plotName=" + plotName).done(function(data) {
-              $("#plotDetailsContent").html(data);
+            var studyLocationName = $("#studyLocationDetailsContent").attr("studyLocationName");
+            $.ajax("${createLink(controller: 'studyLocation', action:'detailsFragment')}?studyLocationName=" + studyLocationName).done(function(data) {
+              $("#studyLocationDetailsContent").html(data);
             });
           }
 
@@ -235,7 +235,7 @@
         $("#findPlotLink").fancybox({
           beforeLoad: function() {
             $("#findPlotContent").html("");
-            $.ajax("${createLink(controller: 'plot', action:'findPlotFragment')}").done(function(html) {
+            $.ajax("${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}").done(function(html) {
               $("#findPlotContent").html(html);
             });
           }
@@ -244,7 +244,7 @@
         $("#comparePlotsLink").fancybox({
           beforeLoad: function() {
             $("#comparePlotsContent").html('<h5>Please wait while study location data is retrieved...<img src="${resource(dir:'/images', file:'spinner.gif')}"/></h5>');
-            $.ajax("${createLink(controller: 'plot', action:'comparePlotsFragment')}").done(function(html) {
+            $.ajax("${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}").done(function(html) {
               $("#comparePlotsContent").html(html);
             });
           }
@@ -314,10 +314,10 @@
 
         // wmsLayer.visibility = false;
         map.addLayer(wmsLayer);
-        var plots = map.getLayer("Plots");
-        if (plots) {
-          map.removeLayer(plots);
-          map.addLayer(plots);
+        var studyLocations = map.getLayer("Plots");
+        if (studyLocations) {
+          map.removeLayer(studyLocations);
+          map.addLayer(studyLocations);
         }
       }
 
@@ -383,21 +383,21 @@
 
       }
 
-      function showPlotDetails(plotName) {
+      function showPlotDetails(studyLocationName) {
 
-        $("#plotDetailsContent").attr("plotName", plotName);
-        $("#plotDetailsLink").click();
+        $("#studyLocationDetailsContent").attr("studyLocationName", studyLocationName);
+        $("#studyLocationDetailsLink").click();
         return true;
       }
 
-      var plotHoverFlag = false;
+      var studyLocationHoverFlag = false;
 
-      function showPlotHover(plotName) {
-        plotHoverFlag = true;
-        var url = "${createLink(controller:'map', action:'ajaxPlotHover')}?plotName=" + plotName;
+      function showPlotHover(studyLocationName) {
+        studyLocationHoverFlag = true;
+        var url = "${createLink(controller:'map', action:'ajaxPlotHover')}?studyLocationName=" + studyLocationName;
         $.ajax(url).done(function(html) {
-          if (plotHoverFlag) {
-            $("#plotSummary").css("display", "block").html(html);
+          if (studyLocationHoverFlag) {
+            $("#studyLocationSummary").css("display", "block").html(html);
           }
         });
 
@@ -417,18 +417,18 @@
 
       }
 
-      function hidePlotHover(plotName) {
-        plotHoverFlag = false;
+      function hidePlotHover(studyLocationName) {
+        studyLocationHoverFlag = false;
         hideMessagePanel();
       }
 
       function hideMessagePanel() {
-        $('#plotSummary').css("display", "none");
+        $('#studyLocationSummary').css("display", "none");
       }
 
       function infoMessage(message) {
         var html = "<h4>" + message + "</h4>"
-        $("#plotSummary").css("display", "block").html(html);
+        $("#studyLocationSummary").css("display", "block").html(html);
       }
 
       function toggleSidebar() {
@@ -466,7 +466,7 @@
       </div>
     </div>
 
-    <div class="info-popup" id="plotSummary" style="display: none; ">
+    <div class="info-popup" id="studyLocationSummary" style="display: none; ">
       <H2>Plot details</H2>
     </div>
 
@@ -476,9 +476,9 @@
       </div>
     </div>
 
-    <a id="plotDetailsLink" href="#plotDetails" style="display: none"></a>
-    <div id="plotDetails" style="display:none; width: 600px; height: 300px">
-      <div id="plotDetailsContent">
+    <a id="studyLocationDetailsLink" href="#studyLocationDetails" style="display: none"></a>
+    <div id="studyLocationDetails" style="display:none; width: 600px; height: 300px">
+      <div id="studyLocationDetailsContent">
       </div>
     </div>
 

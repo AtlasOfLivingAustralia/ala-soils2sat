@@ -4,7 +4,7 @@ import grails.converters.JSON
 
 class SpatialProxyController {
 
-    def plotService
+    def studyLocationService
 
     def layersSearch = {
         proxyService('/ws/layers/search')
@@ -24,10 +24,10 @@ class SpatialProxyController {
     def intersect = {
 
         def layers = params.layers
-        def plotName = params.plotName
+        def studyLocationName = params.studyLocationName
 
-        def plot = plotService.getPlotSummary(plotName)
-        if (layers && plot) {
+        def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
+        if (layers && studyLocation) {
             def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${latitude}/${longitude}")
             response.setContentType("application/json")
             render url.getText()

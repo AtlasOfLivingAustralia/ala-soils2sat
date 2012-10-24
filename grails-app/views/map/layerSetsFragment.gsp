@@ -9,7 +9,7 @@
           </g:each>
         </ul>
       </li>
-      <li><b>User Defined Layer Sets</b>
+      <li><b>User Defined Layer Sets</b>&nbsp;<button class="btn btn-mini">Edit layer sets</button>
         <ul>
           <li>Coming soon...</li>
         </ul>
