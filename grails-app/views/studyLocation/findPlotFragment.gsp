@@ -5,6 +5,10 @@
       <label class="control-label" for="searchText">Search</label>
       <div class="controls">
         <input type="text" id="searchText" placeholder="Search..." style="width:300px">
+      %{--</div>--}%
+    %{--</div>--}%
+    %{--<div class="control-group">--}%
+      %{--<div class="controls">--}%
         <label class="checkbox" style="margin-top: 5px;">
           <input id="chkUseBox" type="checkbox"checked="checked"> Restrict results to visible portion of the map
         </label>
@@ -14,7 +18,7 @@
     <div class="control-group">
       <div class="controls">
         <button id="btnSearch" class="btn btn-small btn-primary">Search</button>
-        <button id="btnCancelSearch" class="btn btn-small">Close</button>
+        <button id="btnCancelSearch" class="btn btn-small">Cancel</button>
       </div>
     </div>
   </form>
@@ -31,15 +35,10 @@
 
   $("#btnSearch").click(function(e) {
     e.preventDefault();
-    doSearch();
-  });
-
-  function doSearch() {
     var term = $("#searchText").val();
 
     if (term) {
-      $("#searchResults").html("Searching...");
-      var url = "${createLink(controller: 'plot', action: 'findPlotsResultsFragment')}?q=" + term;
+      var url = "${createLink(controller: 'map', action: 'ajaxSearch')}?q=" + term;
       var useBox = $("#chkUseBox").is(":checked");
       if (useBox) {
         var projWGS84 = new OpenLayers.Projection("EPSG:4326");
@@ -51,11 +50,9 @@
       $.ajax(url).done(function(html) {
         $("#searchResults").html(html);
       });
-    } else {
-      $("#searchResults").html("Please enter a search term ('*' for all)");
     }
-  }
+  });
 
-  $("#searchText").focus();
+
 
 </script>
