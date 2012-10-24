@@ -49,12 +49,6 @@ class StudyLocationController {
         render (results as JSON)
     }
 
-    def studyLocationSummary() {
-        def studyLocationName = params.studyLocationName
-        def summary = studyLocationService.getStudyLocationSummary(studyLocationName)
-        [studyLocationName: studyLocationName, studyLocationSummary: summary]
-    }
-
     def detailsFragment() {
         def studyLocationName = params.studyLocationName;
         def userInstance = springSecurityService.currentUser as User
@@ -376,7 +370,7 @@ class StudyLocationController {
         def studyLocationName = params.studyLocationName
         def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
 
-        println studyLocation
+        println studyLocation?.data
 
         [studyLocation:studyLocation, studyLocationName: studyLocationName ]
     }
