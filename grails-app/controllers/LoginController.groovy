@@ -58,8 +58,6 @@ class LoginController {
         String view = 'auth'
         String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
 
-        println flash.message
-
         render view: view, model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
     }
 

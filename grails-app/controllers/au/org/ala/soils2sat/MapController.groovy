@@ -189,8 +189,6 @@ class MapController {
             }
         }
 
-        println layerMap
-
         [layerMap: layerMap]
     }
 
