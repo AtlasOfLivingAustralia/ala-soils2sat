@@ -11,7 +11,6 @@
   <g:else>
     <button class="btn btn-small btn-primary" id="btnSelectPlot">Add to selection</button>
   </g:else>
-
 </div>
 
 <script type="text/javascript">
