@@ -368,11 +368,55 @@ class StudyLocationController {
 
     def studyLocationSummary = {
         def studyLocationName = params.studyLocationName
-        def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
 
-        println studyLocation?.data
+        [studyLocationSummary:studyLocationSummary, studyLocationName: studyLocationName ]
+    }
 
-        [studyLocation:studyLocation, studyLocationName: studyLocationName ]
+    def studyLocationVisitSummary = {
+        def studyLocationName = params.studyLocationName
+        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+
+        [studyLocation:studyLocationSummary, studyLocationName: studyLocationName ]
+    }
+
+    def studyLocationLayersFragment = {
+
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+
+        def studyLocationName = params.studyLocationName
+        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def layerData = [:]
+        if (studyLocationSummary) {
+            def layerNames = appState.layers.collect({ it.name }).join(",")
+            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
+
+            println url
+
+            def studyLocationResults = JSON.parse(url.text)
+            studyLocationResults.each {
+                def fieldName = it.layername ?: it.field
+                layerData[fieldName] = it.value
+            }
+        }
+
+        [layerData: layerData, studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary]
+    }
+
+    def studyLocationTaxaFragment = {
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+
+        def studyLocationName = params.studyLocationName
+        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+
+        def rank = params.rank ?: 'family';
+        int radius = params.int("radius") ?: 10
+
+        def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, radius, rank)
+
+        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: rank, radius: radius]
     }
 
 }

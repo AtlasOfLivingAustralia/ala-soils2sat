@@ -168,6 +168,11 @@
         var latLongProj = new OpenLayers.Projection("EPSG:4326");
         studyLocations = new OpenLayers.Layer.Markers("Plots");
         var results = studyLocationList;
+
+        var size = new OpenLayers.Size(21,25);
+        var offset = new OpenLayers.Pixel(-(size.w/2), 0);
+        var icon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker.png')}', size, offset);
+
         for (resultKey in results) {
 
           var result = results[resultKey];
@@ -175,7 +180,8 @@
 
           location.transform(latLongProj, map.getProjectionObject());
 
-          var marker = new OpenLayers.Marker(location);
+          var marker = new OpenLayers.Marker(location, icon.clone());
+
           studyLocations.addMarker(marker);
           marker.tag = result.siteName;
 

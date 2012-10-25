@@ -22,7 +22,7 @@
 
     <div class="tab-content" >
 
-      <div class="tab-pane active" id="searchTab" style="vertical-align: top; margin-bottom: 5px;margin-top:30px; back">
+      <div class="tab-pane active" id="searchTab" style="vertical-align: top; margin-bottom: 5px;margin-top:30px;">
         <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
         %{--<span style="vertical-align: top">Add layer to map&nbsp;<g:checkBox style="vertical-align: top" id="chkAddToMap" name="chkAddToMap" checked=""/></span>--}%
         <br />
