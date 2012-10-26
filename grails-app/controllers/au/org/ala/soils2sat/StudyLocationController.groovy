@@ -77,7 +77,7 @@ class StudyLocationController {
             results = JSON.parse(url.text)
         }
 
-        [results:results, userInstance: springSecurityService.currentUser, appState: appState]
+        [results:results, userInstance: springSecurityService.currentUser, appState: appState, studyLocation: studyLocation]
     }
 
     private Map getCompareData(User userInstance) {
@@ -397,7 +397,7 @@ class StudyLocationController {
             def studyLocationResults = JSON.parse(url.text)
             studyLocationResults.each {
                 def fieldName = it.layername ?: it.field
-                layerData[fieldName] = it.value
+                layerData[fieldName] = "${it.value}${it.units? ' (' + it.units + ')' :''}"
             }
         }
 
@@ -417,6 +417,20 @@ class StudyLocationController {
         def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, radius, rank)
 
         [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: rank, radius: radius]
+    }
+
+    def studyLocationVisitSamplingUnits = {
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+
+        def studyLocationName = params.studyLocationName
+        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+
+        def visit = studyLocationSummary.data.visitSummaryList?.find {
+            it.visitId = params.visitId
+        }
+
+        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visit: visit]
     }
 
 }

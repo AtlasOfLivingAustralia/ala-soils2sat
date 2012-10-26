@@ -48,6 +48,9 @@
 
     <script type="text/javascript">
       $(document).ready(function(e) {
+
+        $.ajaxSetup({ cache: false });
+
         $("#btnLogout").click(function(e) {
            window.location = "${createLink(controller: 'logout', action:'index')}";
         });

@@ -60,7 +60,7 @@ grails.exceptionresolver.params.exclude = ['password']
 grails.hibernate.cache.queries = false
 
 aekosServiceRoot = "http://s2s-dev.ecoinformatics.org.au:8080/s2s-services-s2"
-spatialPortalRoot = "http://spatial.ala.org.au"
+spatialPortalRoot = "http://spatial-dev.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
 environments {

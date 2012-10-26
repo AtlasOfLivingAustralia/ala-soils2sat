@@ -1,6 +1,7 @@
 package au.org.ala.soils2sat
 
 import groovy.xml.MarkupBuilder
+import java.text.SimpleDateFormat
 
 /**
  *
@@ -75,6 +76,22 @@ class S2STagLib {
                 it.role.authority
             }
             out << roleNames.join(", ")
+        }
+    }
+
+    /**
+     * @attr dateStr
+     */
+    def formatDateStr =  { attrs, body ->
+        def sdf = new SimpleDateFormat("yyyy-MM-dd")
+        if (attrs.dateStr) {
+            def date = sdf.parse(attrs.dateStr)
+            if (params.dateFormat) {
+                sdf = new SimpleDateFormat(params.dateFormat)
+            } else {
+                sdf = new SimpleDateFormat("dd MMM, yyyy")
+            }
+            out << sdf.format(date)
         }
     }
 

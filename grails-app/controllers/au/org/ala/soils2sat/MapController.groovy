@@ -114,6 +114,8 @@ class MapController {
         [layerName: layerName, layerInfo: info]
     }
 
+    static _lock = new String("lock")
+
     def ajaxSaveCurrentExtent = {
         def top = params.double("top")
         def left = params.double("left")
@@ -122,23 +124,29 @@ class MapController {
 
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
-        appState.lock()
         def success = false;
 
-        if (appState && top && left && bottom && right) {
-            if (!appState.viewExtent) {
-                def extent = new Bounds(top: top, left: left, right: right, bottom:bottom)
-                extent.save(flush:true, failOnError: true)
-                appState.setViewExtent(extent)
-            } else {
-                appState.viewExtent.top = top
-                appState.viewExtent.left = left
-                appState.viewExtent.bottom = bottom
-                appState.viewExtent.right = right
-            }
 
-            appState.save(flush: true, failOnError: true)
-            success = true
+        if (appState && top && left && bottom && right) {
+            synchronized (_lock) {
+                appState.lock()
+
+                if (!appState.viewExtent) {
+                    def extent = new Bounds(top: top, left: left, right: right, bottom:bottom)
+                    extent.save(flush:true, failOnError: true)
+                    appState.setViewExtent(extent)
+                } else {
+
+
+                    appState.viewExtent.top = top
+                    appState.viewExtent.left = left
+                    appState.viewExtent.bottom = bottom
+                    appState.viewExtent.right = right
+                }
+
+                appState.save(flush: true)
+                success = true
+            }
         }
 
         render([status: success ? 'ok' : 'failed'] as JSON)

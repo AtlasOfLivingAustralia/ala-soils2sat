@@ -22,6 +22,10 @@
         background-color: white;
       }
 
+    .fieldColumn {
+      width: 300px;
+    }
+
     </style>
 
     <script type="text/javascript">
@@ -56,7 +60,7 @@
       <legend>
         <table style="width:100%">
           <tr>
-            <td>Study Location Summary ${studyLocationName}</td>
+            <td>Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
             <td><button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})</button></td>
           </tr>
         </table>
@@ -76,58 +80,60 @@
               <h4>Study Location Details</h4>
               <table class="table table-bordered table-striped">
                 <tr>
-                  <td>Position</td>
+                  <td class="fieldColumn">Position</td>
                   <td>${studyLocationSummary.longitude}, ${studyLocationSummary.latitude}</td>
                 </tr>
                 <tr>
-                  <td>Bioregion Name</td>
+                  <td class="fieldColumn">Bioregion Name</td>
                   <td>${studyLocationSummary.data.bioregionName}</td>
                 </tr>
                 <tr>
-                  <td>siteLocSysId</td>
-                  <td>${studyLocationSummary.data.siteLocSysId}</td>
-                </tr>
-                <tr>
-                  <td>Landform element</td>
+                  <td class="fieldColumn">Landform element</td>
                   <td>${studyLocationSummary.data.landformElement}</td>
                 </tr>
                 <tr>
-                  <td>Landform pattern</td>
+                  <td class="fieldColumn">Landform pattern</td>
                   <td>${studyLocationSummary.data.landformPattern}</td>
                 </tr>
                 <tr>
-                  <td>Number of distinct plant species (Unverified)</td>
+                  <td class="fieldColumn">Number of distinct plant species (Unverified)</td>
                   <td>${studyLocationSummary.data.numDistinctPlantSpeciesUnverified}</td>
                 </tr>
                 <tr>
-                  <td>Number of distinct plant species (Verified)</td>
+                  <td class="fieldColumn">Number of distinct plant species (Verified)</td>
                   <td>${studyLocationSummary.data.numDistinctPlantSpeciesVerified}</td>
                 </tr>
 
                 <tr>
-                  <td>Total number of distinct plant species</td>
+                  <td class="fieldColumn">Total number of distinct plant species</td>
                   <td>${studyLocationSummary.data.numDistinctPlantSpeciesTotal}</td>
                 </tr>
 
                 <tr>
-                  <td>Number of visits</td>
+                  <td class="fieldColumn">Number of visits</td>
                   <td><a href="${visitSummaryLink}">${studyLocationSummary.data.numVisits}</a></td>
                 </tr>
                 <tr>
-                  <td>First visit date</td>
-                  <td>${studyLocationSummary.data.firstVisitDate}</td>
+                  <td class="fieldColumn">First visit date</td>
+                  <td><sts:formatDateStr dateStr="${studyLocationSummary.data.firstVisitDate}"/></td>
                 </tr>
                 <tr>
-                  <td>Last visit date</td>
-                  <td>${studyLocationSummary.data.lastVisitDate}</td>
+                  <td class="fieldColumn">Last visit date</td>
+                  <td><sts:formatDateStr dateStr="${studyLocationSummary.data.lastVisitDate}"/></td>
                 </tr>
                 <tr>
-                  <td>Number of sampling units</td>
+                  <td class="fieldColumn">Number of sampling units</td>
                   <td>${studyLocationSummary.data.numSamplingUnits}</td>
                 </tr>
                 <tr>
-                  <td>Sampling unit types</td>
-                  <td>${studyLocationSummary.data.samplingUnitTypeList?.join(', ')}</td>
+                  <td class="fieldColumn">Sampling unit types</td>
+                  <td>
+                    <ul>
+                      <g:each in="${studyLocationSummary.data.samplingUnitTypeList}" var="unit">
+                        <li><a href="#">${unit}</a></li>
+                      </g:each>
+                    </ul>
+                  </td>
                 </tr>
               </table>
             </div>
