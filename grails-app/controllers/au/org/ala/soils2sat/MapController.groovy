@@ -172,32 +172,25 @@ class MapController {
 
     def browseLayersFragment = {
         def layers = layerService.getAllLayers()
-        def layerMap = ['_':[]]
+
+        def root = new LayerTreeNode(label: 'Unclassified')
 
         layers.each {
             if (it.classification1) {
-                def topLevel = layerMap[it.classification1]
-                if (!topLevel) {
-                    topLevel = ['_':[]]
-                    layerMap[it.classification1] = topLevel
-                }
+                def topLevelFolder =  root.getOrAddFolder(it.classification1)
 
                 if (it.classification2) {
-                    def secondLevel = topLevel[it.classification2]
-                    if (!secondLevel) {
-                        secondLevel = []
-                        topLevel[it.classification2] = secondLevel
-                    }
-                    secondLevel << it
+                    def secondLevel = topLevelFolder.getOrAddFolder(it.classification2)
+                    secondLevel.addLayer(it)
                 } else {
-                    topLevel['_'] << it
+                    topLevelFolder.addLayer(it)
                 }
             } else {
-                layerMap['_'] << it
+                root.addLayer(it)
             }
         }
 
-        [layerMap: layerMap]
+        [layerTree: root]
     }
 
     def layerSummaryFragment = {
@@ -274,6 +267,39 @@ class MapController {
         }
 
         render([status: success ? 'ok' : 'failed'] as JSON)
+    }
+
+}
+
+class LayerTreeNode {
+    String label
+    List<LayerTreeNode> childFolders = new ArrayList<LayerTreeNode>()
+    List<LayerDefinition> layers = new ArrayList<LayerDefinition>()
+
+    def getOrAddFolder(String name) {
+        def folder = childFolders.find {
+            it.label == name
+        }
+        if (!folder) {
+            folder = new LayerTreeNode(label: name)
+            childFolders.add(folder)
+        }
+        return folder
+    }
+
+    def addLayer(LayerDefinition layer) {
+        layers.add(layer)
+    }
+
+    def dump(int indent = 0) {
+        def s = " " * (indent * 2)
+        println s + label
+        layers.each {
+            println s + "  " + it.name + " (layer)"
+        }
+        childFolders.each {
+            it.dump(indent + 1)
+        }
     }
 
 }

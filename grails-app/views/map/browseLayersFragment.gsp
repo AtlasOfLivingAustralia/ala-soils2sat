@@ -1,32 +1,34 @@
 <div>
   <div id="layerTree" style="max-height: 250px; height: 240px; overflow-y: scroll;">
     <ul item-selected="true">
-      <g:each in="${layerMap}" var="topLevel">
-        <g:set value="${topLevel.key}" var="topLevelLabel"/>
-        <g:if test="${topLevel.key == '_'}">
-          <g:set var="topLevelLabel" value="Unclassified"/>
-        </g:if>
-        <g:if test="${topLevel.value}">
-          <li><b>${topLevelLabel}</b>
-            <ul>
-              <g:each in="${topLevel.value}" var="secondLevel">
-                <g:if test="${secondLevel.key != '_'}">
-                  <li><b>${secondLevel.key}</b>
-                    <ul>
-                      <g:each in="${secondLevel.value}" var="layer">
-                        <sts:layerTreeItem layer="${layer}" />
-                      </g:each>
-                    </ul>
-                  </li>
-                </g:if>
-              </g:each>
-              <g:each in="${topLevel.value['_']}" var="unsorted">
-                <sts:layerTreeItem layer="${unsorted}" />
-              </g:each>
-            </ul>
-          </li>
-        </g:if>
+      <g:each in="${layerTree.childFolders}" var="folder">
+        <li><b>${folder.label}</b>
+          <ul>
+            <g:each in="${folder.childFolders}" var="subfolder">
+              <li><b>${subfolder.label}</b>
+                <ul>
+                  <g:each in="${subfolder.layers}" var="layer">
+                    <sts:layerTreeItem layer="${layer}" />
+                  </g:each>
+                </ul>
+              </li>
+            </g:each>
+
+            <g:each in="${folder.layers}" var="layer">
+              <sts:layerTreeItem layer="${layer}" />
+            </g:each>
+          </ul>
+        </li>
       </g:each>
+      <g:if test="${layerTree.layers}">
+        <li><b>Unclassified</b>
+          <ul>
+            <g:each in="${layerTree.layers}" var="layer">
+              <sts:layerTreeItem layer="${layer}" />
+            </g:each>
+          </ul>
+        </li>
+      </g:if>
     </ul>
 </div>
 

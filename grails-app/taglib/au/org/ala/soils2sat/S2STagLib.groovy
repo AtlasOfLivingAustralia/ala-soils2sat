@@ -95,4 +95,29 @@ class S2STagLib {
         }
     }
 
+    /**
+     * @attr id
+     * @attr title
+     */
+    def modalDialog = { attrs, body ->
+
+        def mb = new MarkupBuilder(out)
+        def height = attrs.height ?: 400
+        def width = attrs.width ?: 600
+
+        mb.div(id: attrs.id, class:"modal hide fade", role:"dialog", 'aria-labelledby':"modal_label_${attrs.id}", 'aria-hidden': 'true', style:"height: ${height}px;width: ${width}px; overflow: hidden") {
+            div(class:'modal-header') {
+                button(type:'button', class:'close', 'data-dismiss':'modal', 'aria-hidden':'true') {
+                    mkp.yield('x')
+                }
+                h3(id:"modal_label_${attrs.id}") {
+                   mkp.yield(attrs.title)
+                }
+            }
+            div(class:'modal-body', style:"max-height: ${height}px") {
+                mkp.yield('loading')
+            }
+        }
+    }
+
 }

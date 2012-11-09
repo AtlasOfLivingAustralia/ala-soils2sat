@@ -1,5 +1,5 @@
 <div id="searchContainer" class="">
-  <h3>Find Study Location</h3>
+  %{--<h3>Find Study Location</h3>--}%
   <form class="form-horizontal" id="searchForm">
     <div class="control-group">
       <label class="control-label" for="searchText">Search</label>
@@ -26,7 +26,7 @@
 <script type="text/javascript">
   $("#btnCancelSearch").click(function(e) {
     e.preventDefault();
-    $.fancybox.close();
+    $("#findPlot").modal('hide');
   });
 
   $("#btnSearch").click(function(e) {

@@ -1,5 +1,4 @@
 <div>
-  <h4>Layer Information - ${layerName}</h4>
   <div style="height: 430px; overflow-y: scroll;">
     <table class="table table-striped table-bordered">
       <tr>
@@ -60,7 +59,7 @@
 
   $("#btnCloseLayerInformation").click(function(e) {
     e.preventDefault();
-    $.fancybox.close();
+//    $.fancybox.close();
   });
 
 </script>

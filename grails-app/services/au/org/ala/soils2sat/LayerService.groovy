@@ -37,12 +37,10 @@ class LayerService {
                 }
                 results.add(layer)
             }
-
             return results
         } finally {
             timer.stop(true)
         }
-
     }
 
 }

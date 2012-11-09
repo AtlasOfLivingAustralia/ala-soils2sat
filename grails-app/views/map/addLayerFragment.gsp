@@ -10,8 +10,7 @@
 
 </style>
 <div>
-  <h4 style="margin-top: 0px">Add an environmental layer</h4>
-
+  %{--<h4 style="margin-top: 0px">Add an environmental layer</h4>--}%
   <div class="tabbable">
 
     <ul class="nav nav-tabs" style="margin-bottom: 0px">

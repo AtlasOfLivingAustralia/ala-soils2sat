@@ -121,13 +121,19 @@
       }
 
       function displayLayerInfo(layerName) {
-        $("#layerInfoContent").attr("layerName", layerName);
-        $("#layerInfoLink").click();
+
+        alert(layerName);
+
+        $("#layerInfo").modal({
+          remote: "${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName
+        });
         return true;
       }
 
       function findPlot() {
-        $("#findPlotLink").click();
+        $("#findPlot").modal({
+          remote: "${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}"
+        });
         return true;
       }
 
@@ -137,7 +143,9 @@
       }
 
       function addLayerClicked() {
-        $("#addLayerLink").click();
+        $("#addLayerDetails").modal({
+          remote: "${createLink(controller: 'map', action:'addLayerFragment')}"
+        });
         return true;
       }
 
@@ -220,14 +228,6 @@
         refreshSidebar();
         refreshStudyLocationPoints();
 
-        $("#addLayerLink").fancybox({
-            beforeLoad: function() {
-              $.ajax("${createLink(controller: 'map', action:'addLayerFragment')}").done(function(data) {
-                $("#addLayerContent").html(data);
-              });
-            }
-        });
-
         $("#studyLocationDetailsLink").fancybox({
           beforeLoad: function() {
             var studyLocationName = $("#studyLocationDetailsContent").attr("studyLocationName");
@@ -238,30 +238,11 @@
 
         });
 
-        $("#findPlotLink").fancybox({
-          beforeLoad: function() {
-            $("#findPlotContent").html("");
-            $.ajax("${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}").done(function(html) {
-              $("#findPlotContent").html(html);
-            });
-          }
-        });
-
         $("#comparePlotsLink").fancybox({
           beforeLoad: function() {
             $("#comparePlotsContent").html('<h5>Please wait while study location data is retrieved...<img src="${resource(dir:'/images', file:'spinner.gif')}"/></h5>');
             $.ajax("${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}").done(function(html) {
               $("#comparePlotsContent").html(html);
-            });
-          }
-        });
-
-
-        $("#layerInfoLink").fancybox({
-          beforeLoad: function() {
-            var layerName = $("#layerInfoContent").attr("layerName");
-            $.ajax("${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName).done(function(html) {
-              $("#layerInfoContent").html(html);
             });
           }
         });
@@ -476,28 +457,14 @@
       <H2>Plot details</H2>
     </div>
 
-    <a id="addLayerLink" href="#addLayerDetails" style="display: none"></a>
-    <div id="addLayerDetails" style="display:none; width: 800px; height: 500px">
-      <div id="addLayerContent">
-      </div>
-    </div>
+    <sts:modalDialog id="addLayerDetails" title="Add an Environmental Layer" height="550" width="800" />
+    <sts:modalDialog id="findPlot" title="Find Study Location" height="550" />
+    <sts:modalDialog id="layerInfo" title="Layer Details" height="550" width="600" />
+
 
     <a id="studyLocationDetailsLink" href="#studyLocationDetails" style="display: none"></a>
     <div id="studyLocationDetails" style="display:none; width: 600px; height: 300px">
-      <div id="studyLocationDetailsContent">
-      </div>
-    </div>
-
-    <a id="findPlotLink" href="#findPlot" style="display: none"></a>
-    <div id="findPlot" style="display:none; width: 600px; height: 500px">
-      <div id="findPlotContent">
-      </div>
-    </div>
-
-    <a id="layerInfoLink" href="#layerInfo" style="display: none"></a>
-    <div id="layerInfo" style="display:none; width: 600px; height: 500px">
-      <div id="layerInfoContent">
-      </div>
+      <div id="studyLocationDetailsContent"/>
     </div>
 
     <a id="comparePlotsLink" href="#comparePlots" style="display: none"></a>
