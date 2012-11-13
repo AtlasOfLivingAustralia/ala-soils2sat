@@ -10,7 +10,7 @@
 
 </style>
 <div>
-  %{--<h4 style="margin-top: 0px">Add an environmental layer</h4>--}%
+
   <div class="tabbable">
 
     <ul class="nav nav-tabs" style="margin-bottom: 0px">
@@ -45,7 +45,7 @@
 <script type="text/javascript">
 
   $('#btnCancelLoadLayer').click(function(e) {
-    $.fancybox.close();
+    hideModal();
   });
 
   $('a[data-toggle="tab"]').on('shown', function (e) {

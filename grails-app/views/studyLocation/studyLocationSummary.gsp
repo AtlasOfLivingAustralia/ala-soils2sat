@@ -4,7 +4,6 @@
 	<head>
     <r:require module='jqueryui' />
     <r:require module='bootstrap_responsive' />
-    <r:require module='fancybox' />
 		<meta name="layout" content="detail"/>
 		<title>Study Location Summary - ${studyLocationName}</title>
 	</head>

@@ -50,16 +50,4 @@
     </table>
   </div>
 
-  <div style="margin-top: 15px;">
-    <button id="btnCloseLayerInformation" class="btn btn-small pull-right">Close</button>
-  </div>
-
 </div>
-<script type="text/javascript">
-
-  $("#btnCloseLayerInformation").click(function(e) {
-    e.preventDefault();
-//    $.fancybox.close();
-  });
-
-</script>

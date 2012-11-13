@@ -2,6 +2,7 @@ package au.org.ala.soils2sat
 
 import groovy.xml.MarkupBuilder
 import java.text.SimpleDateFormat
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 /**
  *
@@ -84,7 +85,7 @@ class S2STagLib {
      */
     def formatDateStr =  { attrs, body ->
         def sdf = new SimpleDateFormat("yyyy-MM-dd")
-        if (attrs.dateStr) {
+        if (attrs.dateStr && attrs.dateStr != JSONObject.NULL) {
             def date = sdf.parse(attrs.dateStr)
             if (params.dateFormat) {
                 sdf = new SimpleDateFormat(params.dateFormat)
@@ -92,31 +93,6 @@ class S2STagLib {
                 sdf = new SimpleDateFormat("dd MMM, yyyy")
             }
             out << sdf.format(date)
-        }
-    }
-
-    /**
-     * @attr id
-     * @attr title
-     */
-    def modalDialog = { attrs, body ->
-
-        def mb = new MarkupBuilder(out)
-        def height = attrs.height ?: 400
-        def width = attrs.width ?: 600
-
-        mb.div(id: attrs.id, class:"modal hide fade", role:"dialog", 'aria-labelledby':"modal_label_${attrs.id}", 'aria-hidden': 'true', style:"height: ${height}px;width: ${width}px; overflow: hidden") {
-            div(class:'modal-header') {
-                button(type:'button', class:'close', 'data-dismiss':'modal', 'aria-hidden':'true') {
-                    mkp.yield('x')
-                }
-                h3(id:"modal_label_${attrs.id}") {
-                   mkp.yield(attrs.title)
-                }
-            }
-            div(class:'modal-body', style:"max-height: ${height}px") {
-                mkp.yield('loading')
-            }
         }
     }
 

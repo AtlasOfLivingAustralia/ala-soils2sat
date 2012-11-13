@@ -15,6 +15,7 @@
     <td>Compare Study Locations (${appState?.selectedPlots?.size()})</td>
     <td style="text-align: right">
       <button id="btnCompareExport" class="btn btn-small">Export data</button>
+      <button id="btnCloseCompare" class="btn btn-small">Close</button>
     </td>
   </tr>
 </table>
@@ -74,9 +75,15 @@
 </div>
 
 <script type="text/javascript">
+
   $("#btnCompareExport").click(function(e) {
     e.preventDefault();
     location.href = "${createLink(controller: 'studyLocation', action:'exportComparePlots')}";
+  });
+
+  $("#btnCloseCompare").click(function(e) {
+    e.preventDefault();
+    hideModal();
   });
 
   $('a[data-toggle="tab"]').on('shown', function (e) {

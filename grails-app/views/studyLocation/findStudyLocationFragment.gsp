@@ -26,7 +26,7 @@
 <script type="text/javascript">
   $("#btnCancelSearch").click(function(e) {
     e.preventDefault();
-    $("#findPlot").modal('hide');
+    hideModal();
   });
 
   $("#btnSearch").click(function(e) {

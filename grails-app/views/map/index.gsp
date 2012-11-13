@@ -3,7 +3,6 @@
 	<head>
     <r:require module='jqueryui' />
     <r:require module='openlayers' />
-    <r:require module='fancybox' />
 
 		<meta name="layout" content="soils2sat"/>
 		<title>Soils to Satellites</title>
@@ -122,29 +121,42 @@
 
       function displayLayerInfo(layerName) {
 
-        alert(layerName);
-
-        $("#layerInfo").modal({
-          remote: "${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName
+        showModal({
+            url: "${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName,
+            title:"Layer details - " + layerName,
+            height: 520,
+            width:700
         });
         return true;
       }
 
       function findPlot() {
-        $("#findPlot").modal({
-          remote: "${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}"
+        showModal({
+            url: "${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}",
+            title: "Find Study Location",
+            height: 550,
+            width: 600
         });
         return true;
       }
 
       function compareSelectedPlots() {
-        $("#comparePlotsLink").click();
+        showModal({
+            url: "${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}",
+            title:"Compare Study Locations",
+            height: 600,
+            width: 800,
+            hideHeader: true
+        });
         return true;
       }
 
       function addLayerClicked() {
-        $("#addLayerDetails").modal({
-          remote: "${createLink(controller: 'map', action:'addLayerFragment')}"
+        showModal({
+          url: "${createLink(controller: 'map', action:'addLayerFragment')}",
+          title: "Add Environmental Layer",
+          height: 560,
+          width: 700
         });
         return true;
       }
@@ -228,30 +240,9 @@
         refreshSidebar();
         refreshStudyLocationPoints();
 
-        $("#studyLocationDetailsLink").fancybox({
-          beforeLoad: function() {
-            var studyLocationName = $("#studyLocationDetailsContent").attr("studyLocationName");
-            $.ajax("${createLink(controller: 'studyLocation', action:'detailsFragment')}?studyLocationName=" + studyLocationName).done(function(data) {
-              $("#studyLocationDetailsContent").html(data);
-            });
-          }
-
-        });
-
-        $("#comparePlotsLink").fancybox({
-          beforeLoad: function() {
-            $("#comparePlotsContent").html('<h5>Please wait while study location data is retrieved...<img src="${resource(dir:'/images', file:'spinner.gif')}"/></h5>');
-            $.ajax("${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}").done(function(html) {
-              $("#comparePlotsContent").html(html);
-            });
-          }
-        });
-
         $("#btnToggleSidebar").click(function(e) {
           toggleSidebar();
         });
-
-
 
         <g:each in="${appState?.layers}" var="layer">
           <g:if test="${layer.visible}">
@@ -356,7 +347,6 @@
             ${appState.viewExtent?.right},
             ${appState.viewExtent?.top}
           );
-//          extent.transform(latLongProj, map.getProjectionObject());
           map.zoomToExtent(extent);
         </g:if>
         <g:else>
@@ -371,9 +361,10 @@
       }
 
       function showPlotDetails(studyLocationName) {
-
-        $("#studyLocationDetailsContent").attr("studyLocationName", studyLocationName);
-        $("#studyLocationDetailsLink").click();
+          showModal({
+              url:"${createLink(controller: 'studyLocation', action:'detailsFragment')}?studyLocationName=" + studyLocationName,
+              title:"Study Location Synopsis - " + studyLocationName
+          })
         return true;
       }
 
@@ -455,22 +446,6 @@
 
     <div class="info-popup" id="studyLocationSummary" style="display: none; ">
       <H2>Plot details</H2>
-    </div>
-
-    <sts:modalDialog id="addLayerDetails" title="Add an Environmental Layer" height="550" width="800" />
-    <sts:modalDialog id="findPlot" title="Find Study Location" height="550" />
-    <sts:modalDialog id="layerInfo" title="Layer Details" height="550" width="600" />
-
-
-    <a id="studyLocationDetailsLink" href="#studyLocationDetails" style="display: none"></a>
-    <div id="studyLocationDetails" style="display:none; width: 600px; height: 300px">
-      <div id="studyLocationDetailsContent"/>
-    </div>
-
-    <a id="comparePlotsLink" href="#comparePlots" style="display: none"></a>
-    <div id="comparePlots" style="display:none; width: 800px; height: 600px">
-      <div id="comparePlotsContent">
-      </div>
     </div>
 
     <content tag="buttonBar">

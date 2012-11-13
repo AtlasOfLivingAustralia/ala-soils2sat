@@ -1,5 +1,4 @@
 <div>
-  <H4>Study Location - ${studyLocationName}</H4>
   <div id="studyLocationSummaryPanel" class="well well-small">
     Retrieving Study Location data...
   </div>
@@ -19,13 +18,11 @@
   $("#btnSelectPlot").click(function(e) {
     e.preventDefault();
     selectPlot("${studyLocationName}");
-    $.fancybox.close();
   });
 
   $("#btnDeselectPlot").click(function(e) {
     e.preventDefault();
     deselectPlot("${studyLocationName}");
-    $.fancybox.close();
   });
 
   $("#btnStudyLocationSummary").click(function(e) {
