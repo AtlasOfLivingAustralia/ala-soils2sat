@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="${resource(dir:'/jqwidgets/styles', file:'jqx.base.css')}" type="text/css" />
 
 		<g:layoutHead/>
-    <r:require module="bootstrap" />
+        <r:require module="bootstrap" />
+        <r:require module="application" />
 		<r:layoutResources />
     <Style type="text/css">
 
