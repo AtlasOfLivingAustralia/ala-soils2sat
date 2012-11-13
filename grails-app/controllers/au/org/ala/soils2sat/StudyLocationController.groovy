@@ -49,7 +49,7 @@ class StudyLocationController {
         render (results as JSON)
     }
 
-    def detailsFragment() {
+    def synopsisFragment() {
         def studyLocationName = params.studyLocationName;
         def userInstance = springSecurityService.currentUser as User
 

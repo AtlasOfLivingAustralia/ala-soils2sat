@@ -362,7 +362,7 @@
 
       function showPlotDetails(studyLocationName) {
           showModal({
-              url:"${createLink(controller: 'studyLocation', action:'detailsFragment')}?studyLocationName=" + studyLocationName,
+              url:"${createLink(controller: 'studyLocation', action:'synopsisFragment')}?studyLocationName=" + studyLocationName,
               title:"Study Location Synopsis - " + studyLocationName
           })
         return true;
