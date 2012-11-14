@@ -25,11 +25,9 @@
         </div>
 
         <div class="control-group">
-            <label class="control-label" for='name'>Description:</label>
-
+            <label class="control-label" for='description'>Description:</label>
             <div class="controls">
-                <g:textField class="input-xlarge" name="description" placeholder="Description"
-                             value="${layerSet?.description}"/>
+                <g:textField class="input-xlarge" name="description" placeholder="Description" value="${layerSet?.description}"/>
             </div>
         </div>
 

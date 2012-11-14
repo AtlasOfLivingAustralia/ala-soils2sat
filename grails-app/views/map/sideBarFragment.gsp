@@ -44,7 +44,7 @@
   </div>
   <p style="margin-top: 15px">
     <button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>
-    <button class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Question</button>
+    <button id="btnQuestions" class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Questions</button>
     <button class="btn btn-small" id="btnClearSelection">Remove All</button>
   </p>
 
@@ -110,6 +110,11 @@
       refreshStudyLocationPoints();
     });
 
+  });
+
+  $("#btnQuestions").click(function(e) {
+      e.preventDefault();
+      window.open("${createLink(controller:'question')}", "Questions");
   });
 
   $("#btnComparePlots").click(function(e) {

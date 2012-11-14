@@ -223,4 +223,45 @@ class AdminController {
         }
     }
 
+    def matrix = {
+        def contexts = []
+        for (EcologicalContextType1 t1 : EcologicalContextType1.values()) {
+            for (EcologicalContextType2 t2 : EcologicalContextType2.values()) {
+                for (EcologicalContextType3 t3 : EcologicalContextType3.values()) {
+                    def context = new EcologicalContext(ecologicalContextType1: t1, ecologicalContextType2: t2, ecologicalContextType3: t3)
+                    contexts << context
+                }
+            }
+        }
+        def questions = Question.list()
+        [contexts: contexts, questions: questions]
+    }
+
+    def newQuestion = {
+    }
+
+    def insertQuestion = {
+        def text = params.question
+        def description = params.description
+
+        def question = new Question(text: text, description: description)
+        if (!question.validate()) {
+            flash.errorMessage = question.errors.toString()
+            redirect(controller: 'admin', action:'newQuestion', params:  params)
+            return
+        }
+
+        question.save(flush: true, failOnError: true)
+
+        redirect(action:'matrix')
+    }
+
+    def deleteQuestion = {
+        def question = Question.get(params.int("questionId"))
+        if (question) {
+            question.delete();
+        }
+        redirect(action:'matrix')
+    }
+
 }
