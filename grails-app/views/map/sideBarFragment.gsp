@@ -44,7 +44,7 @@
   </div>
   <p style="margin-top: 15px">
     <button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>
-    <button class="btn btn-small">Export</button>
+    <button class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Question</button>
     <button class="btn btn-small" id="btnClearSelection">Remove All</button>
   </p>
 

@@ -58,7 +58,7 @@ class LoginController {
         String view = 'auth'
         String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
 
-        render view: view, model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
+        render view: view, model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter, username: params.lastUsername]
     }
 
     /**
@@ -121,6 +121,7 @@ class LoginController {
         }
         else {
             params.errorMessage = msg
+            params.lastUsername = username
             redirect(view: 'auth', params: params)
         }
 
