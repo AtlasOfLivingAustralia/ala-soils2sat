@@ -4,7 +4,7 @@
     <head>
         <r:require module='jqueryui'/>
         <r:require module='bootstrap_responsive'/>
-        <meta name="layout" content="admin"/>
+        <meta name="layout" content="adminLayout"/>
         <title>Soils to Satellites - Admin - Matrix</title>
     </head>
 
@@ -12,15 +12,6 @@
         <content tag="pageTitle">Matrix</content>
         <content tag="adminButtonBar">
         </content>
-
-        <script type="text/javascript">
-
-            $("#btnAddQuestion").click(function(e) {
-                e.preventDefault();
-                window.location = "${createLink(controller: 'admin', action:'newQuestion')}";
-            });
-
-        </script>
         <content tag="adminButtonBar">
             <a class="btn btn-small" href="${createLink(controller: 'admin', action:'matrix')}">Back to matrix</a>
         </content>
@@ -45,7 +36,7 @@
 
                 <div class="control-group">
                     <div class="controls">
-                        <g:submitButton class="btn btn-primary" name="submit" value='Save'/>
+                        <g:submitButton class="btn btn-primary" name="submit" value='Add'/>
                     </div>
                 </div>
 

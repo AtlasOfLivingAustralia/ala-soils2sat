@@ -3,7 +3,7 @@
     <head>
         <r:require module='jqueryui'/>
         <r:require module='bootstrap_responsive'/>
-        <meta name="layout" content="admin"/>
+        <meta name="layout" content="adminLayout"/>
         <title>Soils to Satellites - Admin - User List</title>
     </head>
 

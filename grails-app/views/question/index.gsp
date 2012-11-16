@@ -14,7 +14,7 @@
                 <table style="width:100%">
                     <tr>
                         <td>Questions</td>
-                        <td></td>
+                        <td style="text-align: right"></td>
                     </tr>
                 </table>
             </legend>
@@ -32,7 +32,7 @@
                 <g:else>
                     <ul class="nav nav-pills nav-stacked">
                         <g:each in="${questions}" var="question">
-                            <li><a href="#">${question.text}</a></li>
+                            <li><a href="${createLink(controller:'question', action:'ecologicalContexts', params:[questionId:question.id])}">${question.text}</a></li>
                         </g:each>
                     </ul>
                 </g:else>

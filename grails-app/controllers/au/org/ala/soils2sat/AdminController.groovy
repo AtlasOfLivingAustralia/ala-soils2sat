@@ -1,5 +1,7 @@
 package au.org.ala.soils2sat
 
+import grails.converters.JSON
+
 class AdminController {
 
     def springSecurityService
@@ -122,7 +124,7 @@ class AdminController {
         redirect(controller: 'admin', action: 'userList')
     }
 
-    def deleteUser = {
+    def deleteUser() {
         def userToDelete = User.get(params.int("id"))
 
         if (!userToDelete) {
@@ -146,13 +148,13 @@ class AdminController {
         [layerSets: layerSets]
     }
 
-    def newGlobalLayerSet = {
+    def newGlobalLayerSet() {
         def layerSet = new LayerSet(user: null, name:'<new layer set>')
         layerSet.save(flush: true, failOnError: true)
         redirect(controller:'admin', action:'layerSets')
     }
 
-    def deleteLayerSet = {
+    def deleteLayerSet() {
         def layerSet = LayerSet.get(params.int("id"))
         if (layerSet) {
             layerSet.delete(flush: true)
@@ -160,7 +162,7 @@ class AdminController {
         redirect(controller:'admin', action:'layerSets')
     }
 
-    def editLayerSet = {
+    def editLayerSet() {
         def layerSet = LayerSet.get(params.int("id"))
         if (!layerSet) {
             flash.errorMessage = "Could not retrieve layer set with id " + params.id
@@ -171,7 +173,7 @@ class AdminController {
         [layerSet: layerSet]
     }
 
-    def saveLayerSet = {
+    def saveLayerSet() {
         def layerSet = LayerSet.get(params.int("id"))
         if (!layerSet) {
             flash.errorMessage = "Could not retrieve layer set with id " + params.id
@@ -185,7 +187,7 @@ class AdminController {
         redirect(controller:'admin', action:'layerSets')
     }
 
-    def addLayerToLayerSet = {
+    def addLayerToLayerSet() {
         def layerSet = LayerSet.get(params.int("id"))
         if (!layerSet) {
             flash.errorMessage = "Could not retrieve layer set with id " + params.id
@@ -204,7 +206,7 @@ class AdminController {
         }
     }
 
-    def removeLayerFromLayerSet = {
+    def removeLayerFromLayerSet() {
         def layerSet = LayerSet.get(params.int("id"))
         if (!layerSet) {
             flash.errorMessage = "Could not retrieve layer set with id " + params.id
@@ -223,24 +225,35 @@ class AdminController {
         }
     }
 
-    def matrix = {
-        def contexts = []
-        for (EcologicalContextType1 t1 : EcologicalContextType1.values()) {
-            for (EcologicalContextType2 t2 : EcologicalContextType2.values()) {
-                for (EcologicalContextType3 t3 : EcologicalContextType3.values()) {
-                    def context = new EcologicalContext(ecologicalContextType1: t1, ecologicalContextType2: t2, ecologicalContextType3: t3)
-                    contexts << context
-                }
-            }
+    def matrix() {
+        def contexts = EcologicalContext.listOrderByName()
+        def questions = Question.list().sort { it.id }
+        def valuesList = MatrixValue.list();
+        def valueMap =[:]
+        valuesList.each {
+            def key = "${it.ecologicalContext.id}_${it.question.id}"
+            valueMap[key] = it
         }
-        def questions = Question.list()
-        [contexts: contexts, questions: questions]
+
+        [contexts: contexts, questions: questions, valueMap: valueMap]
     }
 
-    def newQuestion = {
+    def newQuestion() {
     }
 
-    def insertQuestion = {
+    def editQuestion() {
+        def question = Question.get(params.int("questionId"))
+        if (question) {
+            [question: question]
+        } else {
+            flash.message = "Could not retrieve question!"
+            redirect(action:'matrix')
+            return
+        }
+
+    }
+
+    def insertQuestion() {
         def text = params.question
         def description = params.description
 
@@ -256,12 +269,189 @@ class AdminController {
         redirect(action:'matrix')
     }
 
-    def deleteQuestion = {
+    def updateQuestion() {
+
+        def question = Question.get(params.int("questionId"))
+        if (question) {
+            question.text = params.question
+            question.description = params.description
+            question.save(flush: true, failOnError: true)
+        }
+
+        redirect(action:'matrix')
+    }
+
+    def deleteQuestion() {
         def question = Question.get(params.int("questionId"))
         if (question) {
             question.delete();
         }
         redirect(action:'matrix')
+    }
+
+    def ecologicalContexts() {
+        def contexts = EcologicalContext.listOrderByName();
+        [contexts: contexts]
+    }
+
+    def generateEcologicalContexts() {
+        for (EcologicalContextType1 t1 : EcologicalContextType1.values()) {
+            for (EcologicalContextType2 t2 : EcologicalContextType2.values()) {
+                for (EcologicalContextType3 t3 : EcologicalContextType3.values()) {
+                    def name = "${t1.description} + ${t2.description} + ${t3.description}"
+                    def existing = EcologicalContext.findByName(name)
+                    if (!existing) {
+                        def context = new EcologicalContext(name: name)
+                        context.save(flush: true, failOnError: true)
+                    }
+                }
+            }
+        }
+
+        redirect(action:'ecologicalContexts')
+    }
+
+    def deleteEcologicalContext() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        if (context) {
+            context.delete(flush: true)
+        }
+
+        redirect(action: 'ecologicalContexts')
+    }
+
+    def newEcologicalContext() {
+
+    }
+
+    def insertEcologicalContext() {
+        def context = new EcologicalContext(params)
+
+        if (!context.validate()) {
+            flash.errorMessage = context.errors.toString()
+            redirect(action:'newEcologicalContext', params: params)
+            return
+        }
+
+        context.save(flush: true, failOnError: true)
+
+        redirect(action:'ecologicalContexts')
+    }
+
+    def editEcologicalContext() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        if (!context) {
+            flash.errorMessage = "Could not location specified context!"
+            redirect(action:'ecologicalContexts')
+            return
+        }
+        [context: context, samplingUnits: SamplingUnit.listOrderByName()]
+    }
+
+
+    def updateEcologicalContext() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        if (context) {
+            context.properties = params
+            if (!context.validate()) {
+                flash.errorMessage = context.errors.toString()
+                redirect(action:'editEcologicalContext', params: params)
+            }
+
+            context.save(flush: true, failOnError: true)
+        } else {
+            flash.errorMessage = "Could not locate specified context!"
+        }
+        redirect(action:'ecologicalContexts')
+    }
+    
+    def setMatrixValue() {
+        def question = Question.get(params.int("questionId"));
+        def context = EcologicalContext.get(params.int("ecologicalContextId"));
+        String value = params.value as String
+
+        if (question && context) {
+            
+            def existing = MatrixValue.findByEcologicalContextAndQuestion(context, question)
+            if (existing && !value) {
+                existing.delete(flush: true)
+            } else {
+
+                if (!existing) {
+                    existing = new MatrixValue(question: question, ecologicalContext: context)
+                }
+
+                if (value?.equalsIgnoreCase("y")) {
+                    existing.required = true
+                } else if (value?.equalsIgnoreCase('n')) {
+                    existing.required = false
+                } else {
+                    existing.required = null;
+                }
+
+                existing.save(flush: true, failOnError: true)
+            }
+        }
+        render ([status:'ok'] as JSON)
+    }
+
+    def contextSamplingUnitsFragment() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        render(view:'contextSamplingUnitsFragment', model: [context: context])
+    }
+
+    def addContextSamplingUnitAjax() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        def unit = SamplingUnit.get(params.int("samplingUnitId"))
+        if (context && unit) {
+            if (!context.samplingUnits.contains(unit)) {
+                context.addToSamplingUnits(unit)
+                context.save(flush: true, failOnError: true)
+            }
+        }
+        render ([status:'ok'] as JSON)
+    }
+
+    def removeContextSamplingUnitAjax() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        def unit = SamplingUnit.get(params.int("samplingUnitId"))
+        if (context && unit) {
+            if (context.samplingUnits.contains(unit)) {
+                context.removeFromSamplingUnits(unit)
+            }
+        }
+        render ([status:'ok'] as JSON)
+
+    }
+
+    def samplingUnits() {
+        [samplingUnits: SamplingUnit.listOrderByName()]
+    }
+
+    def addSamplingUnit() {
+        def name = params.name?.trim()
+
+        if (name) {
+            def existing = SamplingUnit.findByName(name)
+            if (!existing) {
+                def samplingUnit = new SamplingUnit(name: name)
+                samplingUnit.save(flush: true, failOnError: true)
+            }
+        }
+
+        redirect(controller: 'admin', action:'samplingUnits')
+    }
+
+    def deleteSamplingUnit() {
+        def unit = SamplingUnit.get(params.int("samplingUnitId"))
+        if (unit) {
+            try {
+                unit.delete(flush: true)
+            } catch (Exception ex) {
+                flash.errorMessage = "Cannot delete sampling unit - it is probably being used by one or more ecological contexts"
+            }
+        }
+        redirect(controller: 'admin', action:'samplingUnits')
     }
 
 }

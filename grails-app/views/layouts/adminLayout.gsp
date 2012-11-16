@@ -24,16 +24,19 @@
             </table>
         </legend>
 
-        <div class="row">
-            <div class="span4">
+        <div class="row-fluid">
+            <div class="span3">
                 <ul class="nav nav-list nav-stacked nav-tabs">
-                    <li ${pageProperty(name: 'page.pageTitle') == 'Users' ? 'class="active"' : ''}><a href="${createLink(controller: 'admin', action: 'userList')}"><i class="icon-chevron-right"></i>Users</a></li>
-                    <li ${pageProperty(name: 'page.pageTitle') == 'Layer Sets' ? 'class="active"' : ''}><a href="${createLink(controller: 'admin', action: 'layerSets')}"><i class="icon-chevron-right"></i>Layer Sets</a></li>
-                    <li ${pageProperty(name: 'page.pageTitle') == 'Matrix' ? 'class="active"' : ''}><a href="${createLink(controller: 'admin', action: 'matrix')}"><i class="icon-chevron-right"></i>Matrix</a></li>
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'userList')}" title="Users" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'layerSets')}" title="Layer Sets" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'samplingUnits')}" title="Sampling Units" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'ecologicalContexts')}" title="Ecological Contexts" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'matrix')}" active="Matrix" title="Questions Matrix" />
+
                 </ul>
             </div>
 
-            <div class="span8">
+            <div class="span9">
                 <g:if test="${flash.errorMessage}">
                     <div class="container-fluid">
                         <div class="alert alert-error">
