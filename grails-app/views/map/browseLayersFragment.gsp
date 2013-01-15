@@ -1,5 +1,4 @@
-<div>
-  <div id="layerTree" style="max-height: 250px; height: 240px; overflow-y: scroll;">
+<div id="layerTree" style="max-height: 250px; height: 240px; overflow-y: scroll;">
     <ul item-selected="true">
       <g:each in="${layerTree.childFolders}" var="folder">
         <li><b>${folder.label}</b>
