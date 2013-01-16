@@ -28,19 +28,24 @@
                             <th>Visit</th>
                             <th>Dates</th>
                             <th>Observers</th>
-                            <th>Sampling units</th>
+                            <th>Sampling activities conducted during the visit to this Study Location</th>
                         </tr>
                     </thead>
-                    <g:each in="${studyLocation.data.visitSummaryList}" var="visit">
+                    <g:each in="${visitSummaries}" var="visit">
                         <tr>
-                            <g:set var="samplesURL"
-                                   value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, visitId: visit.visitId])}"/>
+                            <g:set var="samplesURL" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, visitId: visit.visitId])}"/>
                             <td><a href="${samplesURL}">${visit.visitId}</a></td>
-                            <td><a
-                                href="${samplesURL}">${visit.startDate ?: studyLocation.data.firstVisitDate} - ${visit.endDate ?: studyLocation.data.lastVisitDate}</a>
+                            <td>Visit&nbsp;Start&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.startDate}"/><br/>
+                                Visit&nbsp;End&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.endDate}"/>
                             </td>
-                            <td>${visit.observerList?.collect({ it.name })?.join(", ")}</td>
-                            <td>${visit.samplingUnitNameList?.join(", ")}</td>
+                            <td>${visit.observers?.join(", ")}</td>
+                            <td>
+                                <ul>
+                                    <g:each in="${visit.samplingUnitNames}" var="samplingUnitCode">
+                                        <li><a href="#"><sts:formatSamplingUnitName code="${samplingUnitCode}"/></a></li>
+                                    </g:each>
+                                </ul>
+                            </td>
                         </tr>
                     </g:each>
                 </table>

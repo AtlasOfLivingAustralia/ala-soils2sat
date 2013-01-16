@@ -19,14 +19,17 @@
       </tr>
       <tr>
         <td>Visits (${studyLocation.data.numVisits})</td>
-        <td>From <sts:formatDateStr dateStr="${studyLocation.data.firstVisitDate}"/> to <sts:formatDateStr dateStr="${studyLocation.data.lastVisitDate}"/></td>
+        <td>Initial visit date: <sts:formatDateStr date="${studyLocation.firstVisitDate}"/><br/>
+            Lastest visit date: <sts:formatDateStr date="${studyLocation.lastVisitDate}"/>
+        </td>
       </tr>
       <tr>
-        <td>Sampling Units (${studyLocation.data.numSamplingUnits})</td>
+        <td>Sampling Methods performed<br/>at this site location</td>
         <td>
           <ul>
             <g:each in="${studyLocation.data.samplingUnitTypeList}" var="unit">
-              <li>${unit}</li>
+              <li><sts:formatSamplingUnitName code="${unit}"/></li>
+
             </g:each>
           </ul>
         </td>

@@ -22,13 +22,44 @@
             </legend>
 
             <div class="well well-small">
+
+                <h4>Study Location Visit Summary</h4>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <td>Study Location</td>
+                        <td>${studyLocationSummary.name}</td>
+                    </tr>
+                    <tr>
+                        <td>Start Date</td>
+                        <td><sts:formatDateStr date="${visit.startDate}"/></td>
+                    </tr>
+                    <tr>
+                        <td>End Date</td>
+                        <td><sts:formatDateStr date="${visit.endDate}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Observers</td>
+                        <td>${visit.observers?.join(", ")}</td>
+                    </tr>
+
+                </table>
+
                 <h4>Study Location Visit Sampling Units</h4>
                 <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Observers</th>
+                            <th>Sampling Unit</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
                     <g:each in="${visit.samplingUnitSummaryList}" var="su">
                         <tr>
-                            <td>${su.sampleDate}</td>
-                            <td>${su.observerList?.collect({ it.name })?.join(", ")}</td>
-                            <td>${su.samplingUnitDescription ?: su.samplingUnit}</td>
+                            <td><sts:formatDateStr date="${su.sampleDate}"/></td>
+                            <td>${su.observerNames?.join(", ")}</td>
+                            <td>${su.description ?: su.samplingUnit}</td>
+                            <td>${su.summary}</td>
                         </tr>
                     </g:each>
                 </table>

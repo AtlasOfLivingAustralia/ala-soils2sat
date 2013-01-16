@@ -1,148 +1,161 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <!doctype html>
 <html>
-	<head>
-    <r:require module='jqueryui' />
-    <r:require module='bootstrap_responsive' />
-		<meta name="layout" content="detail"/>
-		<title>Study Location Summary - ${studyLocationName}</title>
-	</head>
-	<body>
+    <head>
+        <r:require module='jqueryui'/>
+        <r:require module='bootstrap_responsive'/>
+        <meta name="layout" content="detail"/>
+        <title>Study Location Summary - ${studyLocationName}</title>
+    </head>
 
-    <g:set var="visitSummaryLink" value="${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationName: studyLocationName])}" />
+    <body>
 
-    <style type="text/css">
+        <g:set var="visitSummaryLink" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}"/>
 
-      .tab-content {
-        border-left: 1px solid #d3d3d3;
-        border-right: 1px solid #d3d3d3;
-        border-bottom: 1px solid #d3d3d3;
-        padding: 10px;
-        background-color: white;
-      }
+        <style type="text/css">
 
-    .fieldColumn {
-      width: 300px;
-    }
+        .tab-content {
+            border-left: 1px solid #d3d3d3;
+            border-right: 1px solid #d3d3d3;
+            border-bottom: 1px solid #d3d3d3;
+            padding: 10px;
+            background-color: white;
+        }
 
-    </style>
+        .fieldColumn {
+            width: 300px;
+        }
 
-    <script type="text/javascript">
+        </style>
 
-      $(document).ready(function() {
+        <script type="text/javascript">
 
-        $('a[data-toggle="tab"]').on('shown', function (e) {
-          $("#environmentalLayersTab").html("");
-          var tabHref = $(this).attr('href');
-          if (tabHref == '#environmentalLayersTab') {
-            $("#environmentalLayersTab").html('Retrieving data for study location... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
-            $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationLayersFragment', params: [studyLocationName: studyLocationName])}").done(function(html) {
-              $("#environmentalLayersTab").html(html);
+            $(document).ready(function () {
+
+                $('a[data-toggle="tab"]').on('shown', function (e) {
+                    $("#environmentalLayersTab").html("");
+                    var tabHref = $(this).attr('href');
+                    if (tabHref == '#environmentalLayersTab') {
+                        $("#environmentalLayersTab").html('Retrieving data for study location... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationLayersFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                            $("#environmentalLayersTab").html(html);
+                        });
+                    } else if (tabHref == "#taxaTab") {
+                        $("#taxaTab").html('Retrieving taxa data for study location... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                            $("#taxaTab").html(html);
+                        });
+                    }
+                });
+
+                $("#btnViewVisitSummaries").click(function (e) {
+                    e.preventDefault();
+                    window.location = "${visitSummaryLink}";
+                })
+
             });
-          } else if (tabHref == "#taxaTab") {
-            $("#taxaTab").html('Retrieving taxa data for study location... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
-            $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function(html) {
-              $("#taxaTab").html(html);
-            });
-          }
-        });
 
-        $("#btnViewVisitSummaries").click(function(e) {
-          e.preventDefault();
-          window.location = "${visitSummaryLink}";
-        })
+        </script>
 
-      });
+        <div class="container-fluid">
+            <legend>
+                <table style="width:100%">
+                    <tr>
+                        <td>Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
+                        <td><button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})</button>
+                        </td>
+                    </tr>
+                </table>
+            </legend>
 
-    </script>
-    <div class="container-fluid">
-      <legend>
-        <table style="width:100%">
-          <tr>
-            <td>Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
-            <td><button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})</button></td>
-          </tr>
-        </table>
-      </legend>
-      <div class="well well-small">
+            <div class="well well-small">
 
-        <div class="tabbable">
+                <div class="tabbable">
 
-          <ul class="nav nav-tabs" style="margin-bottom: 0px">
-            <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
-            <li><a href="#environmentalLayersTab" data-toggle="tab">Environmental data</a></li>
-            <li><a href="#taxaTab" data-toggle="tab">Taxa data</a></li>
-          </ul>
-
-          <div class="tab-content" >
-            <div class="tab-pane active" id="detailsTab">
-              <h4>Study Location Details</h4>
-              <table class="table table-bordered table-striped">
-                <tr>
-                  <td class="fieldColumn">Position</td>
-                  <td>${studyLocationSummary.longitude}, ${studyLocationSummary.latitude}</td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Bioregion Name</td>
-                  <td>${studyLocationSummary.data.bioregionName}</td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Landform element</td>
-                  <td>${studyLocationSummary.data.landformElement}</td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Landform pattern</td>
-                  <td>${studyLocationSummary.data.landformPattern}</td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Number of distinct plant species (Unverified)</td>
-                  <td>${studyLocationSummary.data.numDistinctPlantSpeciesUnverified}</td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Number of distinct plant species (Verified)</td>
-                  <td>${studyLocationSummary.data.numDistinctPlantSpeciesVerified}</td>
-                </tr>
-
-                <tr>
-                  <td class="fieldColumn">Total number of distinct plant species</td>
-                  <td>${studyLocationSummary.data.numDistinctPlantSpeciesTotal}</td>
-                </tr>
-
-                <tr>
-                  <td class="fieldColumn">Number of visits</td>
-                  <td><a href="${visitSummaryLink}">${studyLocationSummary.data.numVisits}</a></td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">First visit date</td>
-                  <td><sts:formatDateStr dateStr="${studyLocationSummary.data.firstVisitDate}"/></td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Last visit date</td>
-                  <td><sts:formatDateStr dateStr="${studyLocationSummary.data.lastVisitDate}"/></td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Number of sampling units</td>
-                  <td>${studyLocationSummary.data.numSamplingUnits}</td>
-                </tr>
-                <tr>
-                  <td class="fieldColumn">Sampling unit types</td>
-                  <td>
-                    <ul>
-                      <g:each in="${studyLocationSummary.data.samplingUnitTypeList}" var="unit">
-                        <li><a href="#">${unit}</a></li>
-                      </g:each>
+                    <ul class="nav nav-tabs" style="margin-bottom: 0px">
+                        <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
+                        <li><a href="#environmentalLayersTab" data-toggle="tab">Environmental data</a></li>
+                        <li><a href="#taxaTab" data-toggle="tab">Taxa data</a></li>
                     </ul>
-                  </td>
-                </tr>
-              </table>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="detailsTab">
+                            <h4>Study Location Details</h4>
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <td class="fieldColumn">Location</td>
+                                    <td>${studyLocationSummary.longitude}, ${studyLocationSummary.latitude}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Bioregion Name</td>
+                                    <td>${studyLocationSummary.data.bioregionName}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Landform element</td>
+                                    <td>${studyLocationSummary.data.landformElement}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Landform pattern</td>
+                                    <td>${studyLocationSummary.data.landformPattern}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Number of distinct plant species (Unverified)</td>
+                                    <td>${studyLocationSummary.data.numDistinctPlantSpeciesUnverified}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Number of distinct plant species (Verified)</td>
+                                    <td>${studyLocationSummary.data.numDistinctPlantSpeciesVerified}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Total number of distinct plant species</td>
+                                    <td>${studyLocationSummary.data.numDistinctPlantSpeciesTotal}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Number of visits</td>
+                                    <td><a href="${visitSummaryLink}">${studyLocationSummary.data.numVisits}</a></td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Observers</td>
+                                    <td>
+                                        <g:set var="observers" value="${studyLocationSummary.observers}"/>
+                                        <g:each in="${observers}" var="observer" status="i">
+                                            <a href="#">${observer}</a><g:if test="${i < observers.size()-1}">,&nbsp;</g:if>
+                                        </g:each>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">First visit date</td>
+                                    <td><sts:formatDateStr date="${studyLocationSummary.firstVisitDate}"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="fieldColumn">Last visit date</td>
+                                    <td><sts:formatDateStr date="${studyLocationSummary.lastVisitDate}"/></td>
+                                </tr>
+                                %{--<tr>--}%
+                                %{--<td class="fieldColumn">Number of sampling units</td>--}%
+                                %{--<td>${studyLocationSummary.data.numSamplingUnits}</td>--}%
+                                %{--</tr>--}%
+                                <tr>
+                                    <td class="fieldColumn">Sampling Methods that have been performed at this site</td>
+                                    <td>
+                                        <ul>
+                                            <g:each in="${studyLocationSummary.data.samplingUnitTypeList}" var="unit">
+                                                <li><a href="#"><sts:formatSamplingUnitName code="${unit}"/></a></li>
+                                            </g:each>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane" id="environmentalLayersTab">
+                        </div>
+
+                        <div class="tab-pane" id="taxaTab">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="tab-pane" id="environmentalLayersTab">
-            </div>
-            <div class="tab-pane" id="taxaTab">
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </body>
+    </body>
 </html>

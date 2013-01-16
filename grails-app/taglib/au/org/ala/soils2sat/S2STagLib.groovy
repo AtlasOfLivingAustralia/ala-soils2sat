@@ -1,6 +1,8 @@
 package au.org.ala.soils2sat
 
 import groovy.xml.MarkupBuilder
+import org.apache.commons.lang.WordUtils
+
 import java.text.SimpleDateFormat
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -81,18 +83,28 @@ class S2STagLib {
     }
 
     /**
-     * @attr dateStr
+     * @attr date
      */
     def formatDateStr =  { attrs, body ->
-        def sdf = new SimpleDateFormat("yyyy-MM-dd")
-        if (attrs.dateStr && attrs.dateStr != JSONObject.NULL) {
-            def date = sdf.parse(attrs.dateStr)
-            if (params.dateFormat) {
-                sdf = new SimpleDateFormat(params.dateFormat)
-            } else {
-                sdf = new SimpleDateFormat("dd MMM, yyyy")
+
+        Date theDate = null
+
+        if (attrs.date) {
+            if (attrs.date instanceof String) {
+                theDate = DateUtils.tryParse(attrs.date)
+            } else if (attrs.date instanceof Date) {
+                theDate = attrs.date
             }
-            out << sdf.format(date)
+            if (theDate) {
+                SimpleDateFormat sdf = null
+                if (params.dateFormat) {
+                    sdf = new SimpleDateFormat(params.dateFormat)
+                } else {
+                    sdf = new SimpleDateFormat("dd/MM/yyyy")
+                }
+                out << sdf.format(theDate)
+                return
+            }
         }
     }
 
@@ -114,6 +126,16 @@ class S2STagLib {
                 i(class:'icon-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
                 mkp.yield(attrs.title)
             }
+        }
+    }
+
+    /**
+     * @attr code
+     */
+    def formatSamplingUnitName = { attrs, body ->
+        def code = attrs.code as String
+        if (code) {
+            out << WordUtils.capitalizeFully(code.replaceAll('_', ' '))
         }
     }
 

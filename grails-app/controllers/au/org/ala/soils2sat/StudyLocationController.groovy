@@ -95,7 +95,7 @@ class StudyLocationController {
                 temp.latitude = studyLocationSummary.latitude
                 temp.longitude = studyLocationSummary.longitude
                 studyLocationResults.each {
-                    def fieldName = it.field ?: it.layername
+                    def fieldName = it.layername
                     if (!fieldNames.contains(fieldName)) {
                         fieldNames << fieldName
                     }
@@ -376,8 +376,9 @@ class StudyLocationController {
     def studyLocationVisitSummary = {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def visitSummaries = studyLocationSummary.visitSummaries
 
-        [studyLocation:studyLocationSummary, studyLocationName: studyLocationName ]
+        [studyLocation:studyLocationSummary, studyLocationName: studyLocationName, visitSummaries: visitSummaries ]
     }
 
     def studyLocationLayersFragment = {
@@ -426,8 +427,8 @@ class StudyLocationController {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
 
-        def visit = studyLocationSummary.data.visitSummaryList?.find {
-            it.visitId = params.visitId
+        def visit = studyLocationSummary.visitSummaries?.find {
+            it.visitId == params.visitId
         }
 
         [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visit: visit]
