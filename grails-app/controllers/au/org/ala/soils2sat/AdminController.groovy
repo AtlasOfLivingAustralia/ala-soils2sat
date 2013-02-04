@@ -6,6 +6,7 @@ class AdminController {
 
     def springSecurityService
     def userService
+    def layerService
 
     def index() { }
 
@@ -452,6 +453,14 @@ class AdminController {
             }
         }
         redirect(controller: 'admin', action:'samplingUnits')
+    }
+
+    def advancedSettings() {
+
+    }
+
+    def clearLayersCacheAjax() {
+        layerService.flushCache()
     }
 
 }

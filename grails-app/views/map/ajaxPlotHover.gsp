@@ -3,13 +3,22 @@
   <g:if test="${studyLocation}">
     <table>
       <tr>
-        <td>Date</td>
-        <td>${studyLocation.data.lastVisitDate}</td>
+        <td>First visit</td>
+        <td><sts:formatDateStr date="${studyLocation.firstVisitDate}"/></td>
       </tr>
+        <tr>
+          <td>Last visit</td>
+          <td><sts:formatDateStr date="${studyLocation.lastVisitDate}"/></td>
+        </tr>
       <tr>
-        <td>Position</td>
+        <td>Position (Lat,Long)</td>
         <td>${studyLocation.longitude}, ${studyLocation.latitude}</td>
       </tr>
+        <tr>
+          <td>Position (UTM)</td>
+          <td>${studyLocation.data.easting}, ${studyLocation.data.northing} (${studyLocation.data.zone as Integer})</td>
+        </tr>
+
     </table>
   </g:if>
   <g:else>

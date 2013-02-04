@@ -28,8 +28,8 @@
         position: absolute;
         bottom: 100px;
         right: 10px;
-        width: 250px;
-        height:100px;
+        width: 350px;
+        height:200px;
         background: #393939;
         border: 3px solid #393939;
         color: white;
@@ -189,9 +189,10 @@
         studyLocations = new OpenLayers.Layer.Markers("Plots");
         var results = studyLocationList;
 
-        var size = new OpenLayers.Size(21,25);
+        var size = new OpenLayers.Size(32,32);
         var offset = new OpenLayers.Pixel(-(size.w/2), 0);
         var icon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker.png')}', size, offset);
+        var selectedIcon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker-selected.png')}', size, offset);
 
         for (resultKey in results) {
 
@@ -200,7 +201,15 @@
 
           location.transform(latLongProj, map.getProjectionObject());
 
-          var marker = new OpenLayers.Marker(location, icon.clone());
+          var pinIcon = null;
+
+          if (result.selected) {
+              pinIcon = selectedIcon.clone();
+          } else {
+              pinIcon = icon.clone();
+          }
+
+          var marker = new OpenLayers.Marker(location, pinIcon);
 
           studyLocations.addMarker(marker);
           marker.tag = result.siteName;
@@ -361,11 +370,15 @@
       }
 
       function showPlotDetails(studyLocationName) {
-          showModal({
-              url:"${createLink(controller: 'studyLocation', action:'synopsisFragment')}?studyLocationName=" + studyLocationName,
-              title:"Study Location Synopsis - " + studyLocationName
-          })
-        return true;
+          if (studyLocationName) {
+              // It used to be that 'showPlotDetails show a study location synopsis. Now it goes straight to study location summary
+              window.location = "${createLink(controller: 'studyLocation', action:'studyLocationSummary', )}?studyLocationName=" + studyLocationName
+              %{--showModal({--}%
+                  %{--url:"${createLink(controller: 'studyLocation', action:'synopsisFragment')}?studyLocationName=" + studyLocationName,--}%
+                  %{--title:"Study Location Synopsis - " + studyLocationName--}%
+              %{--})--}%
+              return true;
+          }
       }
 
       var studyLocationHoverFlag = false;

@@ -14,6 +14,7 @@ class S2STagLib {
     static namespace = 'sts'
 
     def springSecurityService
+    def layerService
 
     /**
      * @attr active
@@ -137,6 +138,54 @@ class S2STagLib {
         if (code) {
             out << WordUtils.capitalizeFully(code.replaceAll('_', ' '))
         }
+    }
+
+    /**
+     * @attr layerName
+     */
+    def layerDisplayName = { attrs, body ->
+        def layerName = attrs.layerName
+        def href = attrs.href
+
+        def mb = new MarkupBuilder(out)
+
+        if (layerName) {
+            def layerInfo = layerService.getLayerInfo(layerName)
+            if (href) {
+                mb.a(href:href, title:layerInfo?.description, class:attrs.class, layerName: layerName) {
+                    mkp.yield(layerInfo?.displayname ?: layerName)
+                }
+            } else {
+                out << layerInfo?.displayname ?: layerName
+            }
+
+        }
+    }
+
+    /**
+     * @attr key
+     * @attr value
+     */
+    def layerMetadataValue = { attrs, body ->
+
+        def key = attrs.key
+        def value = attrs.value
+
+        def mb = new MarkupBuilder(out)
+        if (value instanceof String) {
+            def str = value as String
+
+            if (str.matches("^http[s]{0,1}[:]//.+\$")) {
+                mb.a(href: str, target: 'other') {
+                    mkp.yield(str)
+                }
+            } else {
+                out << str
+            }
+        } else {
+            out << value
+        }
+
     }
 
 }

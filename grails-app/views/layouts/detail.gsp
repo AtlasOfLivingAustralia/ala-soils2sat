@@ -45,6 +45,7 @@
                                 <g:pageProperty name="page.buttonBar"/>
                             </span>
                         </div>
+                        <sts:navbar active="${pageProperty(name: 'page.topLevelNav')}" />
                     </div><!--/.nav-collapse -->
                 </div>
             </div>

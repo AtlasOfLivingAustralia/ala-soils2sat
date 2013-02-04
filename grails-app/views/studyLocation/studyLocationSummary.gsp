@@ -61,7 +61,7 @@
             <legend>
                 <table style="width:100%">
                     <tr>
-                        <td>Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
+                        <td><a href="${createLink(controller:'map', action:'index')}">Map</a>&nbsp;&#187;&nbsp;Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
                         <td><button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})</button>
                         </td>
                     </tr>
@@ -83,9 +83,14 @@
                             <h4>Study Location Details</h4>
                             <table class="table table-bordered table-striped">
                                 <tr>
-                                    <td class="fieldColumn">Location</td>
+                                    <td class="fieldColumn">Location (Lat, Long)</td>
                                     <td>${studyLocationSummary.longitude}, ${studyLocationSummary.latitude}</td>
                                 </tr>
+                                <tr>
+                                    <td class="fieldColumn">Location (UTM)</td>
+                                    <td>${studyLocationSummary.data.easting}, ${studyLocationSummary.data.northing} (${studyLocationSummary.data.zone as Integer})</td>
+                                </tr>
+
                                 <tr>
                                     <td class="fieldColumn">Bioregion Name</td>
                                     <td>${studyLocationSummary.data.bioregionName}</td>

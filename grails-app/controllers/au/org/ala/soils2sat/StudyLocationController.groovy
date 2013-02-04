@@ -36,15 +36,16 @@ class StudyLocationController {
         def user = springSecurityService.currentUser as User
         def candidates = studyLocationService.getStudyLocations()
         def results = []
-        if (user && user.applicationState?.plotOnlySelectedLocations) {
-            candidates.each {
-                if (user.applicationState?.containsPlot(it.siteName)) {
-                    results.add(it)
-                }
+        def plotSelectedOnly = user && user.applicationState?.plotOnlySelectedLocations
+        candidates.each {
+            it.selected = user.applicationState?.containsPlot(it.siteName)
+            if (!plotSelectedOnly || it.selected) {
+                results << it
             }
-        } else {
-            results = candidates
         }
+
+        // Sort the results so that selected plots get rendered last, and therefore on top...
+        results = results.sort { it.selected }
 
         render (results as JSON)
     }

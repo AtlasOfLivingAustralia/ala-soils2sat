@@ -2,9 +2,13 @@
   <div style="height: 250px; overflow-y: scroll">
     <table class="table table-bordered table-striped">
       <tr>
-        <td>Location</td>
+        <td>Location (Lat, Long)</td>
         <td>${studyLocation.longitude}, ${studyLocation.latitude}</td>
       </tr>
+        <tr>
+          <td>Location (UTM)</td>
+          <td>${studyLocation.data.easting}, ${studyLocation.data.northing} (Zone ${studyLocation.data.zone as Integer})</td>
+        </tr>
       <tr>
         <td>Bioregion Name</td>
         <td>${studyLocation.data.bioregionName}</td>

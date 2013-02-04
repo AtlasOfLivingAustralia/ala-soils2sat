@@ -2,11 +2,15 @@ package au.org.ala.soils2sat
 
 import grails.converters.JSON
 import ala.soils2sat.CodeTimer
+import grails.plugin.springcache.annotations.CacheFlush
+import org.springframework.cache.annotation.Cacheable
 
 class LayerService {
 
     def grailsApplication
+    def logService
 
+    @Cacheable("S2S_LayerCache")
     def getLayerInfo(String layerName) {
         def results = "{}"
         def timer = new CodeTimer("LayerInfo")
@@ -20,6 +24,7 @@ class LayerService {
         return JSON.parse(results)
     }
 
+    @Cacheable("S2S_LayerCache")
     List<LayerDefinition> getAllLayers() {
         def results = new ArrayList<LayerDefinition>()
         def timer = new CodeTimer("getAllLayers")
@@ -41,6 +46,11 @@ class LayerService {
         } finally {
             timer.stop(true)
         }
+    }
+
+    @CacheFlush("S2S_LayerCache")
+    public void flushCache() {
+        logService.log("Flushing Layer Cache")
     }
 
 }

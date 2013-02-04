@@ -5,4 +5,5 @@ class StudyLocationSearchResult {
     String date
     double longitude
     double latitude
+    Boolean selected
 }

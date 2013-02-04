@@ -32,7 +32,7 @@
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'samplingUnits')}" title="Sampling Units" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'ecologicalContexts')}" title="Ecological Contexts" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'matrix')}" active="Matrix" title="Questions Matrix" />
-
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'advancedSettings')}" title="Advanced Settings" />
                 </ul>
             </div>
 
