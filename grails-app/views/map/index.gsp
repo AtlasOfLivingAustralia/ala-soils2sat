@@ -131,12 +131,15 @@
       }
 
       function findPlot() {
-        showModal({
-            url: "${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}",
-            title: "Find Study Location",
-            height: 550,
-            width: 600
-        });
+        window.location = "${createLink(controller:'studyLocation', action:'findStudyLocations')}";
+
+        %{--showModal({--}%
+            %{--url: "${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}",--}%
+            %{--title: "Find Study Location",--}%
+            %{--height: 550,--}%
+            %{--width: 600--}%
+        %{--});--}%
+
         return true;
       }
 
@@ -356,7 +359,7 @@
             ${appState.viewExtent?.right},
             ${appState.viewExtent?.top}
           );
-          map.zoomToExtent(extent);
+          map.zoomToExtent(extent, true);
         </g:if>
         <g:else>
           var point = new OpenLayers.LonLat(133, -28);

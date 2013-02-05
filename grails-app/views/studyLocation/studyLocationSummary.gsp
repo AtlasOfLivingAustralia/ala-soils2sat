@@ -51,7 +51,21 @@
                 $("#btnViewVisitSummaries").click(function (e) {
                     e.preventDefault();
                     window.location = "${visitSummaryLink}";
-                })
+                });
+
+                $("#btnDeselect").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
+                        window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";
+                    });
+                });
+
+                $("#btnSelect").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
+                        window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";
+                    });
+                });
 
             });
 
@@ -62,7 +76,15 @@
                 <table style="width:100%">
                     <tr>
                         <td><a href="${createLink(controller:'map', action:'index')}">Map</a>&nbsp;&#187;&nbsp;Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
-                        <td><button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})</button>
+                        <td>
+                            <button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})
+                            <g:if test="${isSelected}">
+                                <button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location</button>
+                            </g:if>
+                            <g:else>
+                                <button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location</button>
+                            </g:else>
+                        </button>
                         </td>
                     </tr>
                 </table>

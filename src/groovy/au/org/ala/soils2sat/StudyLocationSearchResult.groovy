@@ -5,5 +5,8 @@ class StudyLocationSearchResult {
     String date
     double longitude
     double latitude
+    Double easting
+    Double northing
+    Integer zone
     Boolean selected
 }

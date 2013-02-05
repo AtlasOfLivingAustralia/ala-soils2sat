@@ -10,7 +10,7 @@
       <table class="table table-striped table-hover">
       <g:each in="${results}" var="result">
         <tr>
-          <td class="studyLocationSearchResultRow" studyLocationName="${result.siteName}">${result.siteName} (${result.longitude}, ${result.latitude})</td>
+          <td class="studyLocationSearchResultRow" studyLocationName="${result.siteName}">${result.siteName} (${result.latitude}, ${result.latitude})</td>
           <td>
             <g:set var="selected" value="${!appState.containsPlot(result.siteName)}"/>
               <button style="display:${selected ? 'block' : 'none'}" class="btn btn-mini selectSearchResult pull-right" studyLocationName="${result.siteName}">Select</button>

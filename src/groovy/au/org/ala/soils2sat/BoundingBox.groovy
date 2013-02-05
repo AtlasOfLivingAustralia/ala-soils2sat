@@ -3,7 +3,7 @@ package au.org.ala.soils2sat
 class BoundingBox {
 
     double top
-    public double left
+    double left
     double bottom
     double right
 
@@ -14,5 +14,9 @@ class BoundingBox {
             }
         }
         return false
+    }
+
+    public String toString() {
+        return "${top}\n${left}\n${bottom}\n${right}"
     }
 }

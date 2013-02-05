@@ -62,6 +62,26 @@ class StudyLocationController {
         [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
+    def findStudyLocations() {
+        def userInstance = springSecurityService.currentUser as User
+
+        def searchResults = null
+        def searchPerformed = false
+        def q = params.searchText
+        BoundingBox bbox = null
+
+        if (params.useBoundingBox == "on") {
+            bbox = new BoundingBox(top: params.double("top"), left: params.double("left"), bottom: params.double("bottom"), right: params.double("right"))
+        }
+
+        if (q || bbox) {
+            searchResults = studyLocationService.searchStudyLocations(q, bbox)
+            searchPerformed = true
+        }
+
+        [userInstance: userInstance, appState: userInstance?.applicationState, results: searchResults, searchPerformed: searchPerformed]
+    }
+
     def studyLocationDataFragment() {
 
         def userInstance = springSecurityService.currentUser as User
@@ -76,6 +96,7 @@ class StudyLocationController {
         if (layerNames && studyLocation) {
             def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocation.latitude}/${studyLocation.longitude}")
             results = JSON.parse(url.text)
+
         }
 
         [results:results, userInstance: springSecurityService.currentUser, appState: appState, studyLocation: studyLocation]
@@ -367,14 +388,20 @@ class StudyLocationController {
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
-    def studyLocationSummary = {
+    def studyLocationSummary() {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
 
-        [studyLocationSummary:studyLocationSummary, studyLocationName: studyLocationName ]
+        def isSelected = appState.selectedPlots.find {
+            it.name == studyLocationName
+        }
+
+        [studyLocationSummary:studyLocationSummary, studyLocationName: studyLocationName, isSelected: isSelected != null]
     }
 
-    def studyLocationVisitSummary = {
+    def studyLocationVisitSummary() {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
         def visitSummaries = studyLocationSummary.visitSummaries
@@ -382,7 +409,7 @@ class StudyLocationController {
         [studyLocation:studyLocationSummary, studyLocationName: studyLocationName, visitSummaries: visitSummaries ]
     }
 
-    def studyLocationLayersFragment = {
+    def studyLocationLayersFragment() {
 
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
@@ -406,7 +433,7 @@ class StudyLocationController {
         [layerData: layerData, studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary]
     }
 
-    def studyLocationTaxaFragment = {
+    def studyLocationTaxaFragment() {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
@@ -421,7 +448,7 @@ class StudyLocationController {
         [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: rank, radius: radius]
     }
 
-    def studyLocationVisitSamplingUnits = {
+    def studyLocationVisitSamplingUnits() {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
@@ -433,6 +460,11 @@ class StudyLocationController {
         }
 
         [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visit: visit]
+    }
+
+    def ajaxSelectedStudyLocationsFragment() {
+        def userInstance = springSecurityService.currentUser as User
+        [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
 }
