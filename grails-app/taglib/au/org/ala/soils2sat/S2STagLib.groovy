@@ -224,7 +224,7 @@ class S2STagLib {
                             mkp.yield("Less than or equal to")
                         }
                     }
-                    mb.input(type: "text", placeholder:'Value', class:'input-small', style: "margin-left: 20px")
+                    mb.input(type: "text", name:"numberValue",placeholder:'Value', class:'input-small', style: "margin-left: 20px")
                     if (attrs.units) {
                         mb.span {
                             mkp.yieldUnescaped("&nbsp;(")
@@ -239,7 +239,20 @@ class S2STagLib {
                     break;
             }
         }
-//        <g:textField name="fieldValue" class="input-xlarge" />
+    }
+
+    def formatNumberRangeCriteria = { attrs, body ->
+        def criteria = params.criteria as SearchCriteria
+        if (criteria) {
+            def mb = new MarkupBuilder(out)
+            mb.span() {
+                if (criteria.value?.startsWith("lt ")) {
+                    mkp.yield("is less than ")
+                } else if (criteria.value?.startsWith('gt')) {
+                    mkp.yield("")
+                }
+            }
+        }
     }
 
 }

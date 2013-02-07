@@ -77,7 +77,7 @@ class StudyLocationService extends ServiceBase {
             case CriteriaType.SpatialPortalLayer:
             case CriteriaType.SpatialPortalField:
                 def value = layerService.getIntersectValues(candidate.latitude, candidate.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
-                result = compareValue(criteria, value)
+                result = compareValue(criteria, value as String)
                 break;
             default:
                 // Don't care about other types of criteria, let them through!
@@ -88,26 +88,28 @@ class StudyLocationService extends ServiceBase {
     }
 
     private boolean compareValue(SearchCriteria criteria, String value) {
-        boolean result = false;
-        switch (criteria.criteriaDefinition.valueType) {
-            case CriteriaValueType.StringSingleSelect:
-                if (value?.equalsIgnoreCase(criteria.value)) {
-                    result= true;
-                }
-                break;
-            case CriteriaValueType.StringDirectEntry:
-            case CriteriaValueType.StringMultiSelect:
-                def candidates = criteria.value?.split("\\|")
-                // only one of them has to match
-                for (String candidate : candidates) {
-                    if (candidate.equalsIgnoreCase(value)) {
-                        result = true;
-                        break;
-                    }
-                }
-                break;
-        }
-        return result
+        return SearchCriteriaUtils.eval(criteria, value);
+
+//        boolean result = false;
+//        switch (criteria.criteriaDefinition.valueType) {
+//            case CriteriaValueType.StringSingleSelect:
+//                if (value?.equalsIgnoreCase(criteria.value)) {
+//                    result= true;
+//                }
+//                break;
+//            case CriteriaValueType.StringDirectEntry:
+//            case CriteriaValueType.StringMultiSelect:
+//                def candidates = criteria.value?.split("\\|")
+//                // only one of them has to match
+//                for (String candidate : candidates) {
+//                    if (candidate.equalsIgnoreCase(value)) {
+//                        result = true;
+//                        break;
+//                    }
+//                }
+//                break;
+//        }
+//        return result
     }
 
     StudyLocationSummary getStudyLocationSummary(String studyLocationName) {
@@ -140,92 +142,3 @@ class StudyLocationService extends ServiceBase {
 
 }
 
-public class StudyLocationDetails {
-
-    JSONElement data
-
-    public StudyLocationDetails(JSONElement data) {
-        this.data = data
-    }
-
-    Integer getId() {
-        return data.id as Integer
-    }
-
-    String getSiteLocationName() {
-        return data.siteLocationName as String
-    }
-
-    String getEstablishedDate() {
-        return data.establishedDate as String
-    }
-
-    String getDescription() {
-        return data.description as String
-    }
-
-    String getBioregionName() {
-        return data.bioregionName as String
-    }
-
-    String getProperty() {
-        return data.property as String
-    }
-
-    String getZone() {
-        return data.zone as String
-    }
-
-    String getEasting() {
-        return data.easting as String
-    }
-
-    String getNorthing() {
-        return data.northing as String
-    }
-
-    String getMethod() {
-        return data.method as String
-    }
-
-    String getDatum() {
-        return data.datum as String
-    }
-
-    Boolean getPlotPermanentlyMarkedq() {
-        return data.plotPermanentlyMarkedq as Boolean
-    }
-
-    Boolean getPlotAlignedToGridq() {
-        return data.plotAlignedToGridq as Boolean
-    }
-
-    String getLandformPattern() {
-        return data.landformPattern as String
-    }
-
-    String getLandformElement() {
-        return data.landformElement as String
-    }
-
-    String getSiteSlope() {
-        return data.siteSlope as String
-    }
-
-    String getSiteAspect() {
-        return data.siteAspect as String
-    }
-
-    String getSurfaceStrewSize() {
-        return data.surfaceStrewSize as String
-    }
-
-    Boolean getPlot100mBy100m() {
-        return data.plot100mBy100m as String
-    }
-
-    String getComments() {
-        return data.comments as String
-    }
-
-}

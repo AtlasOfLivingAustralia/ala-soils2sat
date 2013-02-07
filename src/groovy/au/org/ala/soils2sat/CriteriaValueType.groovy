@@ -4,7 +4,7 @@ enum CriteriaValueType {
     StringMultiSelect,
     StringSingleSelect,
     StringDirectEntry,
-    NumberRangeInteger,
+    //NumberRangeInteger,
     NumberRangeDouble,
     Boolean
 }

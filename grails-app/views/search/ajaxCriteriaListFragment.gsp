@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.soils2sat.CriteriaValueType" %>
 <div>
     <g:if test="${userSearch?.criteria}">
         <h5>Each of the following criteria must be met:</h5>
@@ -7,13 +8,7 @@
                     <tr searchCriteriaId="${criteria.id}">
                         <td>
                             <strong>${criteria.criteriaDefinition.name}</strong>&nbsp;
-                            <g:if test="${criteria.value?.contains("|")}">
-                                is one of
-                            </g:if>
-                            <g:else>
-                                matches
-                            </g:else>
-                            &nbsp;<strong>${criteria.value?.split("\\|")?.join(", ")}</strong>
+                            ${au.org.ala.soils2sat.SearchCriteriaUtils.format(criteria, "strong")}
                         </td>
                         <td>
                             <button type="button" class="btn btn-mini pull-right btnDeleteCriteria"><i class="icon-trash"></i></button>

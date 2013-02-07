@@ -1,6 +1,7 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class SearchController {
 
@@ -69,13 +70,7 @@ class SearchController {
 
     def ajaxSpatialLayerCriteriaFragment() {
         def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
-
-        println criteriaDefinition.fieldName
-
         def layerInfo = layerService.getLayerInfo(criteriaDefinition.fieldName)
-
-
-
         return [criteriaDefinition: criteriaDefinition, layerInfo: layerInfo]
     }
 
@@ -99,6 +94,67 @@ class SearchController {
         throw new RuntimeException("No criteria specified!")
     }
 
+    private String joinMulti(Object val) {
+        if (val instanceof String) {
+            return val as String
+        } else {
+            return val.join("|")
+        }
+    }
+
+    private Map extractFieldValue(SearchCriteriaDefinition criteriaDefinition, GrailsParameterMap params) {
+
+        switch (criteriaDefinition.valueType) {
+            case CriteriaValueType.StringMultiSelect:
+                if (params.fieldValue) {
+                    return [value: joinMulti(params.fieldValue)]
+                } else {
+                    return [errorMessage: "Please select at least one value for " + criteriaDefinition.name]
+                }
+                break;
+            case CriteriaValueType.StringSingleSelect:
+                if (params.fieldValue) {
+                    return [value: joinMulti(params.fieldValue)]
+                } else {
+                    return [errorMessage: "Please select a value for " + criteriaDefinition.name]
+                }
+                break;
+            case CriteriaValueType.StringDirectEntry:
+                if (params.fieldValue) {
+                    return [value: joinMulti(params.fieldValue)]
+                } else {
+                    return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
+                }
+                break;
+            case CriteriaValueType.NumberRangeDouble:
+                if (params.operator && params.numberValue) {
+                    try {
+                        def number = Double.parseDouble(params.numberValue)
+                        return [value:"${params.operator} ${number}"]
+                    } catch (Exception ex) {
+                        return [errorMessage: "Value is not a valid number!"]
+                    }
+                } else {
+                    return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
+                }
+                break;
+            case CriteriaValueType.NumberRangeInteger:
+                if (params.operator && params.numberValue) {
+                    try {
+                        def number = Integer.parseDouble(params.numberValue)
+                        return [value:"${params.operator} ${number}"]
+                    } catch (Exception ex) {
+                        return [errorMessage: "Value is not a valid integer!"]
+                    }
+                } else {
+                    return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
+                }
+                break;
+        }
+
+        return [errorMessage: "Unhandled criteria type - ${criteriaDefinition.valueType}"]
+    }
+
     def addSearchCriteriaAjax() {
         def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
         def results = [status:'ok']
@@ -110,15 +166,16 @@ class SearchController {
             switch (criteriaDefinition.type) {
                 case CriteriaType.SpatialPortalField:
                 case CriteriaType.SpatialPortalLayer:
-                    def val = params.fieldValue
-                    if (!val) {
-                        results = [status: 'failed', errorMessage:'You need to select at least one value for ' + criteriaDefinition.name]
+
+                    def extractResults = extractFieldValue(criteriaDefinition, params)
+
+                    if (extractResults.errorMessage) {
+                        results = [status: 'failed', errorMessage:extractResults.errorMessage]
+                    } else if (extractResults.value) {
+                        value = extractResults.value
                     } else {
-                        if (val instanceof String) {
-                            value = val as String
-                        } else {
-                            value = val.join("|")
-                        }
+                        // Should never happen?
+                        results = [status: 'failed', errorMessage:"No value!"]
                     }
                     break;
                 default:
