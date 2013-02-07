@@ -46,12 +46,21 @@
     }
 
     function doSearch() {
-        $("#btnSearch").click();
+        var formData = $("#searchForm").serialize();
+        $("#searchResultsDiv").html("Searching... <sts:spinner/>");
+        $.post('${createLink(action:'findStudyLocationResultsFragment')}', formData, function (content) {
+            $("#searchResultsDiv").html(content);
+        });
     }
 
     $(document).ready(function () {
 
-        $("#searchText").keydown(function(e) {
+        $("#btnSearch").click(function (e) {
+            e.preventDefault();
+            doSearch();
+        });
+
+        $("#searchText").keydown(function (e) {
             if (e.keyCode == 13) {
                 e.preventDefault();
                 doSearch();
@@ -72,10 +81,10 @@
 
         });
 
-        <g:if test="${params.useBoundingBox}">
-            $("#mapDiv").css("display", "block");
-            $("#useBoundingBox").prop("checked", true);
-            showMap();
+        <g:if test="${userSearch.useBoundingBox}">
+        $("#mapDiv").css("display", "block");
+        $("#useBoundingBox").prop("checked", true);
+        showMap();
         </g:if>
 
         $("#btnClearCurrentSelection").click(function (e) {
@@ -112,14 +121,26 @@
         $("#btnAddCriteria").click(function (e) {
             e.preventDefault();
             showModal({
-                title: "Coming Soon!",
+                url: "${createLink(action:'ajaxAddSearchCriteriaFragment')}",
+                title: "Add search criteria",
                 height: 520,
-                width: 700
+                width: 700,
+                onClose: function () {
+                    renderCriteria();
+                }
+            });
+        });
+
+        $("#btnRemoveAllCriteria").click(function (e) {
+            e.preventDefault();
+            $.ajax("${createLink(action:'ajaxDeleteAllSearchCriteria', params:[userSearchId: appState.currentSearch.id])}").done(function (e) {
+                renderCriteria();
             });
 
         });
 
         renderSelectedList();
+        renderCriteria();
 
     });
 
@@ -151,6 +172,15 @@
 
     function deselectPlot(studyLocationName, successCallback) {
         $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation')}?studyLocationName=" + studyLocationName).done(function (data) {
+            if (successCallback) {
+                successCallback();
+            }
+        });
+    }
+
+    function selectPlots(studyLocationNames, successCallback) {
+        var studyLocationstring = studyLocationNames.join(",");
+        $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocations')}?studyLocationNames=" + studyLocationstring).done(function (data) {
             if (successCallback) {
                 successCallback();
             }
@@ -194,24 +224,25 @@
 
         map.addLayers([gphy, gmap, ghyb, gsat]);
 
-        <g:if test="${params.top && params.left && params.bottom && params.right}">
-            var extent = new OpenLayers.Bounds(
-                ${params.left},
-                ${params.bottom},
-                ${params.right},
-                ${params.top}
-            );
-            var projWGS84 = new OpenLayers.Projection("EPSG:4326");
-            var proj900913 = new OpenLayers.Projection("EPSG:900913");
-            extent.transform(projWGS84, proj900913);
+        <g:if test="${userSearch.useBoundingBox}">
+        var extent = new OpenLayers.Bounds(
+            ${userSearch.left},
+            ${userSearch.bottom},
+            ${userSearch.right},
+            ${userSearch.top}
+        );
 
-            map.zoomToExtent(extent, true);
+        var projWGS84 = new OpenLayers.Projection("EPSG:4326");
+        var proj900913 = new OpenLayers.Projection("EPSG:900913");
+        extent.transform(projWGS84, proj900913);
+
+        map.zoomToExtent(extent, true);
         </g:if>
         <g:else>
-            var latLongProj = new OpenLayers.Projection("EPSG:4326");
-            var point = new OpenLayers.LonLat(133, -28);
-            point.transform(latLongProj, map.getProjectionObject());
-            map.setCenter(point, 5);
+        var latLongProj = new OpenLayers.Projection("EPSG:4326");
+        var point = new OpenLayers.LonLat(133, -28);
+        point.transform(latLongProj, map.getProjectionObject());
+        map.setCenter(point, 5);
         </g:else>
 
         map.events.register("moveend", null, onMapMoved);
@@ -225,7 +256,7 @@
 
         var projWGS84 = new OpenLayers.Projection("EPSG:4326");
         var proj900913 = new OpenLayers.Projection("EPSG:900913");
-        var extent = map.getExtent().transform(proj900913, projWGS84 );
+        var extent = map.getExtent().transform(proj900913, projWGS84);
 
 
         $("#top").val(extent.top);
@@ -308,6 +339,12 @@
         });
     }
 
+    function renderCriteria() {
+        $.ajax("${createLink(action: 'ajaxCriteriaListFragment', params:[userSearchId: userInstance.applicationState.currentSearch?.id])}").done(function (content) {
+            $("#searchCriteria").html(content);
+        });
+    }
+
 
 
 </script>
@@ -326,13 +363,13 @@
         <div class="span8">
             <div class="well well-small">
 
-                <g:form class="form-horizontal" controller="studyLocation" action="findStudyLocations" autocomplete="off" id="searchForm" >
+                <form class="form-horizontal" id="searchForm">
 
                     <div class="control-group">
                         <label class="control-label" for='searchText'>Full or partial site name</label>
 
                         <div class="controls">
-                            <g:textField class="input-xlarge" id="searchText" name="searchText" placeholder="Search" value="${params.searchText}"/>
+                            <g:textField class="input-xlarge" id="searchText" name="searchText" placeholder="Search" value="${userSearch.searchText}"/>
                         </div>
                     </div>
 
@@ -340,7 +377,7 @@
                         <label class="control-label" for='useBoundingBox'>Use bounding box</label>
 
                         <div class="controls">
-                            <g:checkBox class="input-xlarge" id="useBoundingBox" name="useBoundingBox" value="${params.useBoundingBox}"/>
+                            <g:checkBox class="input-xlarge" id="useBoundingBox" name="useBoundingBox" value="${userSearch.useBoundingBox}"/>
                         </div>
                     </div>
 
@@ -349,34 +386,33 @@
                             <tr>
                                 <td>
                                     <div id="mapContainer">
-                                        <div id="mapContent" style="height: 400px; width: 400px">
-                                        </div>
+                                        <div id="mapContent" style="height: 400px; width: 400px"></div>
                                     </div>
-
                                 </td>
                                 <td style="vertical-align: bottom">
 
-                                    <g:hiddenField class="input-small" name="top" />
-                                    <g:hiddenField class="input-small" name="left"/>
-                                    <g:hiddenField class="input-small" name="bottom"/>
-                                    <g:hiddenField class="input-small" name="right"/>
+                                    <g:hiddenField class="input-small" name="top" value="${userSearch.top}" />
+                                    <g:hiddenField class="input-small" name="left" value="${userSearch.left}" />
+                                    <g:hiddenField class="input-small" name="bottom" value="${userSearch.bottom} "/>
+                                    <g:hiddenField class="input-small" name="right" value="${userSearch.right}"/>
+
                                     <small style="color: #a9a9a9">
                                         <table>
                                             <tr>
                                                 <td>Top</td>
-                                                <td><span id="spanTop" ></span></td>
+                                                <td><span id="spanTop"></span></td>
                                             </tr>
                                             <tr>
                                                 <td>Left</td>
-                                                <td><span id="spanLeft" ></span></td>
+                                                <td><span id="spanLeft"></span></td>
                                             </tr>
                                             <tr>
                                                 <td>Bottom</td>
-                                                <td><span id="spanBottom" ></span></td>
+                                                <td><span id="spanBottom"></span></td>
                                             </tr>
                                             <tr>
                                                 <td>Right</td>
-                                                <td><span id="spanRight" ></span></td>
+                                                <td><span id="spanRight"></span></td>
                                             </tr>
                                         </table>
                                     </small>
@@ -385,47 +421,19 @@
                         </table>
                     </div>
 
-                    <button id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add search criteria
+                    <div id="searchCriteria"></div>
+
+                    <button type="button" id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add search criteria
+                    </button>
+                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-trash icon-white"></i>&nbsp;Remove all criteria
                     </button>
 
-                    <button type="submit" id="btnSearch" class="btn btn-primary pull-right">Search</button>
-                </g:form>
+                    <button type="button" id="btnSearch" class="btn btn-primary pull-right">Search</button>
+                </form>
             </div>
 
-            <g:if test="${searchPerformed}">
-                <div class="well well-small">
-                    <h3>Search Results</h3>
-                    <g:if test="${!results}">
-                        Your search returned no results.
-                    </g:if>
-                    <g:else>
-                        <div>
-                            ${results.size()} Study Locations found
-                        </div>
+            <div id="searchResultsDiv"></div>
 
-                        <div class="well well-small" style="height: 245px; overflow-y: scroll;">
-                            <table class="table table-striped table-hover">
-                                <g:each in="${results}" var="result">
-                                    <tr>
-                                        <td class="studyLocationSearchResultRow" studyLocationName="${result.siteName}">${result.siteName} (${result.zone} ${result.easting} ${result.northing})</td>
-                                        <td>[ <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: result.siteName])}">View summary</a> ]
-                                        </td>
-                                        <td>
-                                            <g:set var="selected" value="${!appState.containsPlot(result.siteName)}"/>
-                                            <button style="display:${selected ? 'block' : 'none'}" class="btn btn-mini selectSearchResult pull-right" studyLocationName="${result.siteName}">Select</button>
-                                            <button style="display:${selected ? 'none' : 'block'}" class="btn btn-mini btn-warning deselectSearchResult pull-right" studyLocationName="${result.siteName}">Deselect</button>
-                                        </td>
-                                    </tr>
-                                </g:each>
-                            </table>
-                        </div>
-
-                    %{--<div>--}%
-                    %{--<button id="btnSelectAllSearchResults" class="btn btn-small btn-info pull-right">Select all</button>--}%
-                    %{--</div>--}%
-                    </g:else>
-                </div>
-            </g:if>
         </div>
 
         <div id="sidebarContainer" class="span4">
@@ -440,6 +448,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 </body>

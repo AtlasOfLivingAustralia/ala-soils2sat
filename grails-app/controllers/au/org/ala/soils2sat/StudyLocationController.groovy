@@ -10,6 +10,7 @@ class StudyLocationController {
     def springSecurityService
     def studyLocationService
     def biocacheService
+    def layerService
 
     def getPlots() {
         def results = studyLocationService.getStudyLocations()
@@ -57,30 +58,6 @@ class StudyLocationController {
         [studyLocationName:studyLocationName, userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
-    def findStudyLocationFragment() {
-        def userInstance = springSecurityService.currentUser as User
-        [userInstance: userInstance, appState: userInstance?.applicationState]
-    }
-
-    def findStudyLocations() {
-        def userInstance = springSecurityService.currentUser as User
-
-        def searchResults = null
-        def searchPerformed = false
-        def q = params.searchText
-        BoundingBox bbox = null
-
-        if (params.useBoundingBox == "on") {
-            bbox = new BoundingBox(top: params.double("top"), left: params.double("left"), bottom: params.double("bottom"), right: params.double("right"))
-        }
-
-        if (q || bbox) {
-            searchResults = studyLocationService.searchStudyLocations(q, bbox)
-            searchPerformed = true
-        }
-
-        [userInstance: userInstance, appState: userInstance?.applicationState, results: searchResults, searchPerformed: searchPerformed]
-    }
 
     def studyLocationDataFragment() {
 
@@ -107,6 +84,7 @@ class StudyLocationController {
 
         def data =[:]
         def fieldNames = ['latitude', 'longitude']
+        def fieldUnits = [:]
         if (userInstance && appState?.layers && appState?.selectedPlots && appState?.selectedPlots.size() > 1) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
             for (StudyLocation studyLocation : appState.selectedPlots) {
@@ -116,18 +94,21 @@ class StudyLocationController {
                 def temp = [:]
                 temp.latitude = studyLocationSummary.latitude
                 temp.longitude = studyLocationSummary.longitude
+
                 studyLocationResults.each {
+                    println it
                     def fieldName = it.layername
                     if (!fieldNames.contains(fieldName)) {
                         fieldNames << fieldName
                     }
                     temp[fieldName] = it.value
+                    fieldUnits[fieldName] = it.units
                 }
                 data[studyLocation.name] = temp
             }
         }
 
-        return [data: data, fieldNames: fieldNames]
+        return [data: data, fieldNames: fieldNames, fieldUnits: fieldUnits]
     }
 
     def compareStudyLocationsFragment = {
@@ -287,19 +268,6 @@ class StudyLocationController {
         }
     }
 
-    def findStudyLocationResultsFragment() {
-        BoundingBox bbox = null
-        if (params.top && params.bottom && params.left && params.right) {
-            bbox = new BoundingBox(left: params.double("left"), right: params.double("right"), top: params.double("top"), bottom: params.double("bottom"))
-        }
-
-        def results = studyLocationService.searchStudyLocations(params.q, bbox)
-        def userInstance = springSecurityService.currentUser as User
-        def appState = userInstance?.applicationState
-
-        [results: results, userInstance: userInstance, appState: appState]
-    }
-
     def ajaxSetStudyLocationSelectedOnly() {
         def visibility = params.boolean("plotSelected") ?: false
         def userInstance = springSecurityService.currentUser as User
@@ -420,9 +388,6 @@ class StudyLocationController {
         if (studyLocationSummary) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
             def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
-
-            println url
-
             def studyLocationResults = JSON.parse(url.text)
             studyLocationResults.each {
                 def fieldName = it.layername ?: it.field
@@ -466,5 +431,6 @@ class StudyLocationController {
         def userInstance = springSecurityService.currentUser as User
         [userInstance: userInstance, appState: userInstance?.applicationState]
     }
+
 
 }

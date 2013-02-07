@@ -45,7 +45,11 @@
           <tbody>
             <g:each in="${results.fieldNames}" var="fieldName">
               <tr>
-                <td>${fieldName}</td>
+                <td>${fieldName}
+                    <g:if test="${results.fieldUnits[fieldName]}">
+                        &nbsp;(${results.fieldUnits[fieldName]})
+                    </g:if>
+                </td>
                 <g:each in="${appState?.selectedPlots}" var="studyLocation">
                   <td>${results.data[studyLocation.name][fieldName]}</td>
                 </g:each>

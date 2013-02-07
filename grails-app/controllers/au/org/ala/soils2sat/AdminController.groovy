@@ -463,4 +463,42 @@ class AdminController {
         layerService.flushCache()
     }
 
+    def searchCriteria() {
+        def criteriaDefinitions = SearchCriteriaDefinition.findAll()
+
+        [criteriaDefinitions: criteriaDefinitions]
+    }
+
+    def newSearchCriteriaDefinition() {
+        SearchCriteriaDefinition criteriaDefinition = null
+        render(view: 'editSearchCriteriaDefinition', model: [criteriaDefinition:  criteriaDefinition])
+    }
+
+    def editSearchCriteriaDefinition() {
+        SearchCriteriaDefinition criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        render(view: 'editSearchCriteriaDefinition', model: [criteriaDefinition:  criteriaDefinition])
+    }
+
+    def saveSearchCriteriaDefinition() {
+        def criteria = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        if (criteria == null) {
+            criteria = new SearchCriteriaDefinition(params)
+        } else {
+            criteria.properties = params
+        }
+
+        criteria.save()
+
+        redirect(action:"searchCriteria")
+    }
+
+    def deleteSearchCriteriaDefinition() {
+        def criteria = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        if (criteria) {
+            criteria.delete(flush: true)
+        }
+
+        redirect(action:"searchCriteria")
+    }
+
 }

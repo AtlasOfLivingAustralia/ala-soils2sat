@@ -16,7 +16,8 @@ function showModal(options) {
         height: options.height ? options.height : 400,
         width: options.width ? options.width : 600,
         title: options.title ? options.title : 'Modal Title',
-        hideHeader: options.hideHeader ? options.hideHeader : false
+        hideHeader: options.hideHeader ? options.hideHeader : false,
+        onClose: options.onClose ? options.onClose : null
     }
 
     var html = "<div id='" + opts.id + "' class='modal hide fade' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='height: " + opts.height + "px;width: " + opts.width + "px; overflow: hidden'>";
@@ -31,6 +32,9 @@ function showModal(options) {
 
     $(selector).on("hidden", function() {
         $(selector).remove();
+        if (opts.onClose) {
+            opts.onClose();
+        }
     });
 
     $(selector).modal({

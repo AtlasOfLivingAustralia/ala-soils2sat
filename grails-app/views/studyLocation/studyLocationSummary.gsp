@@ -36,12 +36,12 @@
                     $("#environmentalLayersTab").html("");
                     var tabHref = $(this).attr('href');
                     if (tabHref == '#environmentalLayersTab') {
-                        $("#environmentalLayersTab").html('Retrieving data for study location... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
+                        $("#environmentalLayersTab").html("Retrieving data for study location... <sts:spinner/>");
                         $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationLayersFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
                             $("#environmentalLayersTab").html(html);
                         });
                     } else if (tabHref == "#taxaTab") {
-                        $("#taxaTab").html('Retrieving taxa data for study location... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
+                        $("#taxaTab").html("Retrieving taxa data for study location... <sts:spinner/>");
                         $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
                             $("#taxaTab").html(html);
                         });

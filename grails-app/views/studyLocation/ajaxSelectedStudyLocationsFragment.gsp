@@ -2,7 +2,7 @@
     <g:if test="${appState?.selectedPlots}">
         <g:each in="${appState?.selectedPlots}">
             <tr>
-                <td><a class="studyLocationDetailsLink" href="#" studyLocationName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" studyLocationName="${it.name}" title="Remove study location"><i class="icon-trash"/>
+                <td><a class="studyLocationDetailsLink" href="${createLink(controller:'studyLocation', action:'studyLocationSummary', params:[studyLocationName:it.name])}" studyLocationName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" studyLocationName="${it.name}" title="Remove study location"><i class="icon-trash"/>
                 </button></td>
             </tr>
         </g:each>

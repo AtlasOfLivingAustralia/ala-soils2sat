@@ -48,6 +48,28 @@ class LayerService {
         }
     }
 
+    @Cacheable("S2S_LayerCache")
+    List<String> getValuesForField(String fieldName) {
+        def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/objects/${fieldName}")
+        def data = JSON.parse(url.getText())
+        def results = []
+        data.each {
+            results << it.name
+        }
+        return results
+    }
+
+    @Cacheable("S2S_LayerCache")
+    Map<String, String> getIntersectValues(Double lat, Double lon, List<String> layerNames) {
+        def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames.join(",")}/${lat}/${lon}")
+        def data = JSON.parse(url.getText())
+        def results = [:]
+        data.each {
+            results[it.field] = it.value
+        }
+        return results
+    }
+
     @CacheFlush("S2S_LayerCache")
     public void flushCache() {
         logService.log("Flushing Layer Cache")

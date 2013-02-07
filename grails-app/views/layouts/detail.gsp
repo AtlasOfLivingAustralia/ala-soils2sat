@@ -26,6 +26,17 @@
         }
 
         </Style>
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+
+                $("#btnAdministration").click(function(e) {
+                  window.location = "${createLink(controller: 'admin')}";
+                });
+
+            });
+
+        </script>
 
     </head>
 
@@ -42,6 +53,9 @@
                                 <sec:ifLoggedIn>
                                     <span><sec:username/></span>
                                 </sec:ifLoggedIn>
+                                <sts:ifAdmin>
+                                  <button class="btn btn-warning btn-small" id="btnAdministration">Administration</button>
+                                </sts:ifAdmin>
                                 <g:pageProperty name="page.buttonBar"/>
                             </span>
                         </div>

@@ -7,6 +7,7 @@ class UserApplicationState {
     Boolean plotOnlySelectedLocations
     Bounds viewExtent
     Date lastLogin
+    UserSearch currentSearch
 
     static hasMany = [selectedPlots:StudyLocation, layers: EnvironmentalLayer]
 
@@ -18,6 +19,7 @@ class UserApplicationState {
         plotOnlySelectedLocations nullable:true
         viewExtent nullable: true
         lastLogin nullable: true
+        currentSearch nullable: true
     }
 
     public boolean containsLayerName(String layerName) {

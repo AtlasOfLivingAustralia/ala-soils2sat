@@ -42,7 +42,7 @@
     function onLayerSetSelect(event) {
         var layerSetId = $(event.args.element).attr("layerSetId");
         if (layerSetId) {
-            $("#layerSetInfo").html('Retrieving layer set information... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
+            $("#layerSetInfo").html("Retrieving layer set information... <sts:spinner/>");
             $.ajax("${createLink(controller:'map', action:'layerSetSummaryFragment')}?layerSetId=" + layerSetId).done(function (content) {
                 $("#layerSetInfo").html(content);
             });

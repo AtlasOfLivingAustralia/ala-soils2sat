@@ -56,12 +56,12 @@
 
     var tabHref = $(this).attr('href');
     if (tabHref == '#browseTab') {
-      $("#browseTab").html('Retrieving layer information... <img src="${resource(dir:'/images', file:'spinner.gif')}"/></div>');
+      $("#browseTab").html("Retrieving layer information...<sts:spinner/>");
       $.ajax("${createLink(controller: 'map', action: 'browseLayersFragment')}").done(function(html) {
         $("#browseTab").html(html);
       });
     } else if (tabHref == "#layerSetsTab") {
-      $("#layerSetsTab").html("Retrieving layer sets...");
+      $("#layerSetsTab").html("Retrieving layer sets...<sts:spinner/>");
       $.ajax("${createLink(controller: 'map', action: 'layerSetsFragment')}").done(function(html) {
         $("#layerSetsTab").html(html);
       });

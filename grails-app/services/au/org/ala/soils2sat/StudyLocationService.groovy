@@ -5,6 +5,7 @@ import org.codehaus.groovy.grails.web.json.JSONElement
 class StudyLocationService extends ServiceBase {
 
     def grailsApplication
+    def layerService
 
     List<StudyLocationSearchResult> getStudyLocations() {
         def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocations")
@@ -17,18 +18,24 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
-    List<StudyLocationSearchResult> searchStudyLocations(String query, BoundingBox boundingBox) {
+    List<StudyLocationSearchResult> searchStudyLocations(UserSearch userSearch) {
         def results = new ArrayList<StudyLocationSearchResult>()
-        def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocations")?.results
-        def q = query?.toLowerCase()
+        def q = userSearch.searchText?.toLowerCase()
 
-        if (query == "*") {
-            query = ''; // force match all...
+        if (q == "*") {
+            q = ''; // force match all...
         }
+        BoundingBox boundingBox = null
+        if (userSearch.useBoundingBox) {
+            boundingBox = new BoundingBox(top: userSearch.top, left:  userSearch.left, bottom: userSearch.bottom, right:  userSearch.right)
+        }
+
+        // below should be replaced by a call to the search service, when it exists.
+        def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocations")?.results
         if (studyLocations) {
             studyLocations.each { studyLocation ->
                 boolean match = true
-                if (query) {
+                if (q) {
                     if (!studyLocation.siteName?.toLowerCase()?.contains(q)) {
                         match = false
                     }
@@ -47,7 +54,60 @@ class StudyLocationService extends ServiceBase {
             }
         }
 
+        // Now we need to post process the search results and filter out that do not match any specified 'ALA' criteria
+        if (userSearch.criteria) {
+            List<StudyLocationSearchResult> finalResults = new ArrayList<StudyLocationSearchResult>(results)
+            results.each { candidate ->
+                for (SearchCriteria criteria : userSearch.criteria) {
+                    if (!testCriteria(criteria, candidate)) {
+                        finalResults.remove(candidate)
+                        break;
+                    }
+                }
+            }
+            results = finalResults
+        }
+
         return results
+    }
+
+    private boolean testCriteria(SearchCriteria criteria, StudyLocationSearchResult candidate) {
+        boolean result = false;
+        switch (criteria.criteriaDefinition.type) {
+            case CriteriaType.SpatialPortalLayer:
+            case CriteriaType.SpatialPortalField:
+                def value = layerService.getIntersectValues(candidate.latitude, candidate.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
+                result = compareValue(criteria, value)
+                break;
+            default:
+                // Don't care about other types of criteria, let them through!
+                result = true;
+                break;
+        }
+        return result
+    }
+
+    private boolean compareValue(SearchCriteria criteria, String value) {
+        boolean result = false;
+        switch (criteria.criteriaDefinition.valueType) {
+            case CriteriaValueType.StringSingleSelect:
+                if (value?.equalsIgnoreCase(criteria.value)) {
+                    result= true;
+                }
+                break;
+            case CriteriaValueType.StringDirectEntry:
+            case CriteriaValueType.StringMultiSelect:
+                def candidates = criteria.value?.split("\\|")
+                // only one of them has to match
+                for (String candidate : candidates) {
+                    if (candidate.equalsIgnoreCase(value)) {
+                        result = true;
+                        break;
+                    }
+                }
+                break;
+        }
+        return result
     }
 
     StudyLocationSummary getStudyLocationSummary(String studyLocationName) {

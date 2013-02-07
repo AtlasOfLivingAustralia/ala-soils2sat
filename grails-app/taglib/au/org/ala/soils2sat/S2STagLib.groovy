@@ -188,4 +188,58 @@ class S2STagLib {
 
     }
 
+    def spinner = { attrs, body ->
+        def mb = new MarkupBuilder(out)
+        mb.img(src: resource(dir:'/images', file:'spinner.gif')) {
+
+        }
+    }
+
+    /**
+     * @attr criteriaDefinition
+     * @attr units
+     */
+    def criteriaValueControl = { attrs, body ->
+        def criteriaDefinition = attrs.criteriaDefinition as SearchCriteriaDefinition
+        if (criteriaDefinition) {
+            def mb = new MarkupBuilder(out)
+            switch (criteriaDefinition.valueType) {
+                case CriteriaValueType.StringDirectEntry:
+                    mb.strong {
+                        mkp.yield("Enter a value (or values seperated by '|') to match:")
+                    }
+                    mb.div {
+                        input(type:'text', name:'fieldValue', class:"input-xlarge") {}
+                    }
+                    break;
+                case CriteriaValueType.NumberRangeDouble:
+                case CriteriaValueType.NumberRangeInteger:
+                    mb.label(class:'radio inline', style:'white-space: nowrap') {
+                        mb.input(type:'radio', name:'operator', value: 'gt', checked:'checked') {
+                        }
+                        mkp.yield("Greater than or equal to")
+                    }
+                    mb.label(class:'radio inline', style:'white-space: nowrap') {
+                        mb.input(type:'radio', name:'operator', value: 'lt') {
+                            mkp.yield("Less than or equal to")
+                        }
+                    }
+                    mb.input(type: "text", placeholder:'Value', class:'input-small', style: "margin-left: 20px")
+                    if (attrs.units) {
+                        mb.span {
+                            mkp.yieldUnescaped("&nbsp;(")
+                            mkp.yield(attrs.units + ")")
+                        }
+                    }
+                    break;
+                default:
+                    mb.div {
+                        mkp.yield("Unhandled input type: " + criteriaDefinition.valueType.toString())
+                    }
+                    break;
+            }
+        }
+//        <g:textField name="fieldValue" class="input-xlarge" />
+    }
+
 }

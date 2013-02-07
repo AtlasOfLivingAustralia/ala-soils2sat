@@ -131,15 +131,7 @@
       }
 
       function findPlot() {
-        window.location = "${createLink(controller:'studyLocation', action:'findStudyLocations')}";
-
-        %{--showModal({--}%
-            %{--url: "${createLink(controller: 'studyLocation', action:'findStudyLocationFragment')}",--}%
-            %{--title: "Find Study Location",--}%
-            %{--height: 550,--}%
-            %{--width: 600--}%
-        %{--});--}%
-
+        window.location = "${createLink(controller:'search', action:'findStudyLocations')}";
         return true;
       }
 
