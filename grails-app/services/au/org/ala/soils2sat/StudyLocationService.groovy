@@ -77,7 +77,7 @@ class StudyLocationService extends ServiceBase {
             case CriteriaType.SpatialPortalLayer:
             case CriteriaType.SpatialPortalField:
                 def value = layerService.getIntersectValues(candidate.latitude, candidate.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
-                result = compareValue(criteria, value as String)
+                result = SearchCriteriaUtils.eval(criteria, value as String);
                 break;
             default:
                 // Don't care about other types of criteria, let them through!
@@ -85,31 +85,6 @@ class StudyLocationService extends ServiceBase {
                 break;
         }
         return result
-    }
-
-    private boolean compareValue(SearchCriteria criteria, String value) {
-        return SearchCriteriaUtils.eval(criteria, value);
-
-//        boolean result = false;
-//        switch (criteria.criteriaDefinition.valueType) {
-//            case CriteriaValueType.StringSingleSelect:
-//                if (value?.equalsIgnoreCase(criteria.value)) {
-//                    result= true;
-//                }
-//                break;
-//            case CriteriaValueType.StringDirectEntry:
-//            case CriteriaValueType.StringMultiSelect:
-//                def candidates = criteria.value?.split("\\|")
-//                // only one of them has to match
-//                for (String candidate : candidates) {
-//                    if (candidate.equalsIgnoreCase(value)) {
-//                        result = true;
-//                        break;
-//                    }
-//                }
-//                break;
-//        }
-//        return result
     }
 
     StudyLocationSummary getStudyLocationSummary(String studyLocationName) {

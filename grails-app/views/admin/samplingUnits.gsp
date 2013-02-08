@@ -28,7 +28,7 @@
                         <g:each in="${samplingUnits}" var="unit">
                             <tr samplingUnitId="${unit.id}">
                                 <td>${unit.name}</td>
-                                <td><button class="btn btn-mini btn-danger btnDeleteUnit"><i class="icon-trash icon-white"></i>&nbsp;delete</button></td>
+                                <td><button class="btn btn-mini btn-danger btnDeleteUnit"><i class="icon-remove icon-white"></i>&nbsp;delete</button></td>
                             </tr>
                         </g:each>
                     </table>

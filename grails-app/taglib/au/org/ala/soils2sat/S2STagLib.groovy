@@ -205,7 +205,7 @@ class S2STagLib {
             def mb = new MarkupBuilder(out)
             switch (criteriaDefinition.valueType) {
                 case CriteriaValueType.StringDirectEntry:
-                    mb.strong {
+                    mb.span {
                         mkp.yield("Enter a value (or values seperated by '|') to match:")
                     }
                     mb.div {
@@ -231,6 +231,7 @@ class S2STagLib {
                             mkp.yield(attrs.units + ")")
                         }
                     }
+                    mb.input(type: 'hidden', name:'units', value: attrs.units) { }
                     break;
                 default:
                     mb.div {

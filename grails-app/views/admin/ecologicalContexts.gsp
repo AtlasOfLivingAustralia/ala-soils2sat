@@ -30,7 +30,7 @@
                         <td style="width: 300px">${context.name}</td>
                         <td>${context.samplingUnits.collect({ it.name }).join(", ")}</td>
                         <td>
-                            <button class="btn btn-mini btn-danger btnDeleteContext"><i class="icon-trash icon-white"></i>&nbsp;delete</button>
+                            <button class="btn btn-mini btn-danger btnDeleteContext"><i class="icon-remove icon-white"></i>&nbsp;delete</button>
                             <button class="btn btn-mini btnEditContext"><i class="icon-edit"></i>&nbsp;edit</button>
                         </td>
                     </tr>

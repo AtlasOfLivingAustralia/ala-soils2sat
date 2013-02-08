@@ -11,7 +11,7 @@
                             ${au.org.ala.soils2sat.SearchCriteriaUtils.format(criteria, "strong")}
                         </td>
                         <td>
-                            <button type="button" class="btn btn-mini pull-right btnDeleteCriteria"><i class="icon-trash"></i></button>
+                            <button type="button" class="btn btn-mini pull-right btnDeleteCriteria"><i class="icon-remove"></i></button>
                         </td>
                     </tr>
                 </table>

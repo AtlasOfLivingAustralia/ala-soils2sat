@@ -190,7 +190,7 @@ class SearchController {
                     appState.currentSearch.save(failOnError: true)
                 }
 
-                def criteria = new SearchCriteria(criteriaDefinition: criteriaDefinition, value: value)
+                def criteria = new SearchCriteria(criteriaDefinition: criteriaDefinition, value: value, displayUnits: params.units)
                 criteria.save(flush: true, failOnError: true)
                 appState.currentSearch.addToCriteria(criteria)
                 appState.currentSearch.save(flush: true, failOnError: true)

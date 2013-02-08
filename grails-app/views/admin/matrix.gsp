@@ -43,7 +43,7 @@
                         <th questionId="${question.id}">
                             <small>${question.text}</small>
                             <br />
-                            <button class="btn btn-mini btn-danger btnDeleteQuestion"><i class="icon-trash icon-white"></i></button>
+                            <button class="btn btn-mini btn-danger btnDeleteQuestion"><i class="icon-remove icon-white"></i></button>
                             <button class="btn btn-mini btnEditQuestion"><i class="icon-edit"></i></button>
                         </th>
                     </g:each>

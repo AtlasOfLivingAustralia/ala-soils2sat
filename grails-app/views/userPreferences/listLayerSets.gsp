@@ -32,7 +32,7 @@
                             <td>${StringEscapeUtils.escapeHtml(layerSet.name)}</td>
                             <td>${layerSet.layers?.size()}</td>
                             <td>
-                                <button class="btn btn-mini btn-danger btnDeleteLayerSet"><i class="icon-trash icon-white"></i>&nbsp;delete</button>&nbsp;
+                                <button class="btn btn-mini btn-danger btnDeleteLayerSet"><i class="icon-remove icon-white"></i>&nbsp;delete</button>&nbsp;
                                 <button class="btn btn-mini btnEditLayerSet"><i class="icon-edit"></i>&nbsp;edit</button>
                             </td>
                         </tr>

@@ -425,7 +425,7 @@
 
                     <button type="button" id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add search criteria
                     </button>
-                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-trash icon-white"></i>&nbsp;Remove all criteria
+                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-remove icon-white"></i>&nbsp;Remove all criteria
                     </button>
 
                     <button type="button" id="btnSearch" class="btn btn-primary pull-right">Search</button>

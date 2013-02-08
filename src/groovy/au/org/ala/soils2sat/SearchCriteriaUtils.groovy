@@ -19,10 +19,14 @@ class SearchCriteriaUtils {
         return false;
     }
 
-    public static String format(SearchCriteria criteria, String valueDelimter = "") {
+    public static String format(SearchCriteria criteria, String valueDelimiter = "") {
         CriteriaEvaluator evaluator = factory(criteria)
         if (evaluator) {
-            return evaluator.displayString(valueDelimter);
+            def output = evaluator.displayString(valueDelimiter);
+            if (criteria.displayUnits) {
+                output += " (" + criteria.displayUnits + ")"
+            }
+            return output
         }
         return criteria.value
     }

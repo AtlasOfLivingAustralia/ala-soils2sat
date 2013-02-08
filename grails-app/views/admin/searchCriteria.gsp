@@ -49,7 +49,7 @@
                     <th>Value Type</th>
                     <th>Description</th>
                     <th>Field</th>
-                    <th>Actions</th>
+                    <th style="width: 120px">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,8 +60,8 @@
                         <td>${criteria.valueType}</td>
                         <td>${criteria.description}</td>
                         <td>${criteria.fieldName}</td>
-                        <td>
-                            <button class="btn btn-mini btn-danger btnDeleteCriteria"><i class="icon-trash icon-white"></i>&nbsp;delete</button>
+                        <td style="">
+                            <button class="btn btn-mini btn-danger btnDeleteCriteria"><i class="icon-remove icon-white"></i>&nbsp;delete</button>
                             <button class="btn btn-mini btnEditCriteria"><i class="icon-edit"></i>&nbsp;edit</button>
                         </td>
                     </tr>

@@ -58,7 +58,7 @@
                 <td>${StringEscapeUtils.escapeHtml(layerName)}</td>
                 <td>
                     <button class="btn btn-mini btnShowLayerInfo"><i class="icon-info-sign"></i></button>
-                    <button class="btn btn-mini btnRemoveLayerFromSet"><i class="icon-trash"></i></button>
+                    <button class="btn btn-mini btnRemoveLayerFromSet"><i class="icon-remove"></i></button>
                 </td>
             </tr>
         </g:each>

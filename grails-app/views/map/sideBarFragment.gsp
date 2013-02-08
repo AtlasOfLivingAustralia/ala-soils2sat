@@ -43,7 +43,7 @@ td.toolButtonCell {
                     <g:if test="${appState?.selectedPlots}">
                         <g:each in="${appState?.selectedPlots}">
                             <tr>
-                                <td><a class="studyLocationDetailsLink" href="#" studyLocationName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" studyLocationName="${it.name}" title="Remove study location"><i class="icon-trash"/>
+                                <td><a class="studyLocationDetailsLink" href="#" studyLocationName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" studyLocationName="${it.name}" title="Remove study location"><i class="icon-remove"/>
                                 </button></td>
                             </tr>
                         </g:each>
@@ -79,7 +79,7 @@ td.toolButtonCell {
         <tr>
             <td><h5>Environmental layers</h5></td>
             <td style="width: 90px;">
-                <button id="btnLayerRemoveAll" class="btn btn-mini btn-danger pull-right">Remove All&nbsp;<i class="icon-trash icon-white"/>
+                <button id="btnLayerRemoveAll" class="btn btn-mini btn-danger pull-right">Remove All&nbsp;<i class="icon-remove icon-white"/>
                 </button>
             </td>
             <td style="width: 90px;">
@@ -109,7 +109,7 @@ td.toolButtonCell {
                         </button>
                     </td>
                     <td class="toolButtonCell">
-                        <button class="btn btn-mini btnRemoveLayer" layerName="${it.name}" title="Remove layer from the list"><i class="icon-trash"/>
+                        <button class="btn btn-mini btnRemoveLayer" layerName="${it.name}" title="Remove layer from the list"><i class="icon-remove"/>
                         </button>
                     </td>
                     </tr>

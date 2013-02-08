@@ -1,14 +1,12 @@
 <div>
-    <div class="well well-small">
-        ${layerInfo.description}
-    </div>
-    <div style="margin-top: 5px; margin-bottom: 5px;">
-        <span>
+    <div class="alert alert-info" style="color: black">
+        <strong>${layerInfo.description}</strong>
+        <div>
             <sts:criteriaValueControl criteriaDefinition="${criteriaDefinition}" units="${layerInfo?.units ?: layerInfo.environmentalvalueunits}"/>
-        </span>
+        </div>
     </div>
     <g:if test="${layerInfo.notes}">
-        <div class="well well-small" style="height: 215px; overflow-y: auto">
+        <div class="well well-small" style="height: 180px; overflow-y: auto">
             <h5>Notes for ${layerInfo.displayname}</h5>
             ${layerInfo.notes}
         </div>

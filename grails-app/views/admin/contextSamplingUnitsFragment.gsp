@@ -4,7 +4,7 @@
             <g:each in="${context?.samplingUnits?.sort({ it.name })}" var="samplingUnit">
                 <tr samplingUnitId="${samplingUnit.id}">
                     <td>${samplingUnit.name}</td>
-                    <td><button class="btn btn-mini btn-danger btnRemoveSamplingUnit"><i class="icon-trash icon-white"></i>&nbsp;delete</button></td>
+                    <td><button class="btn btn-mini btn-danger btnRemoveSamplingUnit"><i class="icon-remove icon-white"></i>&nbsp;delete</button></td>
                 </tr>
             </g:each>
         </table>

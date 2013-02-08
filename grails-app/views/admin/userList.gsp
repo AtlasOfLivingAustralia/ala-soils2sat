@@ -25,7 +25,7 @@
           <td><sts:roles user="${user}"/></td>
           <td>${user.applicationState?.lastLogin ? formatDate(format:"yyyy-MM-dd HH:mm:ss", date: user.applicationState.lastLogin) : 'N/A'}</td>
           <td>
-            <button class="btn btn-danger btn-mini btnDeleteUser"><i class="icon-trash icon-white"></i>&nbsp;delete</button>
+            <button class="btn btn-danger btn-mini btnDeleteUser"><i class="icon-remove icon-white"></i>&nbsp;delete</button>
             <button class="btn btn-mini btnEditUser"><i class="icon-edit"></i>&nbsp;edit</button>
           </td>
         </tr>
