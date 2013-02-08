@@ -81,7 +81,7 @@
 
         });
 
-        <g:if test="${userSearch.useBoundingBox}">
+        <g:if test="${userSearch?.useBoundingBox}">
         $("#mapDiv").css("display", "block");
         $("#useBoundingBox").prop("checked", true);
         showMap();
@@ -133,7 +133,7 @@
 
         $("#btnRemoveAllCriteria").click(function (e) {
             e.preventDefault();
-            $.ajax("${createLink(action:'ajaxDeleteAllSearchCriteria', params:[userSearchId: appState.currentSearch.id])}").done(function (e) {
+            $.ajax("${createLink(action:'ajaxDeleteAllSearchCriteria', params:[userSearchId: appState.currentSearch?.id])}").done(function (e) {
                 renderCriteria();
             });
 
@@ -224,7 +224,7 @@
 
         map.addLayers([gphy, gmap, ghyb, gsat]);
 
-        <g:if test="${userSearch.useBoundingBox}">
+        <g:if test="${userSearch?.useBoundingBox}">
         var extent = new OpenLayers.Bounds(
             ${userSearch.left},
             ${userSearch.bottom},
@@ -369,7 +369,7 @@
                         <label class="control-label" for='searchText'>Full or partial site name</label>
 
                         <div class="controls">
-                            <g:textField class="input-xlarge" id="searchText" name="searchText" placeholder="Search" value="${userSearch.searchText}"/>
+                            <g:textField class="input-xlarge" id="searchText" name="searchText" placeholder="Search" value="${userSearch?.searchText}"/>
                         </div>
                     </div>
 
@@ -377,7 +377,7 @@
                         <label class="control-label" for='useBoundingBox'>Use bounding box</label>
 
                         <div class="controls">
-                            <g:checkBox class="input-xlarge" id="useBoundingBox" name="useBoundingBox" value="${userSearch.useBoundingBox}"/>
+                            <g:checkBox class="input-xlarge" id="useBoundingBox" name="useBoundingBox" value="${userSearch?.useBoundingBox}"/>
                         </div>
                     </div>
 
@@ -391,10 +391,10 @@
                                 </td>
                                 <td style="vertical-align: bottom">
 
-                                    <g:hiddenField class="input-small" name="top" value="${userSearch.top}" />
-                                    <g:hiddenField class="input-small" name="left" value="${userSearch.left}" />
-                                    <g:hiddenField class="input-small" name="bottom" value="${userSearch.bottom} "/>
-                                    <g:hiddenField class="input-small" name="right" value="${userSearch.right}"/>
+                                    <g:hiddenField class="input-small" name="top" value="${userSearch?.top}" />
+                                    <g:hiddenField class="input-small" name="left" value="${userSearch?.left}" />
+                                    <g:hiddenField class="input-small" name="bottom" value="${userSearch?.bottom} "/>
+                                    <g:hiddenField class="input-small" name="right" value="${userSearch?.right}"/>
 
                                     <small style="color: #a9a9a9">
                                         <table>

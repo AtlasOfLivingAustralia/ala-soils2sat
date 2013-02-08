@@ -12,12 +12,19 @@
         <script type="text/javascript">
 
             $(document).ready(function() {
+
                 $("#btnClearLayersCache").click(function(e) {
                     e.preventDefault();
                     $.ajax("${createLink(controller: 'admin', action:'clearLayersCacheAjax')}").done(function(result) {
                         this.location = "${createLink(controller: 'admin', action:'advancedSettings')}";
                     });
                 });
+
+                $("#btnCreateDefaultCriteria").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller: 'admin', action:'createDefaultSearchCriteria')}";
+                });
+
             });
 
         </script>
@@ -38,6 +45,15 @@
                         Web service calls to the ALA Spatial Portal for Environmental Layer data are cached. This will clear the cache to allow updated layer data to be presented in the S2S Portal
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <button id="btnCreateDefaultCriteria" class="btn btn-small btn-info">Create default search criteria</button>
+                    </td>
+                    <td>
+                        Used when the database has been refreshed to put in a set of default search criteria
+                    </td>
+                </tr>
+
             </tbody>
         </table>
     </body>

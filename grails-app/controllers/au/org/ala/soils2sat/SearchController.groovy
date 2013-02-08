@@ -201,7 +201,14 @@ class SearchController {
     }
 
     def ajaxCriteriaListFragment() {
+
         def userSearch = UserSearch.get(params.int("userSearchId"))
+        if (!userSearch) {
+            def userInstance = springSecurityService.currentUser as User
+            def appState = userInstance?.applicationState
+            userSearch = appState.currentSearch
+        }
+
         [userSearch: userSearch]
     }
 

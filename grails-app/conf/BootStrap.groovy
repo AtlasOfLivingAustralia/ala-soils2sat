@@ -8,8 +8,8 @@ class BootStrap {
 
         def roles = ['ROLE_USER','ROLE_ADMIN']
 
-        for (String role : roles) {
-            Role.findByAuthority(role) ?: new Role(authority: role).save(failOnError: true)
+        roles.each { role ->
+            Role.findByAuthority(role) ?: new Role(authority: role).save(flush:  true, failOnError: true)
         }
 
         def admin = User.findByUsername('admin')

@@ -501,4 +501,29 @@ class AdminController {
         redirect(action:"searchCriteria")
     }
 
+    def createDefaultSearchCriteria() {
+        def criteriaDefinitions = [
+                [name: 'IBRA Region', description: "IBRA Region name", type: CriteriaType.SpatialPortalField, valueType: CriteriaValueType.StringMultiSelect, fieldName: 'cl20'],
+                [name: 'Jurisdiction', description: "Australian State name", type: CriteriaType.SpatialPortalField, valueType: CriteriaValueType.StringMultiSelect, fieldName: 'cl22'],
+                [name: 'IBRA Sub Region', description: "IBRA Sub Region name",type: CriteriaType.SpatialPortalField, valueType: CriteriaValueType.StringMultiSelect, fieldName: 'cl914'],
+                [name: 'NRM Region', description: "National Resource Management Region name", type: CriteriaType.SpatialPortalField, valueType: CriteriaValueType.StringMultiSelect, fieldName: 'cl916'],
+                [name: 'LGA Region', description: "Local Government Region name", type: CriteriaType.SpatialPortalField, valueType: CriteriaValueType.StringMultiSelect, fieldName: 'cl959'],
+                [name: 'Geology Type', description: "Surface Geology", type: CriteriaType.SpatialPortalLayer, valueType: CriteriaValueType.StringDirectEntry, fieldName: 'lith_geologicalunitpolygons1m'],
+                [name: 'Annual Rainfall', description: "Mean annual rainfall", type: CriteriaType.SpatialPortalLayer, valueType: CriteriaValueType.NumberRangeDouble, fieldName: 'rainm'],
+                [name: 'Distance from coast', description: "Distance from nearest coastline", type: CriteriaType.SpatialPortalLayer, valueType: CriteriaValueType.NumberRangeDouble, fieldName: 'substrate_distcoast'],
+                [name: 'Distance from water', description: "Distance from nearest water", type: CriteriaType.SpatialPortalLayer, valueType: CriteriaValueType.NumberRangeDouble, fieldName: 'substrate_distanywater']
+        ]
+
+        criteriaDefinitions.each { criteriaDefinition ->
+            def existing = SearchCriteriaDefinition.findByName(criteriaDefinition.name)
+            if (!existing) {
+                def newDefinition = new SearchCriteriaDefinition(criteriaDefinition)
+                newDefinition.save()
+            }
+        }
+
+
+        redirect(action:'advancedSettings')
+    }
+
 }

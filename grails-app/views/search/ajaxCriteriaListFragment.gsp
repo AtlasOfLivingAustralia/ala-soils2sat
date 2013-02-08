@@ -27,7 +27,7 @@
         e.preventDefault();
         var criteriaId = $(this).parents("tr[searchCriteriaId]").attr("searchCriteriaId");
         if (criteriaId) {
-            $.ajax("${createLink(action:'deleteSearchCriteria', params:[userSearchId: userSearch.id])}&searchCriteriaId=" + criteriaId).done(function(results) {
+            $.ajax("${createLink(action:'deleteSearchCriteria', params:[userSearchId: userSearch?.id])}&searchCriteriaId=" + criteriaId).done(function(results) {
                 renderCriteria();
             });
         }
