@@ -29,8 +29,8 @@
                 <ul class="nav nav-list nav-stacked nav-tabs">
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'userList')}" title="Users" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'layerSets')}" title="Layer Sets" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'samplingUnits')}" title="Sampling Units" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'searchCriteria')}" title="Search Criteria" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'samplingUnits')}" title="Sampling Units" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'ecologicalContexts')}" title="Ecological Contexts" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'matrix')}" active="Matrix" title="Questions Matrix" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'advancedSettings')}" title="Advanced Settings" />

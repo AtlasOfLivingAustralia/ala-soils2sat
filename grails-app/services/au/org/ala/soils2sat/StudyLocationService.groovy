@@ -110,6 +110,12 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
+    def getVisitDetails(String visitId) {
+        def details = proxyServiceCall(grailsApplication, "getSiteLocationVisitDetails", [siteLocationVisitId: visitId])
+        def results = details
+        return results
+    }
+
     @Override
     protected String getServiceRootUrl() {
         return "${grailsApplication.config.aekosServiceRoot}"

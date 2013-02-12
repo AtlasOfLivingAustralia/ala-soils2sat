@@ -12,6 +12,7 @@
         <content tag="pageTitle">Ecological Contexts</content>
 
         <content tag="adminButtonBar">
+            <button id="btnDeleteAll" class="btn btn-danger btn-small"><i class="icon-remove icon-white"></i>&nbsp;Delete all contexts</button>
             <button id="btnAutoGenerateContexts" class="btn btn-small"><i class="icon-wrench"></i>&nbsp;Auto generate contexts</button>
             <button id="btnAddContext" class="btn btn-small btn-primary"><i class="icon-plus icon-white"></i>&nbsp;Add context</button>
         </content>
@@ -21,7 +22,7 @@
                 <tr>
                     <th>Ecological Context</th>
                     <th>Sampling Units</th>
-                    <th>Actions</th>
+                    <th style="width: 120px">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,31 +42,43 @@
 
         <script type="text/javascript">
 
-            $("#btnAutoGenerateContexts").click(function(e) {
-                window.location = "${createLink(controller:'admin', action:'generateEcologicalContexts')}";
-            });
+            $(document).ready(function() {
 
-            $("#btnAddContext").click(function(e) {
-                window.location = "${createLink(controller: 'admin', action:'newEcologicalContext')}";
-            });
+                $("#btnAutoGenerateContexts").click(function(e) {
+                    window.location = "${createLink(controller:'admin', action:'generateEcologicalContexts')}";
+                });
 
-            $(".btnDeleteContext").click(function (e) {
-                e.preventDefault();
-                var contextId = $(this).parents("[ecologicalContextId]").attr("ecologicalContextId");
-                if (contextId) {
-                    if (confirm("Are you sure you wish to delete this ecological context?")) {
-                        window.location = "${createLink(controller:'admin', action: 'deleteEcologicalContext')}?ecologicalContextId=" + contextId;
+                $("#btnAddContext").click(function(e) {
+                    window.location = "${createLink(controller: 'admin', action:'newEcologicalContext')}";
+                });
+
+                $(".btnDeleteContext").click(function (e) {
+                    e.preventDefault();
+                    var contextId = $(this).parents("[ecologicalContextId]").attr("ecologicalContextId");
+                    if (contextId) {
+                        if (confirm("Are you sure you wish to delete this ecological context?")) {
+                            window.location = "${createLink(controller:'admin', action: 'deleteEcologicalContext')}?ecologicalContextId=" + contextId;
+                        }
                     }
-                }
+                });
+
+                $(".btnEditContext").click(function (e) {
+                    e.preventDefault();
+                    var contextId = $(this).parents("[ecologicalContextId]").attr("ecologicalContextId");
+                    if (contextId) {
+                        window.location = "${createLink(controller:'admin', action: 'editEcologicalContext')}?ecologicalContextId=" + contextId;
+                    }
+                });
+
+                $("#btnDeleteAll").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you wish to delete all Ecological Contexts?")) {
+                        window.location = "${createLink(action:"deleteAllEcologicalContexts")}";
+                    }
+                });
+
             });
 
-            $(".btnEditContext").click(function (e) {
-                e.preventDefault();
-                var contextId = $(this).parents("[ecologicalContextId]").attr("ecologicalContextId");
-                if (contextId) {
-                    window.location = "${createLink(controller:'admin', action: 'editEcologicalContext')}?ecologicalContextId=" + contextId;
-                }
-            });
 
 
         </script>

@@ -33,7 +33,7 @@
                     </thead>
                     <g:each in="${visitSummaries}" var="visit">
                         <tr>
-                            <g:set var="samplesURL" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, visitId: visit.visitId])}"/>
+                            <g:set var="samplesURL" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, visitId: visit.visitId])}" />
                             <td><a href="${samplesURL}">${visit.visitId}</a></td>
                             <td>Visit&nbsp;Start&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.startDate}"/><br/>
                                 Visit&nbsp;End&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.endDate}"/>

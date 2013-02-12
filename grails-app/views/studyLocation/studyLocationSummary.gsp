@@ -60,10 +60,24 @@
                     });
                 });
 
+                $("#btnDeselectAndReturn").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
+                        window.location = "${createLink(controller: "map", action: "index")}";
+                    });
+                });
+
                 $("#btnSelect").click(function(e) {
                     e.preventDefault();
                     $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
                         window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";
+                    });
+                });
+
+                $("#btnSelectAndReturn").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
+                        window.location = "${createLink(controller: "map", action: "index")}";
                     });
                 });
 
@@ -79,9 +93,11 @@
                         <td>
                             <button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})
                             <g:if test="${isSelected}">
+                                <button id="btnDeselectAndReturn" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect and return to map</button>
                                 <button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location</button>
                             </g:if>
                             <g:else>
+                                <button id="btnSelectAndReturn" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select and return to map</button>
                                 <button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location</button>
                             </g:else>
                         </button>

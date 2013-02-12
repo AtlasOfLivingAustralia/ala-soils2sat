@@ -24,6 +24,7 @@ class SearchController {
         if (!userSearch) {
             userSearch = new UserSearch(user: userInstance, name: 'default' )
             userSearch.save(failOnError: true)
+            userInstance.applicationState.currentSearch = userSearch
         }
 
         [userInstance: userInstance, appState: userInstance?.applicationState, userSearch: userSearch]
@@ -33,6 +34,10 @@ class SearchController {
 
         def userInstance = springSecurityService.currentUser as User
         def userSearch = userInstance.applicationState.currentSearch
+
+        if (!userSearch) {
+
+        }
 
         def searchResults = null
         def searchPerformed = false

@@ -15,7 +15,7 @@ class StudyLocationVisitSummary {
     public Map data
 
     String getVisitId() {
-        return data.visitId as String
+        return data.sysId as String
     }
 
     public Date getStartDate() {

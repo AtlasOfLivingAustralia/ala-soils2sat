@@ -12,10 +12,12 @@
         <content tag="pageTitle">Sampling Units</content>
 
         <content tag="adminButtonBar">
+            <button id="btnDeleteAll" class="btn btn-danger btn-small"><i class="icon-remove icon-white"></i>&nbsp;Delete all sampling units</button>
+            <button id="btnImport" class="btn btn-small" style="margin-right: 10px"><i class="icon-upload"></i>&nbsp;Import from csv</button>
+            <button id="btnExport" class="btn btn-small"><i class="icon-download-alt"></i>&nbsp;Export to csv</button>
         </content>
 
         <div class="">
-            <h5>Sampling Units</h5>
             <div class="control-group">
                 <div class="controls">
                     <g:textField id="samplingUnit" style="margin-bottom: 0" name="unit" class="input-xlarge"/>
@@ -57,6 +59,23 @@
                     var unitId = $(this).parents("[samplingUnitId]").attr("samplingUnitId");
                     if (unitId) {
                         window.location = "${createLink(controller:'admin', action:'deleteSamplingUnit')}?samplingUnitId=" + unitId;
+                    }
+                });
+
+                $("#btnExport").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'admin', action:'exportSamplingUnits')}";
+                });
+
+                $("#btnImport").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'admin', action:'selectImportFile', params:[importType:'samplingUnits'])}";
+                });
+
+                $("#btnDeleteAll").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you wish to delete all Sampling Units?")) {
+                        window.location = "${createLink(action:"deleteAllSamplingUnits")}";
                     }
                 });
 

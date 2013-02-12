@@ -256,4 +256,76 @@ class S2STagLib {
         }
     }
 
+    /**
+     * @attr samplingUnit
+     * @attr visitDetail
+     */
+    def renderSamplingUnit = { attrs, body ->
+
+        def samplingUnit = attrs.samplingUnit
+        def visitDetail = attrs.visitDetail as Map
+
+        if (visitDetail && samplingUnit) {
+            def dataList = []
+            switch (samplingUnit) {
+                case "POINT_INTERCEPT":
+                    dataList = visitDetail.pointInterceptWithHerbIdAddedList
+                    break
+                case "STRUCTURAL_SUMMARY":
+                    dataList = visitDetail.structuralSummaryList
+                    break
+                case "SOIL_STRUCTURE":
+                    dataList = visitDetail.soilStructureList
+                    break
+                case "SOIL_CHARACTER":
+                    dataList = visitDetail.soilCharacterisationList
+                    break
+                case "SOIL_SAMPLING":
+                    dataList = visitDetail.soilSampleList
+                    break
+                default:
+                break;
+            }
+            def mb = new MarkupBuilder(out)
+            if (dataList) {
+                def colHeaders = dataList[0].collect { it.key }
+
+                mb.ul(class: "samplingUnitTree") {
+                    li {
+                        div(class:'samplingUnitTitle') {
+                            mkp.yield(samplingUnit)
+                        }
+                        table(class:'table table-striped table-bordered table-condensed') {
+                            thead {
+                                tr {
+                                    for (def col : colHeaders) {
+                                        th {
+                                            mkp.yield(col)
+                                        }
+                                    }
+                                }
+                            }
+                            tbody {
+                                for (def row : dataList) {
+                                    tr {
+                                        for (def col : colHeaders) {
+                                            td {
+                                                mkp.yield(row[col] ?: '')
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                mb.span() {
+                    mkp.yield("Sampling unit details not found for '" + title + "'")
+                }
+            }
+        }
+
+    }
+
 }

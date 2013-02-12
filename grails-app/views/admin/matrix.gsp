@@ -35,16 +35,19 @@
 
         <content tag="pageTitle">Matrix</content>
 
+        <content tag="adminButtonBar">
+            <button id="btnImport" class="btn btn-small"><i class="icon-upload"></i>&nbsp;Import matrix</button>
+            <button id="btnExport" class="btn btn-small"><i class="icon-download-alt"></i>&nbsp;Export matrix</button>
+            <button id="btnAddQuestion" class="btn btn-small btn-primary"><i class="icon-plus icon-white"></i>&nbsp;Add question</button>
+        </content>
+
         <table class="table table-bordered table-striped table-condensed">
             <thead>
                 <tr>
                     <th>Ecological Context</th>
                     <g:each in="${questions}" var="question">
                         <th questionId="${question.id}">
-                            <small>${question.text}</small>
-                            <br />
-                            <button class="btn btn-mini btn-danger btnDeleteQuestion"><i class="icon-remove icon-white"></i></button>
-                            <button class="btn btn-mini btnEditQuestion"><i class="icon-edit"></i></button>
+                            <small><a href="${createLink(action:'editQuestion', params:[questionId: question.id])}">${question.text}</a></small>
                         </th>
                     </g:each>
                 </tr>
@@ -52,7 +55,7 @@
             <tbody>
                 <g:each in="${contexts}" var="context">
                     <tr>
-                        <td style="width: 250px"><small>${context.name}</small></td>
+                        <td style="width: 250px"><small><a href="${createLink(action:'editEcologicalContext', params:[ecologicalContextId: context.id])}">${context.name}</a></small></td>
                         <g:each in="${questions}" var="question">
                             <g:set var="matrixValue" value="${valueMap["${context.id}_${question.id}"]}" />
                             <g:set var="required" value="${matrixValue ? (matrixValue.required ? 'Y' : 'N')  : ''}" />
@@ -72,13 +75,19 @@
             </tbody>
         </table>
 
-        <content tag="adminButtonBar">
-            <button id="btnAddQuestion" class="btn btn-small btn-primary"><i class="icon-plus icon-white"></i>&nbsp;Add question</button>
-        </content>
-
         <script type="text/javascript">
 
             $(document).ready(function() {
+
+                $("#btnExport").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(action:'exportMatrix')}";
+                });
+
+                $("#btnImport").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(action:'selectImportFile', params:[importType: 'matrix'])}";
+                });
 
                 $("#btnAddQuestion").click(function(e) {
                     e.preventDefault();
@@ -124,10 +133,7 @@
                                 td.removeClass("value-not-required");
                             }
                         });
-
                     }
-
-
                 });
 
             });

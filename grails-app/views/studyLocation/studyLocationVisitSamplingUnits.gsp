@@ -15,7 +15,7 @@
                         <td>Study Location&nbsp;&#187;&nbsp;
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a>&nbsp;&#187;&nbsp;
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}">Visits</a>&nbsp;&#187;&nbsp;
-                        Visit ${visit.visitId} Sampling Units</td>
+                        Visit ${visitSummary.visitId} Sampling Units</td>
                         <td></td>
                     </tr>
                 </table>
@@ -31,15 +31,19 @@
                     </tr>
                     <tr>
                         <td>Start Date</td>
-                        <td><sts:formatDateStr date="${visit.startDate}"/></td>
+                        <td><sts:formatDateStr date="${visitDetail.startDate}"/></td>
                     </tr>
                     <tr>
                         <td>End Date</td>
-                        <td><sts:formatDateStr date="${visit.endDate}"/></td>
+                        <td><sts:formatDateStr date="${visitDetail.endDate}"/></td>
                     </tr>
                     <tr>
                         <td>Observers</td>
-                        <td>${visit.observers?.join(", ")}</td>
+                        <td>${visitSummary.observers?.join(", ")}</td>
+                    </tr>
+                    <tr>
+                        <td>Visit Notes</td>
+                        <td>${visitDetail.visitNotes}</td>
                     </tr>
 
                 </table>
@@ -51,15 +55,13 @@
                             <th>Date</th>
                             <th>Observers</th>
                             <th>Sampling Unit</th>
-                            <th>Summary</th>
                         </tr>
                     </thead>
-                    <g:each in="${visit.samplingUnitSummaryList}" var="su">
+                    <g:each in="${visitSummary.samplingUnitSummaryList}" var="su">
                         <tr>
                             <td><sts:formatDateStr date="${su.sampleDate}"/></td>
                             <td>${su.observerNames?.join(", ")}</td>
-                            <td>${su.description ?: su.samplingUnit}</td>
-                            <td>${su.summary}</td>
+                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, visitId: visitSummary.visitId, samplingUnit: su.samplingUnit])}">${su.description ?: su.samplingUnit}</a> </td>
                         </tr>
                     </g:each>
                 </table>

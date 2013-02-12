@@ -53,6 +53,7 @@
                 <div class="controls">
                     <g:select id="samplingUnit" from="${samplingUnits}" optionKey="id" optionValue="name" noSelection="['':'- Choose a sampling unit -']" style="margin-bottom: 0" name="unit" class="input-xlarge"/>
                     <button id="btnAddUnit" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;Add</button>
+                    <button type="button" id="btnRemoveAll" class="btn btn-danger pull-right"><i class="icon-remove icon-white"></i>&nbsp;Remove All</button>
                 </div>
             </div>
             <div id="samplingUnits"></div>
@@ -69,6 +70,13 @@
                         $.ajax(url).done(function() {
                             renderSamplingUnits();
                         });
+                    }
+                });
+
+                $("#btnRemoveAll").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you wish to remove all sampling units from this ecological context?")) {
+                        window.location = "${createLink(action:'removeAllContextSamplingUnits', params:[ecologicalContextId: context.id])}";
                     }
                 });
 

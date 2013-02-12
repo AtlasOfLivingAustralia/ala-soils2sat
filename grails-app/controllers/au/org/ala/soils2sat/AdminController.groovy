@@ -1,6 +1,9 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
+import org.grails.plugins.csv.CSVWriter
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 class AdminController {
 
@@ -247,7 +250,7 @@ class AdminController {
         if (question) {
             [question: question]
         } else {
-            flash.message = "Could not retrieve question!"
+            flash.errorMessage = "Could not retrieve question!"
             redirect(action:'matrix')
             return
         }
@@ -285,7 +288,11 @@ class AdminController {
     def deleteQuestion() {
         def question = Question.get(params.int("questionId"))
         if (question) {
-            question.delete();
+            try {
+                question.delete(flush: true);
+            } catch (Exception ex) {
+                flash.errorMessage = "Delete failed: " + ex.message
+            }
         }
         redirect(action:'matrix')
     }
@@ -315,10 +322,24 @@ class AdminController {
     def deleteEcologicalContext() {
         def context = EcologicalContext.get(params.int("ecologicalContextId"))
         if (context) {
-            context.delete(flush: true)
+            try {
+                context.delete(flush: true)
+            } catch (Exception ex) {
+                flash.errorMessage = "Delete failed! " + ex.message
+            }
         }
 
         redirect(action: 'ecologicalContexts')
+    }
+
+    def deleteAllEcologicalContexts() {
+        try {
+            EcologicalContext.deleteAll(EcologicalContext.list())
+        } catch (Exception ex) {
+            flash.errorMessage = "Delete All failed: " + ex.message
+        }
+
+        redirect(action:'ecologicalContexts')
     }
 
     def newEcologicalContext() {
@@ -422,7 +443,19 @@ class AdminController {
             }
         }
         render ([status:'ok'] as JSON)
+    }
 
+    def removeAllContextSamplingUnits() {
+        def context = EcologicalContext.get(params.int("ecologicalContextId"))
+        if (context) {
+            try {
+                context.samplingUnits.clear();
+            } catch (Exception ex) {
+                flash.errorMessage = "Failed to remove all sampling units: " + ex.message
+            }
+        }
+
+        redirect(action: 'editEcologicalContext', params: [ecologicalContextId: context?.id])
     }
 
     def samplingUnits() {
@@ -453,6 +486,16 @@ class AdminController {
             }
         }
         redirect(controller: 'admin', action:'samplingUnits')
+    }
+
+    def deleteAllSamplingUnits() {
+        try {
+            SamplingUnit.deleteAll(SamplingUnit.list())
+        } catch (Exception ex) {
+            flash.errorMessage = "Delete All failed: " + ex.message
+        }
+
+        redirect(action: "samplingUnits")
     }
 
     def advancedSettings() {
@@ -524,6 +567,227 @@ class AdminController {
 
 
         redirect(action:'advancedSettings')
+    }
+
+    def exportSamplingUnits() {
+
+        def units = SamplingUnit.list()
+        def columns = ['SamplingUnit']
+
+        response.setHeader("Content-disposition", "attachment;filename=SamplingUnits.csv")
+        response.contentType = "text/csv"
+
+        def bos = new OutputStreamWriter(response.outputStream)
+
+        def writer = new CSVWriter(bos, {
+            SamplingUnitName { it.name }
+        })
+
+        units.each {
+            writer << it
+        }
+
+        bos.flush()
+        bos.close()
+    }
+
+    def selectImportFile() {
+        def importType = params.importType as String;
+        def heading = ''
+        def importAction = ''
+        def cancelUrl = ''
+        switch(importType) {
+            case "samplingUnits":
+                heading = "Import Sampling Units"
+                importAction = 'importSamplingUnits'
+                cancelUrl = createLink(action: 'samplingUnits')
+                break
+            case "matrix":
+                heading = "Import matrix from JSON file"
+                importAction = "importMatrix"
+                cancelUrl = createLink(action: 'matrix')
+                break
+        }
+
+        if (!heading) {
+            redirect(action: 'index')
+            return
+        }
+
+        [heading: heading, importType: importType, importAction: importAction, cancelUrl: cancelUrl]
+    }
+
+    def importSamplingUnits() {
+
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('filename')
+            if (f != null) {
+                def allowedMimeTypes = ['text/csv']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.errorMessage = "The file must be one of: ${allowedMimeTypes}"
+                    redirect(action:'samplingUnits')
+                    return;
+                }
+                int lineCount = 0
+                int importCount = 0
+                f.inputStream.toCsvReader([skipLines: 1]).eachLine { tokens ->
+                    lineCount++
+                    def newName = tokens[0]
+                    def existing = SamplingUnit.findByName(newName)
+                    if (!existing) {
+                        def samplingUnit = new SamplingUnit(name: newName)
+                        samplingUnit.save()
+                        importCount++
+                    }
+                    println tokens
+                }
+                flash.message ="${lineCount} line(s) processed, ${importCount} new sampling units created."
+            } else {
+                flash.errorMessage ="No file selected!"
+            }
+        }
+
+        redirect(action: 'samplingUnits')
+    }
+
+    def exportMatrix() {
+
+        def data = [:]
+        // First do samplingUnits
+        def samplingUnits = SamplingUnit.list();
+        data.samplingUnits = []
+        samplingUnits.each {
+            data.samplingUnits << [name: it.name, id:  it.id]
+        }
+        // then ecological contexts
+        def ecologicalContexts = EcologicalContext.list()
+        data.ecologicalContexts = []
+        ecologicalContexts.each {
+            data.ecologicalContexts << [name: it.name, description: it.description, samplingUnits: it.samplingUnits.collect { it.id }, id:it.id]
+        }
+        // then the questions
+        def questions = Question.list()
+        data.questions = []
+        questions.each {
+            data.questions << [text: it.text, description: it.description, id: it.id]
+        }
+        // finally the matrix values...
+        def matrixValues = MatrixValue.findAll()
+        data.matrixValues = [:]
+        matrixValues.each {
+            if (it.required != null) {
+                def key = "${it.question.id}_${it.ecologicalContext.id}"
+                data.matrixValues[key] = it.required
+            }
+        }
+
+        response.setHeader("Content-disposition", "attachment;filename=matrix.json")
+        response.contentType = "text/csv"
+
+        def writer = new OutputStreamWriter(response.outputStream)
+
+        writer.write((data as JSON).toString(true))
+
+        writer.flush()
+        writer.close()
+    }
+
+    def importMatrix() {
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('filename')
+            if (f != null) {
+                def allowedMimeTypes = ['application/json']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.errorMessage = "The file must be one of: ${allowedMimeTypes}"
+                    redirect(action:'samplingUnits')
+                    return;
+                }
+
+                def data = JSON.parse(f.inputStream, "utf-8")
+
+                def results = [samplingUnitsAdded: 0, ecologicalContextsAdded: 0, contextSamplingUnitsBound: 0, questionsAdded: 0, matrixValuesAdded: 0 ]
+                Map<Long, Long> samplingUnitMap = [:]
+                Map<Long, Long> ecologicalContextMap = [:]
+                Map<Long, Long> questionMap = [:]
+
+                // first ensure all the sampling units are in
+                data.samplingUnits.each {
+                    def existing = SamplingUnit.findByName(it.name)
+                    if (!existing) {
+                        existing = new SamplingUnit(name: it.name)
+                        existing.save(flush: true, failOnError: true)
+                        results.samplingUnitsAdded++
+                    }
+                    samplingUnitMap[it.id as Long] = existing.id
+                }
+
+                // Then ecological contexts
+                data.ecologicalContexts.each { context ->
+                    def existing = EcologicalContext.findByName(context.name)
+                    if (!existing) {
+                        existing = new EcologicalContext(name: context.name, description: context.description)
+                        existing.save(flush: true, failOnError: true)
+                        results.ecologicalContextsAdded++
+                    }
+                    ecologicalContextMap[context.id as Long] = existing.id
+                    // Now the sampling units attached to the ecological context
+                    context.samplingUnits.each { unitId ->
+                        def mappedId = samplingUnitMap[unitId as Long] as Long
+                        def samplingUnit = SamplingUnit.get(mappedId)
+                        if (!samplingUnit) {
+                            throw new RuntimeException("Internal error! Could not locate sampling unit via mapped id!")
+                        }
+                        if (!existing.samplingUnits?.contains(samplingUnit)) {
+                            existing.addToSamplingUnits(samplingUnit)
+                            results.contextSamplingUnitsBound++
+                        }
+                    }
+                }
+
+                // Now questions
+                data.questions.each { question ->
+                    def existing = Question.findByText(question.text)
+                    if (!existing) {
+                        existing = new Question(text: question.text, description: question.description)
+                        existing.save(flush: true, failOnError: true)
+                        results.questionsAdded++
+                    }
+                    questionMap[question.id as Long] = existing.id
+                }
+
+                // And finally the matrix values...
+                data.matrixValues.each { kvp ->
+                    def bits = kvp.key.split("_")
+                    def questionId = questionMap[Long.parseLong(bits[0])]
+                    def contextId = ecologicalContextMap[Long.parseLong(bits[1])]
+
+                    println "questionID: ${questionId} contextID: ${contextId}"
+
+                    def question = Question.get(questionId)
+                    if (!question) {
+                        throw new RuntimeException("Failed to retrieve a value Matrix Value Question from mapped ids! ID " + questionId)
+                    }
+
+                    def ecologicalContext = EcologicalContext.get(contextId)
+                    if (!ecologicalContext) {
+                        throw new RuntimeException("Failed to retrieve a value Matrix Value Question from mapped ids! ID " + contextId)
+                    }
+
+                    def existing = MatrixValue.findByQuestionAndEcologicalContext(question, ecologicalContext)
+                    if (!existing) {
+                        existing = new MatrixValue(question: question, ecologicalContext: ecologicalContext)
+                        existing.save(flush: true, failOnError: true)
+                        results.matrixValuesAdded++
+                    }
+                    existing.required = kvp.value as Boolean
+                }
+
+                flash.message = results.toString()
+            }
+        }
+
+        redirect(action: 'matrix')
+
     }
 
 }

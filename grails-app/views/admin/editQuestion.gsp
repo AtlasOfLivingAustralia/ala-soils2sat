@@ -15,9 +15,13 @@
 
         <script type="text/javascript">
 
-            $("#btnAddQuestion").click(function(e) {
-                e.preventDefault();
-                window.location = "${createLink(controller: 'admin', action:'newQuestion')}";
+            $(document).ready(function() {
+                $("#btnDelete").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to delete this question?")) {
+                        window.location = "${createLink(action:"deleteQuestion", params:[questionId:question.id])}";
+                    }
+                });
             });
 
         </script>
@@ -48,6 +52,7 @@
                 <div class="control-group">
                     <div class="controls">
                         <g:submitButton class="btn btn-primary" name="submit" value='Update'/>
+                        <button id="btnDelete" type="button" class="btn btn-danger">Delete</button>
                     </div>
                 </div>
 

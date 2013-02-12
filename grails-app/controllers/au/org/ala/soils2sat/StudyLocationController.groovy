@@ -419,12 +419,12 @@ class StudyLocationController {
 
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
-
-        def visit = studyLocationSummary.visitSummaries?.find {
+        def visitSummary = studyLocationSummary.visitSummaries?.find {
             it.visitId == params.visitId
         }
+        def visitDetail = studyLocationService.getVisitDetails(params.visitId as String)
 
-        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visit: visit]
+        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visitDetail: visitDetail, visitSummary: visitSummary]
     }
 
     def ajaxSelectedStudyLocationsFragment() {
@@ -432,5 +432,36 @@ class StudyLocationController {
         [userInstance: userInstance, appState: userInstance?.applicationState]
     }
 
+    def samplingUnitDetail() {
+
+        def visitId = params.visitId
+        def samplingUnit = params.samplingUnit
+        def studyLocationSummary = studyLocationService.getStudyLocationSummary(params.studyLocationName)
+        def visitDetail = studyLocationService.getVisitDetails(visitId as String)
+        def dataList = []
+        switch (samplingUnit) {
+            case "POINT_INTERCEPT":
+                dataList = visitDetail.pointInterceptWithHerbIdAddedList
+                break
+            case "STRUCTURAL_SUMMARY":
+                dataList = visitDetail.structuralSummaryList
+                break
+            case "SOIL_STRUCTURE":
+                dataList = visitDetail.soilStructureList
+                break
+            case "SOIL_CHARACTER":
+                dataList = visitDetail.soilCharacterisationList
+                break
+            case "SOIL_SAMPLING":
+                dataList = visitDetail.soilSampleList
+                break
+            default:
+            break;
+        }
+
+        def colHeadings = dataList[0]?.collect { it.key }
+
+        [visitDetail: visitDetail, studyLocationName: params.studyLocationName, studyLocationSummary: studyLocationSummary, samplingUnit: samplingUnit, columnHeadings: colHeadings, dataList: dataList]
+    }
 
 }
