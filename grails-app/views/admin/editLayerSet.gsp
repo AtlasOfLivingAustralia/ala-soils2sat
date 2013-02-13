@@ -55,7 +55,7 @@
         <tbody>
         <g:each in="${layerSet.layers}" var="layerName">
             <tr layerName="${layerName}">
-                <td>${StringEscapeUtils.escapeHtml(layerName)}</td>
+                <td>${StringEscapeUtils.escapeHtml(displayNames[layerName])}&nbsp;<small class="muted">(${StringEscapeUtils.escapeHtml(layerName)})</small></td>
                 <td>
                     <button class="btn btn-mini btnShowLayerInfo"><i class="icon-info-sign"></i></button>
                     <button class="btn btn-mini btnRemoveLayerFromSet"><i class="icon-remove"></i></button>
@@ -77,16 +77,6 @@
 
     $(document).ready(function () {
 
-        %{--$("#layerInfoLink").fancybox({--}%
-            %{--beforeLoad:function () {--}%
-                %{--var layerName = $("#layerInfoContent").attr("layerName");--}%
-                %{--$("#layerInfoContent").html("Loading...");--}%
-                %{--$.ajax("${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName).done(function (html) {--}%
-                    %{--$("#layerInfoContent").html(html);--}%
-                %{--});--}%
-            %{--}--}%
-        %{--});--}%
-
         $(".btnShowLayerInfo").click(function (e) {
             e.preventDefault();
             var layerName = $(this).parents("tr[layerName]").attr("layerName");
@@ -102,8 +92,6 @@
                 height: 500,
                 width: 600
             });
-            %{--$("#layerInfoContent").attr("layerName", layerName);--}%
-            %{--$("#layerInfoLink").click();--}%
             return true;
         }
 

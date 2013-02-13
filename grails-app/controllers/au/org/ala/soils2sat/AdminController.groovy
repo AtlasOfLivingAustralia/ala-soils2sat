@@ -15,13 +15,13 @@ class AdminController {
 
     def userList() {
 
-        def userList = User.listOrderByUsername()
+        def userList = User.list()
 
         userList.removeAll {
             it.username == 'admin'
         }
 
-        [userList: userList]
+        [userList: userList.sort({ it.applicationState?.lastLogin }).reverse()]
     }
 
     def addUser() {
@@ -148,7 +148,6 @@ class AdminController {
 
     def layerSets() {
         def layerSets = LayerSet.findAllWhere(user: null).sort() { it.id }
-
         [layerSets: layerSets]
     }
 
@@ -174,7 +173,14 @@ class AdminController {
             return
         }
 
-        [layerSet: layerSet]
+        def layerNames = [:]
+        layerSet.layers?.each { layerName ->
+            def layerInfo = layerService.getLayerInfo(layerName)
+            layerNames[layerName] = layerInfo.displayname
+        }
+
+
+        [layerSet: layerSet, displayNames: layerNames]
     }
 
     def saveLayerSet() {
@@ -538,7 +544,11 @@ class AdminController {
     def deleteSearchCriteriaDefinition() {
         def criteria = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
         if (criteria) {
-            criteria.delete(flush: true)
+            try {
+                criteria.delete(flush: true)
+            } catch (Exception ex) {
+                flash.errorMessage = "Delete failed. This is probably because there exists search critera that use this definition<br/>" + ex.message
+            }
         }
 
         redirect(action:"searchCriteria")
@@ -607,6 +617,16 @@ class AdminController {
                 importAction = "importMatrix"
                 cancelUrl = createLink(action: 'matrix')
                 break
+            case "layerSets":
+                heading = "Import Layer Sets from JSON file"
+                importAction = "importLayerSets"
+                cancelUrl = createLink(action: 'layerSets')
+                break
+            case "searchCriteriaDefinitions":
+                heading = "Import Search Criteria Definitions from JSON file"
+                importAction = "importSearchCriteriaDefinitions"
+                cancelUrl = createLink(action: "searchCriteria")
+                break
         }
 
         if (!heading) {
@@ -650,6 +670,107 @@ class AdminController {
         redirect(action: 'samplingUnits')
     }
 
+    def exportSearchCriteriaDefinitions() {
+        def data = []
+
+        def criteriaDefinitions = SearchCriteriaDefinition.list()
+        criteriaDefinitions.each {
+            data << [name: it.name, description: it.description, fieldName: it.fieldName, type: it.type.toString(), valueType: it.valueType.toString()]
+        }
+
+        writeJSON(data, 'searchCriteria')
+    }
+
+    def importSearchCriteriaDefinitions() {
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('filename')
+            if (f != null) {
+                def allowedMimeTypes = ['application/json']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.errorMessage = "The file must be one of: ${allowedMimeTypes}"
+                    redirect(action:'searchCriteria')
+                    return;
+                }
+
+                def data = JSON.parse(f.inputStream, "utf-8")
+                if (data) {
+                    data.each {
+                        def existing = SearchCriteriaDefinition.findByName(it.name)
+                        if (!existing) {
+                            existing = new SearchCriteriaDefinition(it)
+                            existing.save(flush: true, failOnError: true)
+                        }
+                    }
+                }
+            }
+        }
+        redirect(action: 'searchCriteria')
+    }
+
+    private writeJSON(Object data, String filename) {
+
+        response.setHeader("Content-disposition", "attachment;filename=${filename}.json")
+        response.contentType = "text/csv"
+
+        def writer = new OutputStreamWriter(response.outputStream)
+
+        try {
+            writer.write((data as JSON).toString(true))
+        } finally {
+            if (writer) {
+                writer.flush()
+                writer.close()
+            }
+        }
+
+    }
+
+
+    def exportLayerSets() {
+        def layerSets = LayerSet.findAllWhere(user: null)
+        def data = []
+
+        layerSets.each { layerSet ->
+            def set = [name:layerSet.name, description: layerSet.description, layerSet: []]
+            layerSet.layers?.each { layerName ->
+                set.layerSet << layerName
+            }
+            data << set
+        }
+        writeJSON(data, "layerSets")
+    }
+
+    def importLayerSets() {
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('filename')
+            if (f != null) {
+                def allowedMimeTypes = ['application/json']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.errorMessage = "The file must be one of: ${allowedMimeTypes}"
+                    redirect(action:'layerSets')
+                    return;
+                }
+
+                def data = JSON.parse(f.inputStream, "utf-8")
+                if (data) {
+                    data.each {
+                        def existing = LayerSet.findByNameAndUser(it.name, null)
+                        if (!existing) {
+                            existing = new LayerSet(user: null, name: it.name, description: it.description)
+                            existing.save(flush: true, failOnError: true)
+                        }
+                        it.layerSet?.each { layerName ->
+                            if (!existing.layers?.contains(layerName)) {
+                                existing.addToLayers(layerName)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        redirect(action: 'layerSets')
+    }
+
     def exportMatrix() {
 
         def data = [:]
@@ -681,15 +802,7 @@ class AdminController {
             }
         }
 
-        response.setHeader("Content-disposition", "attachment;filename=matrix.json")
-        response.contentType = "text/csv"
-
-        def writer = new OutputStreamWriter(response.outputStream)
-
-        writer.write((data as JSON).toString(true))
-
-        writer.flush()
-        writer.close()
+        writeJSON(data, "matrix")
     }
 
     def importMatrix() {
@@ -699,7 +812,7 @@ class AdminController {
                 def allowedMimeTypes = ['application/json']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.errorMessage = "The file must be one of: ${allowedMimeTypes}"
-                    redirect(action:'samplingUnits')
+                    redirect(action:'matrix')
                     return;
                 }
 

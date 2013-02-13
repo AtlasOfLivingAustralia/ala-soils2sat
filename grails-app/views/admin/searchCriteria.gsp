@@ -35,12 +35,28 @@
                     }
                 });
 
+                $("#btnImport").click(function(e) {
+                    e.preventDefault();
+                    window.location="${createLink(action:'selectImportFile', params:[importType:'searchCriteriaDefinitions'])}";
+                });
+
+                $("#btnExport").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(action:'exportSearchCriteriaDefinitions')}";
+                });
 
             });
 
         </script>
 
         <content tag="pageTitle">Search Criteria</content>
+
+        <content tag="adminButtonBar">
+            <button id="btnImport" class="btn btn-small"><i class="icon-upload"></i>&nbsp;Import criteria</button>
+            <button id="btnExport" class="btn btn-small"><i class="icon-download-alt"></i>&nbsp;Export criteria</button>
+            <button class="btn btn-small btn-primary" id="btnAddCriteria"><i class="icon-plus icon-white"></i>&nbsp;Add Criteria Definition</button>
+        </content>
+
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -69,8 +85,5 @@
             </tbody>
         </table>
     </body>
-    <content tag="adminButtonBar">
-      <button class="btn btn-small btn-primary" id="btnAddCriteria"><i class="icon-plus icon-white"></i>&nbsp;Add Criteria Definition</button>
-    </content>
 
 </html>
