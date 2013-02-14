@@ -8,10 +8,11 @@
                     <tr searchCriteriaId="${criteria.id}">
                         <td>
                             <strong>${criteria.criteriaDefinition.name}</strong>&nbsp;
-                            ${au.org.ala.soils2sat.SearchCriteriaUtils.format(criteria, "strong")}
+                            ${au.org.ala.soils2sat.SearchCriteriaUtils.format(criteria, { str -> "<strong>${str}</strong>" as String} )}
                         </td>
                         <td>
-                            <button type="button" class="btn btn-mini pull-right btnDeleteCriteria"><i class="icon-remove"></i></button>
+                            <button type="button" class="btn btn-mini pull-right btnDeleteCriteria" title="Remove this search criteria"><i class="icon-remove"></i></button>
+                            <button type="button" style="margin-right:5px" class="btn btn-mini pull-right btnEditCriteria" title="Edit search criteria"><i class="icon-edit"></i></button>
                         </td>
                     </tr>
                 </table>
@@ -32,5 +33,22 @@
             });
         }
     });
+
+    $(".btnEditCriteria").click(function(e) {
+        e.preventDefault();
+        var criteriaId = $(this).parents("tr[searchCriteriaId]").attr("searchCriteriaId");
+        if (criteriaId) {
+            showModal({
+                url: "${createLink(action:'ajaxEditSearchCriteriaFragment')}?criteriaId=" + criteriaId,
+                title: "Edit search criteria",
+                height: 520,
+                width: 700,
+                onClose: function () {
+                    renderCriteria();
+                }
+            });
+        }
+    });
+
 
 </script>

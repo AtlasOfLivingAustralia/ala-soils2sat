@@ -205,33 +205,13 @@ class S2STagLib {
             def mb = new MarkupBuilder(out)
             switch (criteriaDefinition.valueType) {
                 case CriteriaValueType.StringDirectEntry:
-                    mb.span {
-                        mkp.yield("Enter a value (or values seperated by '|') to match:")
-                    }
-                    mb.div {
-                        input(type:'text', name:'fieldValue', class:"input-xlarge") {}
-                    }
+                    out << render(template: '/criteriaControls/stringDirectEntry', model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
                     break;
                 case CriteriaValueType.NumberRangeDouble:
-                case CriteriaValueType.NumberRangeInteger:
-                    mb.label(class:'radio inline', style:'white-space: nowrap') {
-                        mb.input(type:'radio', name:'operator', value: 'gt', checked:'checked') {
-                        }
-                        mkp.yield("Greater than or equal to")
-                    }
-                    mb.label(class:'radio inline', style:'white-space: nowrap') {
-                        mb.input(type:'radio', name:'operator', value: 'lt') {
-                            mkp.yield("Less than or equal to")
-                        }
-                    }
-                    mb.input(type: "text", name:"numberValue",placeholder:'Value', class:'input-small', style: "margin-left: 20px")
-                    if (attrs.units) {
-                        mb.span {
-                            mkp.yieldUnescaped("&nbsp;(")
-                            mkp.yield(attrs.units + ")")
-                        }
-                    }
-                    mb.input(type: 'hidden', name:'units', value: attrs.units) { }
+                    out << render(template: '/criteriaControls/numberRangeDouble', model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
+                    break;
+                case CriteriaValueType.DateRange:
+                    out << render(template: '/criteriaControls/dateRange', model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
                     break;
                 default:
                     mb.div {

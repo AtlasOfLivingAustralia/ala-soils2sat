@@ -58,7 +58,6 @@ class SearchController {
         [results: searchResults, userInstance: userInstance, appState: appState, userSearch: userSearch]
     }
 
-
     def ajaxAddSearchCriteriaFragment() {
         def criteriaDefinitions = SearchCriteriaDefinition.list().sort { it.name }
         [criteriaDefinitions: criteriaDefinitions]
@@ -66,37 +65,58 @@ class SearchController {
 
     def ajaxSpatialFieldCriteriaFragment() {
         def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        def criteria = SearchCriteria.get(params.int("criteriaId"))
         if (criteriaDefinition) {
         // get the list of allowed values
             def values = layerService.getValuesForField(criteriaDefinition.fieldName)
-            return [criteriaDefinition: criteriaDefinition, allowedValues: values]
+            return [criteriaDefinition: criteriaDefinition, allowedValues: values, criteria: criteria]
         }
     }
 
     def ajaxSpatialLayerCriteriaFragment() {
         def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        def criteria = SearchCriteria.get(params.int("criteriaId"))
         def layerInfo = layerService.getLayerInfo(criteriaDefinition.fieldName)
-        return [criteriaDefinition: criteriaDefinition, layerInfo: layerInfo]
+        return [criteriaDefinition: criteriaDefinition, layerInfo: layerInfo, criteria: criteria]
+    }
+
+    def ajaxAusPlotsCriteriaFragment() {
+        def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        def criteria = SearchCriteria.get(params.int("criteriaId"))
+
+        return [criteriaDefinition: criteriaDefinition, criteria: criteria]
     }
 
     def ajaxCriteriaDetailFragment() {
-        def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        try {
 
-        if (criteriaDefinition) {
-            switch (criteriaDefinition.type) {
-                case CriteriaType.SpatialPortalField:
-                    redirect(action: 'ajaxSpatialFieldCriteriaFragment', params: params)
-                    break;
-                case CriteriaType.SpatialPortalLayer:
-                    redirect(action: 'ajaxSpatialLayerCriteriaFragment', params: params)
-                    break;
-                default:
-                    throw new RuntimeException("Unhandled CriteriaType")
+            def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+            if (criteriaDefinition) {
+                switch (criteriaDefinition.type) {
+                    case CriteriaType.SpatialPortalField:
+                        redirect(action: 'ajaxSpatialFieldCriteriaFragment', params: params)
+                        break
+                    case CriteriaType.SpatialPortalLayer:
+                        redirect(action: 'ajaxSpatialLayerCriteriaFragment', params: params)
+                        break
+                    case CriteriaType.StudyLocationVisit:
+                        redirect(action: 'ajaxAusPlotsCriteriaFragment', params: params)
+                        break
+                    default:
+                        throw new RuntimeException("Unhandled CriteriaType - " + criteriaDefinition.type)
+                }
+                return
             }
-            return
+            throw new RuntimeException("No criteria specified!")
+        } catch (Exception ex) {
+            redirect(action:'ajaxErrorFragment', params: [title: 'Error getting criteria details', errorMessage: ex.message])
         }
+    }
 
-        throw new RuntimeException("No criteria specified!")
+    def ajaxErrorFragment() {
+        def title = params.title ?: "Error!"
+        def errorMessage = params.errorMessage ?: "Unspecified Error!"
+        [title: title, errorMessage: errorMessage]
     }
 
     private String joinMulti(Object val) {
@@ -135,7 +155,12 @@ class SearchController {
                 if (params.operator && params.numberValue) {
                     try {
                         def number = Double.parseDouble(params.numberValue)
-                        return [value:"${params.operator} ${number}"]
+                        if (params.operator == 'bt') {
+                            def number2 = Double.parseDouble(params.numberValue2)
+                            return [value:"${params.operator} ${number}:${number2}"]
+                        } else {
+                            return [value:"${params.operator} ${number}"]
+                        }
                     } catch (Exception ex) {
                         return [errorMessage: "Value is not a valid number!"]
                     }
@@ -143,17 +168,23 @@ class SearchController {
                     return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
                 }
                 break;
-            case CriteriaValueType.NumberRangeInteger:
-                if (params.operator && params.numberValue) {
+            case CriteriaValueType.DateRange:
+                if (params.operator && params.dateValue1) {
                     try {
-                        def number = Integer.parseDouble(params.numberValue)
-                        return [value:"${params.operator} ${number}"]
+                        def startDate = Date.parse("dd/MM/yyyy", params.dateValue1 as String)
+                        if (params.operator == 'bt') {
+                            def endDate = Date.parse("dd/MM/yyyy", params.dateValue2 as String)
+                            return [value:"${params.operator} ${params.dateValue1}:${params.dateValue2}"]
+                        } else {
+                            return [value:"${params.operator} ${params.dateValue1}"]
+                        }
                     } catch (Exception ex) {
-                        return [errorMessage: "Value is not a valid integer!"]
+                        return [errorMessage: "Value is not a valid date!"]
                     }
                 } else {
                     return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
                 }
+
                 break;
         }
 
@@ -162,6 +193,7 @@ class SearchController {
 
     def addSearchCriteriaAjax() {
         def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
+        def criteria = SearchCriteria.get(params.criteriaId)
         def results = [status:'ok']
         if (!criteriaDefinition) {
             flash.message = "Error! A search criteria definition was not selected"
@@ -171,6 +203,7 @@ class SearchController {
             switch (criteriaDefinition.type) {
                 case CriteriaType.SpatialPortalField:
                 case CriteriaType.SpatialPortalLayer:
+                case CriteriaType.StudyLocationVisit:
 
                     def extractResults = extractFieldValue(criteriaDefinition, params)
 
@@ -195,10 +228,14 @@ class SearchController {
                     appState.currentSearch.save(failOnError: true)
                 }
 
-                def criteria = new SearchCriteria(criteriaDefinition: criteriaDefinition, value: value, displayUnits: params.units)
+                if (!criteria) {
+                    criteria = new SearchCriteria(criteriaDefinition: criteriaDefinition, value: value, displayUnits: params.units)
+                    appState.currentSearch.addToCriteria(criteria)
+                    appState.currentSearch.save(flush: true, failOnError: true)
+                } else {
+                    criteria.value = value
+                }
                 criteria.save(flush: true, failOnError: true)
-                appState.currentSearch.addToCriteria(criteria)
-                appState.currentSearch.save(flush: true, failOnError: true)
             }
         }
 
@@ -240,6 +277,11 @@ class SearchController {
         }
 
         render([status:'ok'] as JSON)
+    }
+
+    def ajaxEditSearchCriteriaFragment() {
+        def criteria = SearchCriteria.get(params.int("criteriaId"))
+        [criteria: criteria]
     }
 
 }

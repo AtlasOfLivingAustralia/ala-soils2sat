@@ -4,5 +4,6 @@ enum CriteriaType {
     SpatialPortalField,
     SpatialPortalLayer,
     StudyLocation,
+    StudyLocationVisit,
     SamplingUnit
 }

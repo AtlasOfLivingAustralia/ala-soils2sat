@@ -6,5 +6,6 @@ enum CriteriaValueType {
     StringDirectEntry,
     //NumberRangeInteger,
     NumberRangeDouble,
-    Boolean
+    Boolean,
+    DateRange
 }

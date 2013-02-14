@@ -1,14 +1,15 @@
 package au.org.ala.soils2sat
 
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 class SearchCriteriaUtils {
 
-    public static Pattern DoublePattern = Pattern.compile("^(gt|lt)\\s(\\d+[\\.]{0,1}\\d*)\$")
-    public static Pattern IntegerPattern = Pattern.compile("^(gt|lt)\\s(\\d+)\$")
+    public static Pattern DoublePattern = Pattern.compile("^(gt|lt)\\s([-]{0,1}\\d+[\\.]{0,1}\\d*)\$")
+    public static Pattern DoubleRangePattern = Pattern.compile("^(bt)\\s([-]{0,1}\\d+[\\.]{0,1}\\d*)[:]([-]{0,1}\\d+[\\.]{0,1}\\d*)\$")
 
     public static CriteriaEvaluator newDoubleEvaluator(String pattern) {
-        return new DoublePatternEvaluator(pattern)
+        return new DoubleCriteriaEvaluator(pattern)
     }
 
     public static boolean eval(SearchCriteria criteria, String value) {
@@ -19,10 +20,13 @@ class SearchCriteriaUtils {
         return false;
     }
 
-    public static String format(SearchCriteria criteria, String valueDelimiter = "") {
+    public static String format(SearchCriteria criteria, Closure<String> valueFormatter = null) {
         CriteriaEvaluator evaluator = factory(criteria)
         if (evaluator) {
-            def output = evaluator.displayString(valueDelimiter);
+            if (!valueFormatter) {
+                valueFormatter = { it }
+            }
+            def output = evaluator.displayString(valueFormatter);
             if (criteria.displayUnits) {
                 output += " (" + criteria.displayUnits + ")"
             }
@@ -34,16 +38,81 @@ class SearchCriteriaUtils {
     private static CriteriaEvaluator factory(SearchCriteria criteria) {
         switch (criteria.criteriaDefinition.valueType) {
             case CriteriaValueType.NumberRangeDouble:
-                return new DoublePatternEvaluator(criteria.value)
+                return new DoubleCriteriaEvaluator(criteria.value)
+                break
             case CriteriaValueType.StringDirectEntry:
             case CriteriaValueType.StringMultiSelect:
                 return new MultiStringPatternEvaluator(criteria.value)
-                break;
+                break
             case CriteriaValueType.StringSingleSelect:
                 return new StringPatternEvaluator(criteria.value)
-                break;
+                break
+            case CriteriaValueType.DateRange:
+                return new DateRangeCriteriaEvaluator(criteria.value)
+                break
             default:
                 throw new RuntimeException("Unhandled value type: " + criteria.criteriaDefinition.valueType)
+        }
+    }
+
+    public static class DateRangeCriteriaEvaluator implements CriteriaEvaluator {
+
+        public static Pattern DatePattern = Pattern.compile("^(gt|lt)\\s(\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)\$");
+        public static Pattern DateRangePattern = Pattern.compile("^(bt)\\s(\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)[:](\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)\$");
+
+        def _sdf = new SimpleDateFormat("dd/MM/yyyy")
+
+        Date startDate
+        Date endDate
+        String operator
+
+        public DateRangeCriteriaEvaluator(String pattern) {
+            def m = DatePattern.matcher(pattern)
+            if (m.matches()) {
+                operator = m.group(1)
+                startDate = _sdf.parse(m.group(2))
+            } else {
+                m = DateRangePattern.matcher(pattern)
+                if (m.matches()) {
+                    operator = m.group(1)
+                    def date1 = _sdf.parse(m.group(2))
+                    def date2 = _sdf.parse(m.group(3))
+                    startDate = [date1, date2].min()
+                    endDate = [date1, date2].max()
+                } else {
+                    throw new RuntimeException("Unrecognized number range criteria format: " + pattern)
+                }
+            }
+
+        }
+
+        boolean evaluate(String value) {
+            def date = _sdf.parse(value)
+            switch (operator) {
+                case "lt":
+                    return date <= startDate
+                    break
+                case "gt":
+                    return date >= startDate
+                    break
+                case "bt":
+                    return date >= startDate && date <= endDate
+                    break
+            }
+        }
+
+        String displayString(Closure<String> valueFormatter) {
+            switch (operator) {
+                case "lt":
+                    return "is on or before " + valueFormatter(_sdf.format(startDate))
+                    break
+                case "gt":
+                    return "is on or before " + valueFormatter(_sdf.format(startDate))
+                    break
+                case "bt":
+                    return "is between " + valueFormatter(_sdf.format(startDate)) + " and " + valueFormatter(_sdf.format(endDate))
+                    break
+            }
         }
     }
 
@@ -63,35 +132,17 @@ class SearchCriteriaUtils {
             return false
         }
 
-        String displayString(String valueDelimiter) {
+        String displayString(Closure<String> formatValue) {
             if (values) {
                 def sb = new StringBuilder()
                 if (values.size() == 1) {
-                    sb << "matches "
-                    if (valueDelimiter) {
-                        sb << "<" << valueDelimiter << ">"
-                    }
-                    sb << values[0]
-                    if (valueDelimiter) {
-                        sb << "</" << valueDelimiter << ">"
-                    }
+                    sb << "matches " + formatValue(values[0])
                 } else {
                     sb << "is one of "
-                    if (valueDelimiter) {
-                        sb << "<" << valueDelimiter << ">"
-                    }
-                    sb << values[0..values.size() - 2].join(", ")
-                    if (valueDelimiter) {
-                        sb << "</" << valueDelimiter << ">"
-                    }
+                    def formattedValues = values.collect { formatValue(it) }
+                    sb << formattedValues[0..formattedValues.size() - 2].join(", ")
                     sb << " or "
-                    if (valueDelimiter) {
-                        sb << "<" << valueDelimiter << ">"
-                    }
-                    sb << values[values.size()-1]
-                    if (valueDelimiter) {
-                        sb << "</" << valueDelimiter << ">"
-                    }
+                    sb << formattedValues[formattedValues.size()-1]
                 }
                 return sb.toString()
             }
@@ -111,66 +162,67 @@ class SearchCriteriaUtils {
             return valueToMatch.equalsIgnoreCase(testValue)
         }
 
-        public String displayString(String valueDelimiter) {
-            def sb = new StringBuilder()
-            sb << "matches "
-            if (valueDelimiter) {
-                sb << "<" << valueDelimiter << ">"
-            }
-            sb << value
-            if (valueDelimiter) {
-                sb << "</" << valueDelimiter << ">"
-            }
-            return sb.toString()
+        public String displayString(Closure<String> formatValue) {
+            return "matches ${formatValue(valueToMatch)}"
         }
 
     }
 
-    public static class DoublePatternEvaluator implements CriteriaEvaluator {
+    public static class DoubleCriteriaEvaluator implements CriteriaEvaluator {
 
         String operator
-        Double value
+        Double value1
+        Double value2
 
-        public DoublePatternEvaluator(String pattern) {
+        public DoubleCriteriaEvaluator(String pattern) {
             def m = DoublePattern.matcher(pattern)
-            if (!m.matches()) {
-                throw new RuntimeException("Invalid criteria pattern: " + pattern)
+            if (m.matches()) {
+                operator = m.group(1)
+                value1 = Double.parseDouble(m.group(2))
+            } else {
+                m = DoubleRangePattern.matcher(pattern)
+                if (m.matches()) {
+                    operator = m.group(1)
+                    def num1 = Double.parseDouble(m.group(2))
+                    def num2 = Double.parseDouble(m.group(3))
+                    value1 = Math.min(num1, num2)
+                    value2 = Math.max(num1, num2)
+                } else {
+                    throw new RuntimeException("Unrecognized number range criteria format: " + pattern)
+                }
             }
 
-            operator = m.group(1)
-            value = Double.parseDouble(m.group(2))
         }
 
         public boolean evaluate(String testValue) {
             Double val = Double.parseDouble(testValue)
             switch (operator) {
                 case "lt":
-                    return val <= value
-                    break;
+                    return val <= value1
+                    break
                 case "gt":
-                    return val >= value
-                    break;
+                    return val >= value1
+                    break
+                case "bt":
+                    return val >= value1 && val <= value2
+                    break
             }
+            return false
         }
 
-        public String displayString(String valueDelimiter) {
-            def sb = new StringBuilder()
+        public String displayString(Closure<String> formatValue) {
             switch (operator) {
                 case "lt":
-                    sb << "is less than "
-                    break;
+                    return "is less than " + formatValue(value1)
+                    break
                 case "gt":
-                    sb << "is greater than "
-                    break;
+                    return "is greater than " + formatValue(value1)
+                    break
+                case "bt":
+                    return "is between ${formatValue(value1)} and ${formatValue(value2)}"
+                    break
             }
-            if (valueDelimiter) {
-                sb << "<" << valueDelimiter << ">"
-            }
-            sb << value
-            if (valueDelimiter) {
-                sb << "</" << valueDelimiter << ">"
-            }
-            return sb.toString()
+            return "???"
         }
 
     }
@@ -180,7 +232,7 @@ class SearchCriteriaUtils {
 public interface CriteriaEvaluator {
 
     public boolean evaluate(String value)
-    public String displayString(String valueDelimiter)
+    public String displayString(Closure<String> valueFormatter)
 
 }
 

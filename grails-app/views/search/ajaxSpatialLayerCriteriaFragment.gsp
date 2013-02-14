@@ -2,7 +2,7 @@
     <div class="alert alert-info" style="color: black">
         <strong>${layerInfo.description}</strong>
         <div>
-            <sts:criteriaValueControl criteriaDefinition="${criteriaDefinition}" units="${layerInfo?.units ?: layerInfo.environmentalvalueunits}"/>
+            <sts:criteriaValueControl criteriaDefinition="${criteriaDefinition}" units="${layerInfo?.units ?: layerInfo.environmentalvalueunits}" value="${criteria?.value}" />
         </div>
     </div>
     <g:if test="${layerInfo.notes}">
