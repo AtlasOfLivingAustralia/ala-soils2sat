@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.lang.WordUtils" %>
 <!doctype html>
 <html>
     <head>
@@ -23,24 +24,26 @@
             </legend>
 
             <h4>Sampling Unit - ${samplingUnit}</h4>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <g:each in="${columnHeadings}" var="colHeading">
-                            <th>${colHeading}</th>
-                        </g:each>
-                    </tr>
-                </thead>
-                <tbody>
-                    <g:each in="${dataList}" var="row">
+            <small>
+                <table class="table table-bordered table-striped table-condensed">
+                    <thead>
                         <tr>
                             <g:each in="${columnHeadings}" var="colHeading">
-                                <td>${row[colHeading]}</td>
+                                <th>${colHeading}</th>
                             </g:each>
                         </tr>
-                    </g:each>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <g:each in="${dataList}" var="row">
+                            <tr>
+                                <g:each in="${columnHeadings}" var="colHeading">
+                                    <td>${row[colHeading]}</td>
+                                </g:each>
+                            </tr>
+                        </g:each>
+                    </tbody>
+                </table>
+            </small>
         </div>
     </body>
 </html>

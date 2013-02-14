@@ -81,6 +81,16 @@
                     });
                 });
 
+                $("#btnMoveNext").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller: "studyLocation", action: "nextSelectedStudyLocationSummary", params:[studyLocationName: studyLocationName])}";
+                });
+
+                $("#btnMovePrevious").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller: "studyLocation", action: "previousSelectedStudyLocationSummary", params:[studyLocationName: studyLocationName])}";
+                });
+
             });
 
         </script>
@@ -95,6 +105,8 @@
                             <g:if test="${isSelected}">
                                 <button id="btnDeselectAndReturn" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect and return to map</button>
                                 <button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location</button>
+                                <button id="btnMoveNext" style="margin-right:5px" class="btn btn-small pull-right">Show next selected&nbsp;<i class="icon icon-arrow-right"></i></button>
+                                <button id="btnMovePrevious" style="margin-right:5px" class="btn btn-small pull-right"><i class="icon icon-arrow-left"></i>&nbsp;Show previous selected</button>
                             </g:if>
                             <g:else>
                                 <button id="btnSelectAndReturn" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select and return to map</button>

@@ -61,6 +61,7 @@ class SearchCriteriaUtils {
         public static Pattern DateRangePattern = Pattern.compile("^(bt)\\s(\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)[:](\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)\$");
 
         def _sdf = new SimpleDateFormat("dd/MM/yyyy")
+        def _sdf2 = new SimpleDateFormat("MMM dd, yyyy")
 
         Date startDate
         Date endDate
@@ -87,7 +88,13 @@ class SearchCriteriaUtils {
         }
 
         boolean evaluate(String value) {
-            def date = _sdf.parse(value)
+            Date date = null
+            try {
+                date = _sdf.parse(value)
+            } catch (Exception ex) {
+                date = _sdf2.parse(value)
+            }
+
             switch (operator) {
                 case "lt":
                     return date <= startDate
@@ -107,7 +114,7 @@ class SearchCriteriaUtils {
                     return "is on or before " + valueFormatter(_sdf.format(startDate))
                     break
                 case "gt":
-                    return "is on or before " + valueFormatter(_sdf.format(startDate))
+                    return "is on or after " + valueFormatter(_sdf.format(startDate))
                     break
                 case "bt":
                     return "is between " + valueFormatter(_sdf.format(startDate)) + " and " + valueFormatter(_sdf.format(endDate))
@@ -213,10 +220,10 @@ class SearchCriteriaUtils {
         public String displayString(Closure<String> formatValue) {
             switch (operator) {
                 case "lt":
-                    return "is less than " + formatValue(value1)
+                    return "is less or equal to " + formatValue(value1)
                     break
                 case "gt":
-                    return "is greater than " + formatValue(value1)
+                    return "is greater or equal to " + formatValue(value1)
                     break
                 case "bt":
                     return "is between ${formatValue(value1)} and ${formatValue(value2)}"

@@ -25,6 +25,13 @@
                     window.location = "${createLink(controller: 'admin', action:'createDefaultSearchCriteria')}";
                 });
 
+                $("#btnClearAusPlotsCache").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller: 'admin', action:'clearAusPlotsCacheAjax')}").done(function(result) {
+                        this.location = "${createLink(controller: 'admin', action:'advancedSettings')}";
+                    });
+                });
+
             });
 
         </script>
@@ -45,6 +52,15 @@
                         Web service calls to the ALA Spatial Portal for Environmental Layer data are cached. This will clear the cache to allow updated layer data to be presented in the S2S Portal
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <button id="btnClearAusPlotsCache" class="btn btn-small btn-info">Clear&nbsp;AusPlots&nbsp;Cache</button>
+                    </td>
+                    <td>
+                        Web service calls to the AEKOS Portal for survey data are cached. This will clear the cache to allow updated survey data to be presented in the S2S Portal
+                    </td>
+                </tr>
+
                 <tr>
                     <td>
                         <button id="btnCreateDefaultCriteria" class="btn btn-small btn-info">Create default search criteria</button>

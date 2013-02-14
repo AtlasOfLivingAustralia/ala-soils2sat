@@ -8,6 +8,7 @@ class SearchController {
     def springSecurityService
     def layerService
     def studyLocationService
+    def searchService
 
     def index() {
         redirect(action: 'findStudyLocations')
@@ -51,7 +52,7 @@ class SearchController {
             userSearch.right = params.double("right")
         }
 
-        searchResults = studyLocationService.searchStudyLocations(userSearch)
+        searchResults = searchService.searchStudyLocations(userSearch)
 
         def appState = userInstance?.applicationState
 
@@ -99,6 +100,7 @@ class SearchController {
                     case CriteriaType.SpatialPortalLayer:
                         redirect(action: 'ajaxSpatialLayerCriteriaFragment', params: params)
                         break
+                    case CriteriaType.StudyLocation:
                     case CriteriaType.StudyLocationVisit:
                         redirect(action: 'ajaxAusPlotsCriteriaFragment', params: params)
                         break
@@ -203,6 +205,7 @@ class SearchController {
             switch (criteriaDefinition.type) {
                 case CriteriaType.SpatialPortalField:
                 case CriteriaType.SpatialPortalLayer:
+                case CriteriaType.StudyLocation:
                 case CriteriaType.StudyLocationVisit:
 
                     def extractResults = extractFieldValue(criteriaDefinition, params)

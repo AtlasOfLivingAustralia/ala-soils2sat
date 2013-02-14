@@ -10,6 +10,7 @@ class AdminController {
     def springSecurityService
     def userService
     def layerService
+    def studyLocationService
 
     def index() { }
 
@@ -510,6 +511,10 @@ class AdminController {
 
     def clearLayersCacheAjax() {
         layerService.flushCache()
+    }
+
+    def clearAusPlotsCacheAjax() {
+        studyLocationService.flushCache()
     }
 
     def searchCriteria() {

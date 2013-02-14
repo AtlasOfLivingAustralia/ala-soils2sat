@@ -2,6 +2,8 @@ package au.org.ala.soils2sat
 
 import grails.converters.JSON
 import au.com.bytecode.opencsv.CSVWriter
+import org.apache.commons.lang.WordUtils
+
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 
@@ -357,7 +359,7 @@ class StudyLocationController {
     }
 
     def studyLocationSummary() {
-        def studyLocationName = params.studyLocationName
+        def studyLocationName = params.studyLocationName as String
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
@@ -461,7 +463,47 @@ class StudyLocationController {
 
         def colHeadings = dataList[0]?.collect { it.key }
 
+        colHeadings.removeAll(['siteLocationVisitId'])
+
+        samplingUnit = WordUtils.capitalizeFully(samplingUnit.replaceAll('_', ' '))
+
         [visitDetail: visitDetail, studyLocationName: params.studyLocationName, studyLocationSummary: studyLocationSummary, samplingUnit: samplingUnit, columnHeadings: colHeadings, dataList: dataList]
+    }
+
+    def nextSelectedStudyLocationSummary() {
+        def siteName = params.studyLocationName as String
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def nextSiteName = siteName
+        def current = appState.selectedPlots.find {
+            it.name == siteName
+        }
+        if (current) {
+            def index = appState.selectedPlots.indexOf(current)
+            if (index < appState.selectedPlots.size() - 1) {
+                nextSiteName = appState.selectedPlots[index + 1].name
+            }
+        }
+
+        redirect(action:'studyLocationSummary', params:[studyLocationName:nextSiteName])
+    }
+
+    def previousSelectedStudyLocationSummary() {
+        def siteName = params.studyLocationName as String
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def prevSiteName = siteName
+        def current = appState.selectedPlots.find {
+            it.name == siteName
+        }
+        if (current) {
+            def index = appState.selectedPlots.indexOf(current)
+            if (index > 0) {
+                prevSiteName = appState.selectedPlots[index - 1].name
+            }
+        }
+
+        redirect(action:'studyLocationSummary', params:[studyLocationName:prevSiteName])
     }
 
 }

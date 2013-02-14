@@ -16,7 +16,7 @@
             Between
         </label>
     </div>
-    <div>
+    <div style="margin-top: 15px">
         <g:textField class="input-small" style="margin-left: 20px" name="numberValue" placeholder="Value" value="${evaluator?.value1}"/>
         <span class="numberRangeOther" style="display: ${evaluator?.operator == 'bt' ? 'inline-block' : 'none' }">
             &nbsp;and&nbsp;

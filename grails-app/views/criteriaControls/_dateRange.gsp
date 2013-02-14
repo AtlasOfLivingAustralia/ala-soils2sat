@@ -6,11 +6,11 @@
         </g:if>
 
         <label class="radio inline" style="white-space: nowrap">
-            <g:radio class="radioButton" name="operator" value="gt" checked="${evaluator == null || evaluator?.operator == 'gt' ? 'checked' : ''}"/>
+            <g:radio class="radioButton" name="operator" value="lt" checked="${evaluator == null || evaluator?.operator == 'lt' ? 'checked' : ''}"/>
             On or Before
         </label>
         <label class="radio inline" style="white-space: nowrap">
-            <g:radio class="radioButton" name="operator" value="lt" checked="${evaluator?.operator == 'lt' ? 'checked' : ''}" />
+            <g:radio class="radioButton" name="operator" value="gt" checked="${evaluator?.operator == 'gt' ? 'checked' : ''}" />
             On or After
         </label>
         <label class="radio inline" style="white-space: nowrap">
