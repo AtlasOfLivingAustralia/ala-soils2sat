@@ -2,6 +2,8 @@ package au.org.ala.soils2sat
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.WordUtils
+import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
+import org.codehaus.groovy.grails.web.pages.discovery.GroovyPageLocator
 
 import java.text.SimpleDateFormat
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -15,6 +17,7 @@ class S2STagLib {
 
     def springSecurityService
     def layerService
+    def groovyPageLocator
 
     /**
      * @attr active
@@ -202,37 +205,16 @@ class S2STagLib {
     def criteriaValueControl = { attrs, body ->
         def criteriaDefinition = attrs.criteriaDefinition as SearchCriteriaDefinition
         if (criteriaDefinition) {
-            def mb = new MarkupBuilder(out)
-            switch (criteriaDefinition.valueType) {
-                case CriteriaValueType.StringDirectEntry:
-                    out << render(template: '/criteriaControls/stringDirectEntry', model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
-                    break;
-                case CriteriaValueType.NumberRangeDouble:
-                    out << render(template: '/criteriaControls/numberRangeDouble', model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
-                    break;
-                case CriteriaValueType.DateRange:
-                    out << render(template: '/criteriaControls/dateRange', model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
-                    break;
-                default:
-                    mb.div {
-                        mkp.yield("Unhandled input type: " + criteriaDefinition.valueType.toString())
-                    }
-                    break;
-            }
-        }
-    }
-
-    def formatNumberRangeCriteria = { attrs, body ->
-        def criteria = params.criteria as SearchCriteria
-        if (criteria) {
-            def mb = new MarkupBuilder(out)
-            mb.span() {
-                if (criteria.value?.startsWith("lt ")) {
-                    mkp.yield("is less than ")
-                } else if (criteria.value?.startsWith('gt')) {
-                    mkp.yield("")
+            def templateName = criteriaDefinition.valueType.toString()
+            def templatePath = '/criteriaControls/' + templateName[0].toLowerCase() + templateName.substring(1)
+            println templatePath
+            if (groovyPageLocator) {
+                if (!groovyPageLocator.findTemplateByPath(templatePath)) {
+                    throw new Exception("Could not locate template for criteria value type: " + criteriaDefinition.valueType.toString())
                 }
             }
+
+            out << render(template: templatePath, model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
         }
     }
 

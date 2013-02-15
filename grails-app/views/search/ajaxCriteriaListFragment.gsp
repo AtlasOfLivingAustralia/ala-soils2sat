@@ -7,7 +7,12 @@
                 <table style="width: 100%">
                     <tr searchCriteriaId="${criteria.id}">
                         <td>
-                            <strong>${criteria.criteriaDefinition.name}</strong>&nbsp;
+                            <g:if test="${criteria.criteriaDefinition.valueType == CriteriaValueType.Boolean}">
+                                <strong>${criteria.criteriaDefinition.description}</strong>&nbsp;
+                            </g:if>
+                            <g:else>
+                                <strong>${criteria.criteriaDefinition.name}</strong>&nbsp;
+                            </g:else>
                             ${au.org.ala.soils2sat.SearchCriteriaUtils.format(criteria, { str -> "<strong>${str}</strong>" as String} )}
                         </td>
                         <td>

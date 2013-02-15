@@ -170,6 +170,23 @@ class SearchController {
                     return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
                 }
                 break;
+            case CriteriaValueType.NumberRangeInteger:
+                if (params.operator && params.numberValue) {
+                    try {
+                        def number = Integer.parseInt(params.numberValue)
+                        if (params.operator == 'bt') {
+                            def number2 = Integer.parseInt(params.numberValue2)
+                            return [value:"${params.operator} ${number}:${number2}"]
+                        } else {
+                            return [value:"${params.operator} ${number}"]
+                        }
+                    } catch (Exception ex) {
+                        return [errorMessage: "Value is not a valid integer!"]
+                    }
+                } else {
+                    return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
+                }
+                break
             case CriteriaValueType.DateRange:
                 if (params.operator && params.dateValue1) {
                     try {
@@ -186,7 +203,18 @@ class SearchController {
                 } else {
                     return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
                 }
-
+                break
+            case CriteriaValueType.Boolean:
+                if (params.value) {
+                    try {
+                        boolean val = Boolean.parseBoolean(params.value)
+                        return [value: val.toString()]
+                    } catch (Exception ex) {
+                        return [errorMessage: "Value is not valid - " + params.value]
+                    }
+                } else {
+                    return [errorMessage: "Please enter a value for " + criteriaDefinition.name]
+                }
                 break;
         }
 
