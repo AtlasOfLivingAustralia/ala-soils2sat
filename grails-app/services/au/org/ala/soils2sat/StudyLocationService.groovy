@@ -55,6 +55,12 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
+    def getSearchTraits() {
+        def traits = proxyServiceCall(grailsApplication, "getSearchTraits", [])
+        return traits
+    }
+
     @CacheFlush("S2S_LayerCache")
     public void flushCache() {
         logService.log("Flushing Layer Cache")

@@ -214,7 +214,12 @@ class S2STagLib {
                 }
             }
 
-            out << render(template: templatePath, model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value])
+            def allowedValues = []
+            if (criteriaDefinition.valueType == CriteriaValueType.StringMultiSelect && (criteriaDefinition.type == CriteriaType.StudyLocationVisit || criteriaDefinition.type == CriteriaType.StudyLocation)) {
+                allowedValues = []
+            }
+
+            out << render(template: templatePath, model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value, allowedValues: allowedValues])
         }
     }
 

@@ -1,0 +1,3 @@
+<div>
+    ${criteriaDefinition.fieldName}
+</div>
