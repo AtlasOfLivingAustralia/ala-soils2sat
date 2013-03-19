@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.soils2sat.MapSelectionMode" %>
 <style type="text/css">
 
 td.toolButtonCell {
@@ -10,12 +11,12 @@ td.toolButtonCell {
 <div class="well well-small">
 
     <ul class="nav nav-tabs" style="margin-bottom: 0px">
-        <li class="active"><a href="#tab1" data-toggle="tab">Study Locations</a></li>
-        <li><a href="#tab2" data-toggle="tab">Study Location Visits</a></li>
+        <li class="active"><a href="#studyLocationsTab" data-toggle="tab" class="mapSelectModeTab" mapSelectionMode="StudyLocation">Study Locations</a></li>
+        <li><a href="#studyLocationVisitsTab" data-toggle="tab" id="" class="mapSelectModeTab" mapSelectionMode="StudyLocationVisit">Study Location Visits</a></li>
     </ul>
 
     <div class="tab-content">
-        <div class="tab-pane active" id="tab1">
+        <div class="tab-pane active" id="studyLocationsTab">
             <table style="width: 100%">
                 <tr>
                     <td>
@@ -26,24 +27,23 @@ td.toolButtonCell {
                         </h5>
                     </td>
                     <td style="text-align: right">
-                        <button id="btnTogglePlotSelected" class="btn btn-mini ${appState.plotOnlySelectedLocations ? 'active' : ''}">Show only selected on map</button>
+                        <button id="btnTogglePlotSelected" class="btn btn-mini ${appState.plotOnlySelectedLocations ? 'active' : ''}">Show selected only</button>
                     </td>
                 </tr>
             </table>
 
             <p>
-                <button class="btn btn-small btn-info" id="btnFindPlot">Find Study Location <i class="icon-search icon-white"></i>
+                <button class="btn btn-small btn-info" id="btnFindPlot">Find Study Locations&nbsp;<i class="icon-search icon-white"></i>
                 </button>
             </p>
-            %{--<br /></br/>--}%
 
             <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
 
                 <table class="table table-bordered table-condensed table-striped">
                     <g:if test="${appState?.selectedPlots}">
                         <g:each in="${appState?.selectedPlots}">
-                            <tr>
-                                <td><a class="studyLocationDetailsLink" href="#" studyLocationName="${it.name}">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" studyLocationName="${it.name}" title="Remove study location"><i class="icon-remove"/>
+                            <tr studyLocationName="${it.name}">
+                                <td><a class="studyLocationDetailsLink" href="#">${it.name}</a><button class="btn btn-mini pull-right btnRemoveSelectedPlot" title="Remove study location"><i class="icon-remove"/>
                                 </button></td>
                             </tr>
                         </g:each>
@@ -64,11 +64,47 @@ td.toolButtonCell {
 
         </div>
 
-        <div class="tab-pane" id="tab2">
-            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
-                 Coming soon...
-            </div>
+        <div class="tab-pane" id="studyLocationVisitsTab">
+            <table style="width: 100%">
+                <tr>
+                    <td>
+                        <h5>Selected Study Location Visits
+                        <g:if test="${appState?.selectedVisits}">
+                            (${appState.selectedVisits?.size()})
+                        </g:if>
+                        </h5>
+                    </td>
+                    <td style="text-align: right">
+                        <button id="btnTogglePlotSelectedVisits" class="btn btn-mini ${appState.plotOnlySelectedLocations ? 'active' : ''}">Show selected only</button>
+                    </td>
+                </tr>
+            </table>
+
+            <p>
+                <button class="btn btn-small btn-info" id="btnFindPlot">Find Study Location Visits&nbsp;<i class="icon-search icon-white"></i>
+                </button>
+            </p>
         </div>
+
+        <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
+
+            <table class="table table-bordered table-condensed table-striped">
+                <g:if test="${appState?.selectedVisits}">
+                    <g:each in="${appState?.selectedVisits}">
+                        <tr studyLocationVisitId="${it.studyLocationVisitId}">
+                            <td><a class="studyLocationVisitDetailsLink" href="#">${it.studyLocationVisitId}</a><button class="btn btn-mini pull-right btnRemoveSelectedVisit" title="Remove study location visit"><i class="icon-remove"/>
+                            </button></td>
+                        </tr>
+                    </g:each>
+                </g:if>
+                <g:else>
+                    <tr>
+                        <td>No study location visits have been selected</td>
+                    </tr>
+                </g:else>
+            </table>
+        </div>
+
 
     </div>
 
@@ -142,6 +178,22 @@ td.toolButtonCell {
 
     });
 
+    $("#btnTogglePlotSelectedVisits").click(function (e) {
+        e.preventDefault();
+        var currentState = $(this).hasClass('active');
+        if ($(this).hasClass('active')) {
+            $(this).removeClass('active');
+        } else {
+            $(this).addClass('active');
+        }
+
+        $.ajax("${createLink(controller: 'studyLocation', action: 'ajaxSetStudyLocationSelectedOnly')}?plotSelected=" + !currentState + "&mode=visits").done(function (e) {
+            refreshStudyLocationPoints();
+        });
+
+    });
+
+
     $("#btnQuestions").click(function (e) {
         e.preventDefault();
         window.open("${createLink(controller:'question')}", "Questions");
@@ -154,8 +206,18 @@ td.toolButtonCell {
 
     $(".btnRemoveSelectedPlot").click(function (e) {
         e.preventDefault();
-        var studyLocationName = $(this).attr("studyLocationName");
-        deselectPlot(studyLocationName);
+        var studyLocationName = $(this).parents('[studyLocationName]').attr("studyLocationName");
+        if (studyLocationName) {
+            deselectPlot(studyLocationName);
+        }
+    });
+
+    $(".btnRemoveSelectedVisit").click(function (e) {
+        e.preventDefault();
+        var studyLocationVisitId = $(this).parents('[studyLocationVisitId]').attr("studyLocationVisitId");
+        if (studyLocationVisitId) {
+            alert("TODO: deleselectStudyLocationVisit - " + studyLocationVisitId)
+        }
     });
 
     $(".studyLocationDetailsLink").click(function (e) {
@@ -265,6 +327,22 @@ td.toolButtonCell {
         displayLayerInfo(layerName);
     });
 
+    $(".mapSelectModeTab").click(function(e) {
+
+        var selectionMode = $(this).attr("mapSelectionMode");
+        if (selectionMode) {
+            $.ajax("${createLink(contoller:'map', action:'ajaxSetMapSelectionMode')}?mapSelectionMode=" + selectionMode).done(function(e) {
+                refreshStudyLocationPoints();
+            });
+        }
+
+    });
+
     resizeLayerPanel();
+
+    var selectedTab = $('a[mapSelectionMode="${appState.mapSelectionMode}"]');
+    if (selectedTab) {
+        selectedTab.click();
+    }
 
 </script>

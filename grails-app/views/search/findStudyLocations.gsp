@@ -334,7 +334,7 @@
 
 
     function refreshStudyLocationPoints() {
-        $.ajax("${createLink(controller: 'studyLocation', action: 'getUserDisplayedPlots')}").done(function (data) {
+        $.ajax("${createLink(controller: 'studyLocation', action: 'getUserDisplayedPoints')}").done(function (data) {
             addPlotPointsLayer(data);
         });
     }

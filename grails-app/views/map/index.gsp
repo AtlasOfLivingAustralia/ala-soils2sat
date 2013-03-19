@@ -215,7 +215,7 @@
 
           marker.events.register('mouseout', marker, function(e) {
             hidePlotHover(this.tag);
-          });
+          });                                                                       s
 
           marker.events.register('click', marker, function(e) {
             showPlotDetails(this.tag);
@@ -230,7 +230,7 @@
       }
 
       function refreshStudyLocationPoints() {
-        $.ajax("${createLink(controller: 'studyLocation', action: 'getUserDisplayedPlots')}").done(function(data) {
+        $.ajax("${createLink(controller: 'studyLocation', action: 'getUserDisplayedPoints')}").done(function(data) {
           addPlotPointsLayer(data);
         });
       }

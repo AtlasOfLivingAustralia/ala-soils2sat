@@ -35,15 +35,22 @@ class StudyLocationController {
         render (results as JSON)
     }
 
-    def getUserDisplayedPlots() {
+    def getUserDisplayedPoints() {
         def user = springSecurityService.currentUser as User
         def candidates = studyLocationService.getStudyLocations()
         def results = []
         def plotSelectedOnly = user && user.applicationState?.plotOnlySelectedLocations
-        candidates.each {
-            it.selected = user.applicationState?.containsPlot(it.siteName)
-            if (!plotSelectedOnly || it.selected) {
-                results << it
+        def appState = user.applicationState
+
+        def source = appState.mapSelectionMode == MapSelectionMode.StudyLocation ? appState.selectedPlots?.collect { it.name } : appState.selectedVisits?.collect { it.studyLocationName }
+
+        println source
+
+        candidates.each { candidate ->
+            // check if in the 'selected' source
+            candidate.selected = source.find { it == candidate.siteName }
+            if (!plotSelectedOnly || candidate.selected && !(results.contains(candidate))) {
+                results << candidate
             }
         }
 

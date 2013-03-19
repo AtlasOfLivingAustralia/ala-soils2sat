@@ -271,4 +271,22 @@ class MapController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
+    def ajaxSetMapSelectionMode() {
+        def selectionMode = params.mapSelectionMode as MapSelectionMode
+        boolean success = false
+        if (selectionMode) {
+            try {
+                def user = springSecurityService.currentUser as User
+                def appState = user.applicationState;
+                appState.lock();
+                appState.mapSelectionMode = selectionMode
+                appState.save(flush: true, failOnError: true)
+                success = true
+            } catch (Exception ex) {
+                ex.printStackTrace()
+            }
+        }
+        render([status: success ? 'ok' : 'failed'] as JSON)
+    }
+
 }
