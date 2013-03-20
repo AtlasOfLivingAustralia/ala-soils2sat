@@ -16,7 +16,7 @@
                         <td>Study Location&nbsp;&#187;&nbsp;
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a>&nbsp;&#187;&nbsp;
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}">Visits</a>&nbsp;&#187;&nbsp;
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, visitId: visitDetail.id])}">Sampling Units</a>&nbsp;&#187;&nbsp;
+                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, studyLocationVisitId: visitDetail.id])}">Sampling Units</a>&nbsp;&#187;&nbsp;
                             ${samplingUnit}</td>
                         <td></td>
                     </tr>

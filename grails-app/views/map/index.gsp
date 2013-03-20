@@ -87,6 +87,26 @@
         });
       }
 
+      function selectVisit(studyLocationName, studyLocationVisitId, successCallback) {
+          $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit')}?studyLocationName=" + studyLocationName + "&studyLocationVisitId=" + visitId).done(function() {
+              refreshSidebar();
+              if (successCallback) {
+                  successCallback();
+              }
+          });
+      }
+
+      function deselectVisit(studyLocationVisitId, successCallback) {
+        $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocationVisit')}?studyLocationVisitId=" + studyLocationVisitId).done(function(data) {
+          refreshSidebar();
+          refreshStudyLocationPoints();
+          if (successCallback) {
+            successCallback();
+          }
+        });
+      }
+
+
       function selectPlots(studyLocationNames, successCallback) {
         var studyLocationstring = studyLocationNames.join(",");
         $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocations')}?studyLocationNames=" + studyLocationstring).done(function(data) {
@@ -130,9 +150,14 @@
         return true;
       }
 
-      function findPlot() {
+      function findStudyLocations() {
         window.location = "${createLink(controller:'search', action:'findStudyLocations')}";
         return true;
+      }
+
+      function findStudyLocationVisits() {
+          window.location = "${createLink(controller:'search', action:'findStudyLocationVisits')}";
+          return true;
       }
 
       function compareSelectedPlots() {
@@ -215,7 +240,7 @@
 
           marker.events.register('mouseout', marker, function(e) {
             hidePlotHover(this.tag);
-          });                                                                       s
+          });
 
           marker.events.register('click', marker, function(e) {
             showPlotDetails(this.tag);
@@ -366,12 +391,14 @@
 
       function showPlotDetails(studyLocationName) {
           if (studyLocationName) {
-              // It used to be that 'showPlotDetails show a study location synopsis. Now it goes straight to study location summary
               window.location = "${createLink(controller: 'studyLocation', action:'studyLocationSummary', )}?studyLocationName=" + studyLocationName
-              %{--showModal({--}%
-                  %{--url:"${createLink(controller: 'studyLocation', action:'synopsisFragment')}?studyLocationName=" + studyLocationName,--}%
-                  %{--title:"Study Location Synopsis - " + studyLocationName--}%
-              %{--})--}%
+              return true;
+          }
+      }
+
+      function showVisitDetails(studyLocationName, studyLocationVisitId) {
+          if (studyLocationVisitId && studyLocationName) {
+              window.location = "${createLink(controller: 'studyLocation', action:'studyLocationVisitSamplingUnits', )}?studyLocationVisitId=" + studyLocationVisitId + "&studyLocationName=" + studyLocationName
               return true;
           }
       }

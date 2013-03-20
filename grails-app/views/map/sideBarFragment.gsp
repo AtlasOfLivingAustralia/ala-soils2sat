@@ -81,7 +81,7 @@ td.toolButtonCell {
             </table>
 
             <p>
-                <button class="btn btn-small btn-info" id="btnFindPlot">Find Study Location Visits&nbsp;<i class="icon-search icon-white"></i>
+                <button class="btn btn-small btn-info" id="btnFindStudyLocationVisits">Find Study Location Visits&nbsp;<i class="icon-search icon-white"></i>
                 </button>
             </p>
         </div>
@@ -91,8 +91,8 @@ td.toolButtonCell {
             <table class="table table-bordered table-condensed table-striped">
                 <g:if test="${appState?.selectedVisits}">
                     <g:each in="${appState?.selectedVisits}">
-                        <tr studyLocationVisitId="${it.studyLocationVisitId}">
-                            <td><a class="studyLocationVisitDetailsLink" href="#">${it.studyLocationVisitId}</a><button class="btn btn-mini pull-right btnRemoveSelectedVisit" title="Remove study location visit"><i class="icon-remove"/>
+                        <tr studyLocationVisitId="${it.studyLocationVisitId}" studyLocationName="${it.studyLocationName}">
+                            <td><a class="studyLocationVisitDetailsLink" href="#"><sts:formatVisitLabel studyLocationVisitId="${it.studyLocationVisitId}" studyLocationName="${it.studyLocationName}" /></a><button class="btn btn-mini pull-right btnRemoveSelectedVisit" title="Remove study location visit"><i class="icon-remove"/>
                             </button></td>
                         </tr>
                     </g:each>
@@ -216,25 +216,34 @@ td.toolButtonCell {
         e.preventDefault();
         var studyLocationVisitId = $(this).parents('[studyLocationVisitId]').attr("studyLocationVisitId");
         if (studyLocationVisitId) {
-            alert("TODO: deleselectStudyLocationVisit - " + studyLocationVisitId)
+            deselectVisit(studyLocationVisitId);
+        }
+    });
+
+    $(".studyLocationVisitDetailsLink").click(function(e) {
+        e.preventDefault();
+        var studyLocationVisitId = $(this).parents('[studyLocationVisitId]').attr("studyLocationVisitId");
+        var studyLocationName = $(this).parents('[studyLocationName]').attr("studyLocationName");
+        if (studyLocationVisitId) {
+            showVisitDetails(studyLocationName, studyLocationVisitId);
         }
     });
 
     $(".studyLocationDetailsLink").click(function (e) {
         e.preventDefault();
-        var studyLocationName = $(this).attr("studyLocationName");
+        var studyLocationName = $(this).parents('[studyLocationName]').attr("studyLocationName");
         showPlotDetails(studyLocationName);
     });
 
     $(".studyLocationDetailsLink").mouseover(function (e) {
         e.preventDefault();
-        var studyLocationName = $(this).attr("studyLocationName");
+        var studyLocationName = $(this).parents('[studyLocationName]').attr("studyLocationName");
         showPlotHover(studyLocationName);
     });
 
     $(".studyLocationDetailsLink").mouseout(function (e) {
         e.preventDefault();
-        var studyLocationName = $(this).attr("studyLocationName");
+        var studyLocationName = $(this).parents('[studyLocationName]').attr("studyLocationName");
         hidePlotHover(studyLocationName);
     });
 
@@ -250,7 +259,12 @@ td.toolButtonCell {
 
     $("#btnFindPlot").click(function (e) {
         e.preventDefault();
-        findPlot();
+        findStudyLocations();
+    });
+
+    $("#btnFindStudyLocationVisits").click(function(e) {
+        e.preventDefault();
+        findStudyLocationVisits();
     });
 
     $("#btnLayerAdd").click(function (e) {

@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="au.org.ala.soils2sat.MapSelectionMode; org.apache.commons.lang.StringEscapeUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -353,7 +353,13 @@
     <legend>
         <table style="width:100%">
             <tr>
-                <td><a href="${createLink(controller: 'map', action: 'index')}">Map</a>&nbsp;&#187;&nbsp;Find Study Locations
+                <td>
+                    <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
+                        <a href="${createLink(controller: 'map', action: 'index')}">Map</a>&nbsp;&#187;&nbsp;Find Study Location Visits
+                    </g:if>
+                    <g:else>
+                        <a href="${createLink(controller: 'map', action: 'index')}">Map</a>&nbsp;&#187;&nbsp;Find Study Locations
+                    </g:else>
                 </td>
             </tr>
         </table>
@@ -438,7 +444,12 @@
 
         <div id="sidebarContainer" class="span4">
             <div id="sidebarContent" class="well well-small">
-                <h5>Selected Study Locations</h5>
+                <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
+                    <h5>Selected Study Location Visits</h5>
+                </g:if>
+                <g:else>
+                    <h5>Selected Study Locations</h5>
+                </g:else>
 
                 <div id="selectedStudyLocations">
                 </div>

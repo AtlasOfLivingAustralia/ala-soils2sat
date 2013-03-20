@@ -18,6 +18,7 @@ class S2STagLib {
     def springSecurityService
     def layerService
     def groovyPageLocator
+    def studyLocationService
 
     /**
      * @attr active
@@ -290,6 +291,27 @@ class S2STagLib {
                 mb.span() {
                     mkp.yield("Sampling unit details not found for '" + title + "'")
                 }
+            }
+        }
+
+    }
+
+    /**
+     * @attr studyLocationVisitId
+     * @attr studyLocationName
+     */
+    def formatVisitLabel = { attrs, body ->
+
+        def studyLocationName = attrs.studyLocationName
+        def studyLocationVisitId = attrs.studyLocationVisitId
+
+        if (studyLocationName && studyLocationVisitId) {
+            def visitDetails = studyLocationService.getVisitDetails(studyLocationVisitId)
+            def mb = new MarkupBuilder(out)
+            mb.span() {
+                mkp.yield(studyLocationName)
+                mkp.yieldUnescaped("&nbsp;-&nbsp;")
+                mkp.yield(visitDetails.visitStartDate)
             }
         }
 

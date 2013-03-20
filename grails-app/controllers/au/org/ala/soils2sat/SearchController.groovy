@@ -31,6 +31,20 @@ class SearchController {
         [userInstance: userInstance, appState: userInstance?.applicationState, userSearch: userSearch]
     }
 
+    def findStudyLocationVisits() {
+        def userInstance = springSecurityService.currentUser as User
+        def userSearch = userInstance.applicationState.currentSearch
+        if (!userSearch) {
+            userSearch = new UserSearch(user: userInstance, name: 'default' )
+            userSearch.save(failOnError: true)
+            userInstance.applicationState.currentSearch = userSearch
+        }
+
+        def model = [userInstance: userInstance, appState: userInstance?.applicationState, userSearch: userSearch]
+
+        render(view: 'findStudyLocations', model: model)
+    }
+
     def findStudyLocationResultsFragment() {
 
         def userInstance = springSecurityService.currentUser as User

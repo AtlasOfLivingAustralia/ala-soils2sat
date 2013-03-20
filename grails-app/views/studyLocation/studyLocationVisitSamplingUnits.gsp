@@ -8,6 +8,29 @@
     </head>
 
     <body>
+
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+
+                $("#btnSelect").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}").done(function() {
+                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSamplingUnits', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}";
+                    });
+
+                });
+
+                $("#btnDeselect").click(function(e) {
+                    e.preventDefault();
+                    $.ajax("${createLink(controller: 'studyLocation', action:'deselectStudyLocationVisit', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}").done(function() {
+                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSamplingUnits', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}";
+                    });
+                });
+            });
+
+        </script>
+
         <div class="container-fluid">
             <legend>
                 <table style="width:100%">
@@ -23,7 +46,24 @@
 
             <div class="well well-small">
 
-                <h4>Study Location Visit Summary</h4>
+                <table style="width: 100%">
+                    <tr>
+                        <td>
+                            <h4>Study Location Visit Summary</h4>
+                        </td>
+                        <td>
+                            <div style="float: right">
+                                <g:if test="${isSelected}">
+                                    <button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location visit</button>
+                                </g:if>
+                                <g:else>
+                                    <button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location visit</button>
+                                </g:else>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
                 <table class="table table-bordered table-striped">
                     <tr>
                         <td>Study Location</td>
@@ -61,7 +101,7 @@
                         <tr>
                             <td><sts:formatDateStr date="${su.sampleDate}"/></td>
                             <td>${su.observerNames?.join(", ")}</td>
-                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, visitId: visitSummary.visitId, samplingUnit: su.samplingUnit])}">${su.description ?: su.samplingUnit}</a> </td>
+                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, studyLocationVisitId: visitSummary.visitId, samplingUnit: su.samplingUnit])}">${su.description ?: su.samplingUnit}</a> </td>
                         </tr>
                     </g:each>
                 </table>

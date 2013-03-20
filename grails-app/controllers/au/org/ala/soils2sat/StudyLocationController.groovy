@@ -332,6 +332,55 @@ class StudyLocationController {
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
+    def deselectStudyLocationVisit() {
+        def studyLocationVisitId = params.studyLocationVisitId
+        def success = false
+
+        if (studyLocationVisitId) {
+            def userInstance = springSecurityService.currentUser as User
+            def appState = userInstance?.applicationState
+
+            appState.lock()
+
+            def existing = appState?.selectedVisits?.find {
+                it.studyLocationVisitId == studyLocationVisitId
+            }
+
+            if (existing) {
+                appState.removeFromSelectedVisits(existing)
+                appState.save(flush: true)
+                success = true
+            }
+        }
+        render([status:success ? 'ok' : 'failed'] as JSON)
+    }
+
+    def selectStudyLocationVisit() {
+        def studyLocationVisitId = params.studyLocationVisitId
+        def studyLocationName = params.studyLocationName
+        def success = false
+
+        if (studyLocationVisitId) {
+            def userInstance = springSecurityService.currentUser as User
+            def appState = userInstance?.applicationState
+
+            appState.lock()
+
+            def existing = appState?.selectedVisits?.find {
+                it.studyLocationVisitId == studyLocationVisitId
+            }
+
+            if (!existing) {
+                def studyLocationVisit = new StudyLocationVisit(studyLocationVisitId: studyLocationVisitId, studyLocationName: studyLocationName)
+                appState.addToSelectedVisits(studyLocationVisit)
+                appState.save(flush: true)
+                success = true
+            }
+        }
+        render([status:success ? 'ok' : 'failed'] as JSON)
+    }
+
+
     def selectStudyLocations() {
         def studyLocationNames = params.studyLocationNames?.split(",");
         def success = false
@@ -382,8 +431,10 @@ class StudyLocationController {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
         def visitSummaries = studyLocationSummary.visitSummaries
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
 
-        [studyLocation:studyLocationSummary, studyLocationName: studyLocationName, visitSummaries: visitSummaries ]
+        [studyLocation:studyLocationSummary, studyLocationName: studyLocationName, visitSummaries: visitSummaries, userInstance: userInstance, appState: appState]
     }
 
     def studyLocationLayersFragment() {
@@ -425,15 +476,18 @@ class StudyLocationController {
     def studyLocationVisitSamplingUnits() {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
-
         def studyLocationName = params.studyLocationName
+        def studyLocationVisitId = params.studyLocationVisitId
+
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
         def visitSummary = studyLocationSummary.visitSummaries?.find {
-            it.visitId == params.visitId
+            it.visitId == studyLocationVisitId
         }
-        def visitDetail = studyLocationService.getVisitDetails(params.visitId as String)
+        def visitDetail = studyLocationService.getVisitDetails(studyLocationVisitId)
 
-        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visitDetail: visitDetail, visitSummary: visitSummary]
+        def isSelected = appState.selectedVisits.find { it.studyLocationVisitId = studyLocationVisitId }
+
+        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visitDetail: visitDetail, visitSummary: visitSummary, isSelected: isSelected]
     }
 
     def ajaxSelectedStudyLocationsFragment() {
@@ -443,7 +497,7 @@ class StudyLocationController {
 
     def samplingUnitDetail() {
 
-        def visitId = params.visitId
+        def visitId = params.studyLocationVisitId
         def samplingUnit = params.samplingUnit
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(params.studyLocationName)
         def visitDetail = studyLocationService.getVisitDetails(visitId as String)

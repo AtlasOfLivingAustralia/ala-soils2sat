@@ -6,6 +6,10 @@ class SearchService extends ServiceBase {
     def grailsApplication
     def layerService
 
+    List<StudyLocationVisitSearchResult> searchStudyLocationVisits(UserSearch userSearch) {
+
+    }
+
     List<StudyLocationSearchResult> searchStudyLocations(UserSearch userSearch) {
 
         def q = userSearch.searchText?.toLowerCase()

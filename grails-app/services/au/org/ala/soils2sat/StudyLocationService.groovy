@@ -22,18 +22,12 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
-    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
+    // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
     StudyLocationSummary getStudyLocationSummary(String studyLocationName) {
         def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocationSummary", [siteNames: studyLocationName])?.studyLocationSummaryList
         StudyLocationSummary result = null
         if (studyLocations) {
-            def seqNo = 1
             studyLocations.each { studyLocation ->
-                // Hopefully this is just temporary, but there is no unique id for visits in the dummy data, so we'll created one
-                studyLocation.visitSummaryList?.each {
-                    it.visitId = seqNo++
-                }
-
                 result = new StudyLocationSummary(name: studyLocation.siteLocationName, longitude: studyLocation.longitude, latitude: studyLocation.latitude, data: studyLocation)
             }
         }
