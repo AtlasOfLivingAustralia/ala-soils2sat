@@ -48,7 +48,13 @@
     function doSearch() {
         var formData = $("#searchForm").serialize();
         $("#searchResultsDiv").html("Searching... <sts:spinner/>");
-        $.post('${createLink(action:'findStudyLocationResultsFragment')}', formData, function (content) {
+        <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
+        var url = "${createLink(action:'findStudyLocationVisitsResultsFragment')}";
+        </g:if>
+        <g:else>
+        var url = "${createLink(action:'findStudyLocationResultsFragment')}";
+        </g:else>
+        $.post(url, formData, function (content) {
             $("#searchResultsDiv").html(content);
         });
     }
@@ -150,15 +156,49 @@
             // Hook up button event handlers...
             $(".btnRemoveSelectedPlot").click(function (e) {
                 e.preventDefault();
-                var studyLocationName = $(this).attr("studyLocationName");
-                deselectPlot(studyLocationName, function () {
-                    renderSelectedList();
-                });
+                <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
+                    var studyLocationVisitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
+                    if (studyLocationVisitId) {
+                        deselectVisit(studyLocationVisitId, function () {
+                            renderSelectedList();
+                        });
+                    }
+                </g:if>
+                <g:else>
+                    var studyLocationName = $(this).parents("[studyLocationName]").attr("studyLocationName");
+                    if (studyLocationName) {
+                        deselectPlot(studyLocationName, function () {
+                            renderSelectedList();
+                        });
+                    }
+                </g:else>
             });
         });
+
         if (map) {
             refreshStudyLocationPoints();
         }
+    }
+
+    function selectVisit(studyLocationName, studyLocationVisitId, successCallback) {
+        $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit')}?studyLocationName=" + studyLocationName + "&studyLocationVisitId=" + studyLocationVisitId).done(function () {
+            if (successCallback) {
+                successCallback();
+            }
+        });
+    }
+
+    function deselectVisit(studyLocationVisitId, successCallback) {
+        $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocationVisit')}?studyLocationVisitId=" + studyLocationVisitId).done(function (data) {
+
+            if (successCallback) {
+                successCallback();
+            }
+
+            if (map) {
+                refreshStudyLocationPoints();
+            }
+        });
     }
 
 
@@ -397,9 +437,9 @@
                                 </td>
                                 <td style="vertical-align: bottom">
 
-                                    <g:hiddenField class="input-small" name="top" value="${userSearch?.top}" />
-                                    <g:hiddenField class="input-small" name="left" value="${userSearch?.left}" />
-                                    <g:hiddenField class="input-small" name="bottom" value="${userSearch?.bottom} "/>
+                                    <g:hiddenField class="input-small" name="top" value="${userSearch?.top}"/>
+                                    <g:hiddenField class="input-small" name="left" value="${userSearch?.left}"/>
+                                    <g:hiddenField class="input-small" name="bottom" value="${userSearch?.bottom}"/>
                                     <g:hiddenField class="input-small" name="right" value="${userSearch?.right}"/>
 
                                     <small style="color: #a9a9a9">

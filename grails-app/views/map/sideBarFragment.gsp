@@ -59,7 +59,7 @@ td.toolButtonCell {
             <p style="margin-top: 15px">
                 <button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>
                 <button id="btnQuestions" class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Questions</button>
-                <button class="btn btn-small" id="btnClearSelection">Remove All</button>
+                <button class="btn btn-small" id="btnClearSelectedPlots">Remove All</button>
             </p>
 
         </div>
@@ -84,27 +84,32 @@ td.toolButtonCell {
                 <button class="btn btn-small btn-info" id="btnFindStudyLocationVisits">Find Study Location Visits&nbsp;<i class="icon-search icon-white"></i>
                 </button>
             </p>
-        </div>
 
-        <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
+            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
 
-            <table class="table table-bordered table-condensed table-striped">
-                <g:if test="${appState?.selectedVisits}">
-                    <g:each in="${appState?.selectedVisits}">
-                        <tr studyLocationVisitId="${it.studyLocationVisitId}" studyLocationName="${it.studyLocationName}">
-                            <td><a class="studyLocationVisitDetailsLink" href="#"><sts:formatVisitLabel studyLocationVisitId="${it.studyLocationVisitId}" studyLocationName="${it.studyLocationName}" /></a><button class="btn btn-mini pull-right btnRemoveSelectedVisit" title="Remove study location visit"><i class="icon-remove"/>
-                            </button></td>
+                <table class="table table-bordered table-condensed table-striped">
+                    <g:if test="${appState?.selectedVisits}">
+                        <g:each in="${appState?.selectedVisits}">
+                            <tr studyLocationVisitId="${it.studyLocationVisitId}" studyLocationName="${it.studyLocationName}">
+                                <td><a class="studyLocationVisitDetailsLink" href="#"><sts:formatVisitLabel studyLocationVisitId="${it.studyLocationVisitId}" studyLocationName="${it.studyLocationName}" /></a><button class="btn btn-mini pull-right btnRemoveSelectedVisit" title="Remove study location visit"><i class="icon-remove"/>
+                                </button></td>
+                            </tr>
+                        </g:each>
+                    </g:if>
+                    <g:else>
+                        <tr>
+                            <td>No study location visits have been selected</td>
                         </tr>
-                    </g:each>
-                </g:if>
-                <g:else>
-                    <tr>
-                        <td>No study location visits have been selected</td>
-                    </tr>
-                </g:else>
-            </table>
-        </div>
+                    </g:else>
+                </table>
+            </div>
+            <p style="margin-top: 15px">
+                %{--<button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>--}%
+                %{--<button id="btnQuestions" class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Questions</button>--}%
+                <button class="btn btn-small" id="btnClearSelectedVisits">Remove All</button>
+            </p>
 
+        </div>
 
     </div>
 
@@ -224,7 +229,7 @@ td.toolButtonCell {
         e.preventDefault();
         var studyLocationVisitId = $(this).parents('[studyLocationVisitId]').attr("studyLocationVisitId");
         var studyLocationName = $(this).parents('[studyLocationName]').attr("studyLocationName");
-        if (studyLocationVisitId) {
+        if (studyLocationVisitId && studyLocationName) {
             showVisitDetails(studyLocationName, studyLocationVisitId);
         }
     });
@@ -252,9 +257,14 @@ td.toolButtonCell {
         displayLayerInfo(layerName);
     });
 
-    $("#btnClearSelection").click(function (e) {
+    $("#btnClearSelectedPlots").click(function (e) {
         e.preventDefault();
         clearSelectedPlots();
+    });
+
+    $("#btnClearSelectedVisits").click(function (e) {
+        e.preventDefault();
+        clearSelectedVisits();
     });
 
     $("#btnFindPlot").click(function (e) {

@@ -323,7 +323,12 @@ class StudyLocationController {
                 it.name == studyLocationName
             }
             if (!existing) {
-                def studyLocation = new StudyLocation(name:studyLocationName)
+
+                def studyLocation = StudyLocation.findByName(studyLocationName)
+                if (!studyLocation) {
+                    studyLocation = new StudyLocation(name:studyLocationName)
+                }
+
                 appState.addToSelectedPlots(studyLocation)
                 appState.save(flush: true)
                 success = true
@@ -371,8 +376,12 @@ class StudyLocationController {
             }
 
             if (!existing) {
-                def studyLocationVisit = new StudyLocationVisit(studyLocationVisitId: studyLocationVisitId, studyLocationName: studyLocationName)
-                appState.addToSelectedVisits(studyLocationVisit)
+
+                def visit = StudyLocationVisit.findByStudyLocationVisitId(studyLocationVisitId)
+                if (!visit) {
+                    visit = new StudyLocationVisit(studyLocationVisitId: studyLocationVisitId, studyLocationName: studyLocationName)
+                }
+                appState.addToSelectedVisits(visit)
                 appState.save(flush: true)
                 success = true
             }
@@ -401,6 +410,17 @@ class StudyLocationController {
             success = true
         }
         render([status: success ? 'ok' : 'failed'] as JSON)
+    }
+
+    def clearSelectedStudyLocationVisits() {
+        def success = false
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        if (appState?.selectedVisits) {
+            appState.selectedVisits.clear();
+            appState.save(flush: true)
+        }
+        render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
     def clearSelectedStudyLocations() {

@@ -14,10 +14,10 @@ class SearchController {
         redirect(action: 'findStudyLocations')
     }
 
-    def findStudyLocationFragment() {
-        def userInstance = springSecurityService.currentUser as User
-        [userInstance: userInstance, appState: userInstance?.applicationState]
-    }
+//    def findStudyLocationFragment() {
+//        def userInstance = springSecurityService.currentUser as User
+//        [userInstance: userInstance, appState: userInstance?.applicationState]
+//    }
 
     def findStudyLocations() {
         def userInstance = springSecurityService.currentUser as User
@@ -72,6 +72,35 @@ class SearchController {
 
         [results: searchResults, userInstance: userInstance, appState: appState, userSearch: userSearch]
     }
+
+    def findStudyLocationVisitsResultsFragment() {
+
+        def userInstance = springSecurityService.currentUser as User
+        def userSearch = userInstance.applicationState.currentSearch
+
+        if (!userSearch) {
+
+        }
+
+        def searchResults = null
+        def searchPerformed = false
+        userSearch.searchText = params.searchText
+
+        userSearch.useBoundingBox = params.useBoundingBox == "on"
+        if (userSearch.useBoundingBox) {
+            userSearch.top = params.double("top")
+            userSearch.left = params.double("left")
+            userSearch.bottom = params.double("bottom")
+            userSearch.right = params.double("right")
+        }
+
+        searchResults = searchService.searchStudyLocationVisits(userSearch)
+
+        def appState = userInstance?.applicationState
+
+        [results: searchResults, userInstance: userInstance, appState: appState, userSearch: userSearch]
+    }
+
 
     def ajaxAddSearchCriteriaFragment() {
         def criteriaDefinitions = SearchCriteriaDefinition.list().sort { it.name }

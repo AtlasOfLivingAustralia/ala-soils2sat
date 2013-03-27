@@ -8,6 +8,57 @@ class SearchService extends ServiceBase {
 
     List<StudyLocationVisitSearchResult> searchStudyLocationVisits(UserSearch userSearch) {
 
+        def q = userSearch.searchText?.toLowerCase()
+
+        if (q == "*") {
+            q = '' // force match all...
+        }
+        BoundingBox boundingBox = null
+        if (userSearch.useBoundingBox) {
+            boundingBox = new BoundingBox(top: userSearch.top, left:  userSearch.left, bottom: userSearch.bottom, right:  userSearch.right)
+        }
+
+        def tempResults = []
+        // below should be replaced by a call to the search service, when it exists.
+        def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocations")?.results
+        if (studyLocations) {
+            studyLocations.each { studyLocation ->
+                boolean match = true
+                if (q) {
+                    if (!studyLocation.siteName?.toLowerCase()?.contains(q)) {
+                        match = false
+                    }
+                }
+
+                if (boundingBox && match) {
+                    if (!boundingBox.contains(studyLocation.longitude, studyLocation.latitude)) {
+                        match = false
+                    }
+                }
+
+                if (match) {
+                    // if these study locations match, we add their visits to the temp result sets...
+                    def details = studyLocationService.getStudyLocationDetails(studyLocation.siteName)
+
+                    details.data.siteLocationVisitList?.each { visit ->
+                        visit.studyLocation = studyLocation
+                        tempResults << visit
+                    }
+
+                }
+            }
+        }
+
+        def results = new ArrayList<StudyLocationVisitSearchResult>()
+
+        tempResults.each { visit ->
+
+            def result = new StudyLocationVisitSearchResult(siteName: visit.studyLocation.siteName, date: visit.studyLocation.startDate, longitude: visit.studyLocation.longitude, latitude: visit.studyLocation.latitude, easting: visit.studyLocation.easting, northing: visit.studyLocation.northing, zone: visit.studyLocation.zone as Integer, studyLocationVisitId: visit.id )
+            results.add(result)
+        }
+
+
+        return results
     }
 
     List<StudyLocationSearchResult> searchStudyLocations(UserSearch userSearch) {
