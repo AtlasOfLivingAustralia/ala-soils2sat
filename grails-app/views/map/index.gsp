@@ -222,13 +222,18 @@
         var results = studyLocationList;
 
         var size = new OpenLayers.Size(32, 32);
-        var offset = new OpenLayers.Pixel(-(size.w / 2), 0);
+        var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
         var icon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker.png')}', size, offset);
         var selectedIcon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker-selected.png')}', size, offset);
+
+        var visitIcon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-visit-marker.png')}', size, offset);
+        var visitSelectedIcon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-visit-marker-selected.png')}', size, offset);
+
 
         for (resultKey in results) {
 
             var result = results[resultKey];
+
             var location = new OpenLayers.LonLat(parseFloat(result.longitude), parseFloat(result.latitude));
 
             location.transform(latLongProj, map.getProjectionObject());
@@ -236,9 +241,17 @@
             var pinIcon = null;
 
             if (result.selected) {
-                pinIcon = selectedIcon.clone();
+                if (result.selectionMode.name == 'StudyLocationVisit') {
+                    pinIcon = visitSelectedIcon.clone();
+                } else {
+                    pinIcon = selectedIcon.clone();
+                }
             } else {
-                pinIcon = icon.clone();
+                if (result.selectionMode.name == 'StudyLocationVisit') {
+                    pinIcon = visitIcon.clone();
+                } else {
+                    pinIcon = icon.clone();
+                }
             }
 
             var marker = new OpenLayers.Marker(location, pinIcon);

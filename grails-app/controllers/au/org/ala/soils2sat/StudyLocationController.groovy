@@ -44,12 +44,11 @@ class StudyLocationController {
 
         def source = appState.mapSelectionMode == MapSelectionMode.StudyLocation ? appState.selectedPlots?.collect { it.name } : appState.selectedVisits?.collect { it.studyLocationName }
 
-        println source
-
         candidates.each { candidate ->
             // check if in the 'selected' source
             candidate.selected = source.find { it == candidate.siteName }
             if (!plotSelectedOnly || candidate.selected && !(results.contains(candidate))) {
+                candidate.selectionMode = appState.mapSelectionMode
                 results << candidate
             }
         }

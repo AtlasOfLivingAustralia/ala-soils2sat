@@ -49,6 +49,25 @@ class SearchService extends ServiceBase {
             }
         }
 
+        // Now we need to post process the search results and filter out that do not match any specified 'ALA' criteria
+        if (userSearch.criteria) {
+            def finalResults = []
+            tempResults.each { candidate ->
+                boolean keep = true
+                for (SearchCriteria criteria : userSearch.criteria) {
+                    if (!testVisitCriteria(criteria, candidate)) {
+                        keep = false
+                        break
+                    }
+                }
+                if (keep) {
+                    finalResults << candidate
+                }
+            }
+            tempResults = finalResults
+        }
+
+
         def results = new ArrayList<StudyLocationVisitSearchResult>()
 
         tempResults.each { visit ->
@@ -124,6 +143,30 @@ class SearchService extends ServiceBase {
         return results
     }
 
+    private boolean testVisitCriteria(SearchCriteria criteria, Map candidateVisit) {
+        boolean result = false
+        def studyLocation = candidateVisit.studyLocation
+        switch (criteria.criteriaDefinition.type) {
+            case CriteriaType.SpatialPortalLayer:
+            case CriteriaType.SpatialPortalField:
+                def value = layerService.getIntersectValues(studyLocation.latitude, studyLocation.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
+                result = SearchCriteriaUtils.eval(criteria, value as String)
+                break
+            case CriteriaType.StudyLocationVisit:
+                result = testVisitCriteriaForVisit(criteria, candidateVisit)
+                break
+            case CriteriaType.StudyLocation:
+                result = testStudyLocationCriteria(criteria, studyLocation)
+                break;
+            default:
+                // Don't care about other types of criteria, let them through!
+                result = true
+                break
+        }
+        return result
+    }
+
+
     private boolean testCriteria(SearchCriteria criteria, Map candidate) {
         boolean result = false
         switch (criteria.criteriaDefinition.type) {
@@ -133,7 +176,7 @@ class SearchService extends ServiceBase {
                 result = SearchCriteriaUtils.eval(criteria, value as String)
                 break
             case CriteriaType.StudyLocationVisit:
-                result = testStudyLocationVisitCriteria(criteria, candidate)
+                result = testVisitCriteriaForStudyLocation(criteria, candidate)
                 break
             case CriteriaType.StudyLocation:
                 result = testStudyLocationCriteria(criteria, candidate)
@@ -156,15 +199,22 @@ class SearchService extends ServiceBase {
     }
 
 
-    boolean testStudyLocationVisitCriteria(SearchCriteria criteria, Map candidate) {
+    boolean testVisitCriteriaForStudyLocation(SearchCriteria criteria, Map candidate) {
         def details = studyLocationService.getStudyLocationDetails(candidate.siteName)
         // at least one of the visits must match the criteria...
         for (def visit : details.data.siteLocationVisitList) {
-            def valueStr = Eval.x(visit, 'x.' + criteria.criteriaDefinition.fieldName)
-            def result = SearchCriteriaUtils.eval(criteria, valueStr as String)
-            if (result) {
+            if (testVisitCriteriaForVisit(criteria, visit)) {
                 return true
             }
+        }
+        return false
+    }
+
+    boolean testVisitCriteriaForVisit(SearchCriteria criteria, Map visit) {
+        def valueStr = Eval.x(visit, 'x.' + criteria.criteriaDefinition.fieldName)
+        def result = SearchCriteriaUtils.eval(criteria, valueStr as String)
+        if (result) {
+            return true
         }
         return false
     }
