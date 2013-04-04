@@ -58,8 +58,9 @@ td.toolButtonCell {
 
             <p style="margin-top: 15px">
                 <button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>
-                <button id="btnQuestions" class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Questions</button>
+                %{--<button id="btnQuestions" class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Questions</button>--}%
                 <button class="btn btn-small" id="btnClearSelectedPlots">Remove All</button>
+                <button class="btn btn-small btnExtract"><i class="icon-download-alt"></i>&nbsp;Extract Data</button>
             </p>
 
         </div>
@@ -81,8 +82,7 @@ td.toolButtonCell {
             </table>
 
             <p>
-                <button class="btn btn-small btn-info" id="btnFindStudyLocationVisits">Find Study Location Visits&nbsp;<i class="icon-search icon-white"></i>
-                </button>
+                <button class="btn btn-small btn-info" id="btnFindStudyLocationVisits">Find Study Location Visits&nbsp;<i class="icon-search icon-white"></i></button>
             </p>
 
             <div style="max-height: 200px; overflow-y: auto; margin-bottom: 5px">
@@ -107,6 +107,7 @@ td.toolButtonCell {
                 %{--<button id="btnComparePlots" class="btn btn-small btn-primary">Compare</button>--}%
                 %{--<button id="btnQuestions" class="btn btn-small"><i class="icon-question-sign"></i>&nbsp;Questions</button>--}%
                 <button class="btn btn-small" id="btnClearSelectedVisits">Remove All</button>
+                <button class="btn btn-small btnExtract"><i class="icon-download-alt"></i>&nbsp;Extract Data</button>
             </p>
 
         </div>
@@ -203,6 +204,12 @@ td.toolButtonCell {
         e.preventDefault();
         window.open("${createLink(controller:'question')}", "Questions");
     });
+
+    $(".btnExtract").click(function (e) {
+        e.preventDefault();
+        window.location = "${createLink(controller:'extract', action:'index')}";
+    });
+
 
     $("#btnComparePlots").click(function (e) {
         e.preventDefault();

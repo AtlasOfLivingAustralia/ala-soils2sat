@@ -35,9 +35,10 @@
             <legend>
                 <table style="width:100%">
                     <tr>
-                        <td>Study Location&nbsp;&#187;&nbsp;
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a>&nbsp;&#187;&nbsp;
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}">Visits</a>&nbsp;&#187;&nbsp;
+                        <td>
+                            <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
+                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
+                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}">Visits</a><sts:navSeperator/>
                         Visit ${visitSummary.visitId} Sampling Units</td>
                         <td></td>
                     </tr>

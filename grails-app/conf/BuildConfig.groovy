@@ -52,6 +52,9 @@ grails.project.dependency.resolution = {
 
         runtime ":database-migration:1.1"
 
-        compile ':cache:1.0.0'
+        runtime ':springcache:1.3.1'
+        runtime ':csv:0.3.1'
+        runtime ':spring-security-core:1.2.7.3'
+
     }
 }

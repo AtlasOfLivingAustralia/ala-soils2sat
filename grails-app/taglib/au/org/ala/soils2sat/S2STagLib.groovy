@@ -317,4 +317,8 @@ class S2STagLib {
 
     }
 
+    def navSeperator = { attrs, body ->
+        out << "&nbsp;&#187;&nbsp;"
+    }
+
 }
