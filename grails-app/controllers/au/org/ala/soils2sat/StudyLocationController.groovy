@@ -485,7 +485,7 @@ class StudyLocationController {
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
 
         def rank = params.rank ?: 'family';
-        int radius = params.int("radius") ?: 10
+        float radius = params.float("radius") ?: 10
 
         def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, radius, rank)
 
