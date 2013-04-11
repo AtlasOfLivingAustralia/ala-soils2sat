@@ -99,7 +99,7 @@
             <legend>
                 <table style="width:100%">
                     <tr>
-                        <td><a href="${createLink(controller:'map', action:'index')}">Map</a>&nbsp;&#187;&nbsp;Study Location Summary&nbsp;&#187;&nbsp;${studyLocationName}</td>
+                        <td><a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>${studyLocationName}</td>
                         <td>
                             <button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})
                             <g:if test="${isSelected}">
@@ -115,16 +115,16 @@
             <div class="well well-small">
 
                 <div class="tabbable">
-                    <div style="float: right">
-                        <g:if test="${isSelected}">
-                            <button id="btnDeselectAndReturn" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect and return to map</button>
-                            <button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location</button>
-                        </g:if>
-                        <g:else>
-                            <button id="btnSelectAndReturn" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select and return to map</button>
-                            <button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location</button>
-                        </g:else>
-                    </div>
+                    %{--<div style="float: right">--}%
+                        %{--<g:if test="${isSelected}">--}%
+                            %{--<button id="btnDeselectAndReturn" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect and return to map</button>--}%
+                            %{--<button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location</button>--}%
+                        %{--</g:if>--}%
+                        %{--<g:else>--}%
+                            %{--<button id="btnSelectAndReturn" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select and return to map</button>--}%
+                            %{--<button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location</button>--}%
+                        %{--</g:else>--}%
+                    %{--</div>--}%
 
                     <ul class="nav nav-tabs" style="margin-bottom: 0px">
                         <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>

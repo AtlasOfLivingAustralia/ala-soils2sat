@@ -69,15 +69,15 @@
     });
 
     $("#btnSelectAllSearchResults").click(function (e) {
-        var studyLocationNames = [];
+        var visitList = [];
         $(".selectSearchResult").each(function () {
-            var studyLocationName = $(this).attr("studyLocationName");
-            if (studyLocationName) {
-                studyLocationNames.push(studyLocationName);
+            var studyLocationVisitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
+            if (studyLocationVisitId) {
+                visitList.push(studyLocationVisitId);
             }
         });
 
-        selectPlots(studyLocationNames, function () {
+        selectVisits(visitList, function () {
             renderSelectedList();
             $(".selectSearchResult.selectSearchResult").each(function () {
                 $(this).css("display", "none");

@@ -9,5 +9,4 @@ class StudyLocationSearchResult {
     Double northing
     Integer zone
     Boolean selected
-    MapSelectionMode selectionMode
 }

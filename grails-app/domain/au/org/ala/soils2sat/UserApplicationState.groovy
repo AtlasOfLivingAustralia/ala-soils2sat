@@ -4,28 +4,28 @@ import javax.persistence.Transient
 
 class UserApplicationState {
 
-    List<StudyLocation> selectedPlots
+    // List<StudyLocation> selectedPlots
     List<StudyLocationVisit> selectedVisits
     List<EnvironmentalLayer> layers
     Boolean plotOnlySelectedLocations
     Bounds viewExtent
     Date lastLogin
     UserSearch currentSearch
-    MapSelectionMode mapSelectionMode = MapSelectionMode.StudyLocation
+    String sidebarSelectedTab
 
-    static hasMany = [selectedPlots:StudyLocation, layers: EnvironmentalLayer, selectedVisits:StudyLocationVisit]
+    static hasMany = [layers: EnvironmentalLayer, selectedVisits:StudyLocationVisit]
 
     static belongsTo = [user:User]
 
     static constraints = {
-        selectedPlots nullable: true
+        // selectedPlots nullable: true
         selectedVisits nullable: true
         layers nullable: true
         plotOnlySelectedLocations nullable:true
         viewExtent nullable: true
         lastLogin nullable: true
         currentSearch nullable: true
-        mapSelectionMode nullable: true
+        sidebarSelectedTab nullable: true
     }
 
     @Transient
@@ -37,9 +37,14 @@ class UserApplicationState {
     }
 
     @Transient
+    public List<String> getSelectedPlotNames() {
+        return selectedVisits.collect { it.studyLocationName }
+    }
+
+    @Transient
     public boolean containsPlot(String name) {
-        def existing = selectedPlots?.find {
-            it.name == name
+        def existing = getSelectedPlotNames()?.find {
+            it == name
         }
 
         return existing != null

@@ -12,7 +12,7 @@
 <legend style="margin-bottom: 3px;">
 <table style="width: 100%">
   <tr>
-    <td>Compare Study Locations (${appState?.selectedPlots?.size()})</td>
+    <td>Compare Study Locations (${appState?.selectedPlotNames?.size()})</td>
     <td style="text-align: right">
       <button id="btnCompareExport" class="btn btn-small">Export data</button>
       <button id="btnCloseCompare" class="btn btn-small">Close</button>
@@ -23,7 +23,7 @@
 <g:set var="max_width" value="790"/>
 <g:set var="max_height" value="500"/>
 
-<g:if test="${appState?.layers?.size() >= 1 && appState?.selectedPlots?.size() > 1}">
+<g:if test="${appState?.layers?.size() >= 1 && appState?.selectedPlotNames?.size() > 1}">
 <div class="tabbable">
   <ul class="nav nav-tabs" style="margin-bottom: 0px">
     <li class="active"><a href="#layerData" data-toggle="tab">Layers</a></li>
@@ -37,8 +37,8 @@
           <thead>
             <tr>
               <th></th>
-              <g:each in="${appState.selectedPlots}" var="studyLocation">
-                <th>${studyLocation.name}</th>
+              <g:each in="${appState.selectedPlotNames}" var="studyLocation">
+                <th>${studyLocation}</th>
               </g:each>
             </tr>
           </thead>
@@ -50,8 +50,8 @@
                         &nbsp;(${results.fieldUnits[fieldName]})
                     </g:if>
                 </td>
-                <g:each in="${appState?.selectedPlots}" var="studyLocation">
-                  <td>${results.data[studyLocation.name][fieldName]}</td>
+                <g:each in="${appState?.selectedPlotNames}" var="studyLocation">
+                  <td>${results.data[studyLocation][fieldName]}</td>
                 </g:each>
               </tr>
             </g:each>

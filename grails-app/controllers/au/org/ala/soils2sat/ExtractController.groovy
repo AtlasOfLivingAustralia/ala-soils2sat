@@ -8,11 +8,7 @@ class ExtractController {
         def user = springSecurityService.currentUser as User
         if (user) {
             def appState = user.applicationState
-            if (appState?.mapSelectionMode == MapSelectionMode.StudyLocation) {
-                redirect(action:'extractStudyLocationData')
-            } else {
-                redirect(action:'extractStudyLocationVisitData')
-            }
+            redirect(action:'extractStudyLocationVisitData')
             return
         }
         flash.message = "No user!"

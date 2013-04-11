@@ -13,16 +13,16 @@
   <table class="table table-striped table-condensed">
     <thead>
       <tr>
-        <g:each in="${appState.selectedPlots}" var="studyLocation">
-          <th>${studyLocation.name}</th>
+        <g:each in="${appState.selectedPlotNames}" var="studyLocation">
+          <th>${studyLocation}</th>
         </g:each>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <g:each in="${appState.selectedPlots}" var="studyLocation">
+        <g:each in="${appState.selectedPlotNames}" var="studyLocation">
           <td class="${params.diffMode}">
-            <g:each in="${results[studyLocation.name]}" var="taxaName">
+            <g:each in="${results[studyLocation]}" var="taxaName">
             ${taxaName}<br/>
             </g:each>
           </td>

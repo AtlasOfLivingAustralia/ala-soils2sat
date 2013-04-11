@@ -1,4 +1,3 @@
-<%@ page import="au.org.ala.soils2sat.MapSelectionMode; org.apache.commons.lang.StringEscapeUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -48,12 +47,7 @@
     function doSearch() {
         var formData = $("#searchForm").serialize();
         $("#searchResultsDiv").html("Searching... <sts:spinner/>");
-        <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
         var url = "${createLink(action:'findStudyLocationVisitsResultsFragment')}";
-        </g:if>
-        <g:else>
-        var url = "${createLink(action:'findStudyLocationResultsFragment')}";
-        </g:else>
         $.post(url, formData, function (content) {
             $("#searchResultsDiv").html(content);
         });
@@ -156,22 +150,12 @@
             // Hook up button event handlers...
             $(".btnRemoveSelectedPlot").click(function (e) {
                 e.preventDefault();
-                <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
-                    var studyLocationVisitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
-                    if (studyLocationVisitId) {
-                        deselectVisit(studyLocationVisitId, function () {
-                            renderSelectedList();
-                        });
-                    }
-                </g:if>
-                <g:else>
-                    var studyLocationName = $(this).parents("[studyLocationName]").attr("studyLocationName");
-                    if (studyLocationName) {
-                        deselectPlot(studyLocationName, function () {
-                            renderSelectedList();
-                        });
-                    }
-                </g:else>
+                var studyLocationVisitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
+                if (studyLocationVisitId) {
+                    deselectVisit(studyLocationVisitId, function () {
+                        renderSelectedList();
+                    });
+                }
             });
         });
 
@@ -221,6 +205,15 @@
     function selectPlots(studyLocationNames, successCallback) {
         var studyLocationstring = studyLocationNames.join(",");
         $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocations')}?studyLocationNames=" + studyLocationstring).done(function (data) {
+            if (successCallback) {
+                successCallback();
+            }
+        });
+    }
+
+    function selectVisits(visits, successCallback) {
+        var idString = visits.join(",");
+        $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocationVisits')}?studyLocationVisitIds=" + idString).done(function (data) {
             if (successCallback) {
                 successCallback();
             }
@@ -329,7 +322,7 @@
         var results = studyLocationList;
 
         var size = new OpenLayers.Size(32, 32);
-        var offset = new OpenLayers.Pixel(-(size.w / 2), 0);
+        var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
         var icon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker.png')}', size, offset);
         var selectedIcon = new OpenLayers.Icon('${resource(dir:'/images', file:'s2s-marker-selected.png')}', size, offset);
 
@@ -394,12 +387,7 @@
         <table style="width:100%">
             <tr>
                 <td>
-                    <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
-                        <a href="${createLink(controller: 'map', action: 'index')}">Map</a>&nbsp;&#187;&nbsp;Find Study Location Visits
-                    </g:if>
-                    <g:else>
-                        <a href="${createLink(controller: 'map', action: 'index')}">Map</a>&nbsp;&#187;&nbsp;Find Study Locations
-                    </g:else>
+                    <a href="${createLink(controller: 'map', action: 'index')}">Map</a><sts:navSeperator/>Find Study Location Visits
                 </td>
             </tr>
         </table>
@@ -484,12 +472,8 @@
 
         <div id="sidebarContainer" class="span4">
             <div id="sidebarContent" class="well well-small">
-                <g:if test="${appState.mapSelectionMode == MapSelectionMode.StudyLocationVisit}">
-                    <h5>Selected Study Location Visits</h5>
-                </g:if>
-                <g:else>
-                    <h5>Selected Study Locations</h5>
-                </g:else>
+
+                <h5>Selected Study Location Visits</h5>
 
                 <div id="selectedStudyLocations">
                 </div>

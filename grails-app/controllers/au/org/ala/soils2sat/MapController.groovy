@@ -3,6 +3,8 @@ package au.org.ala.soils2sat
 import grails.converters.JSON
 
 class MapController {
+
+    static _lock = new String("lock")
     
     def springSecurityService
     def studyLocationService
@@ -121,9 +123,7 @@ class MapController {
         [layerName: layerName, layerInfo: info]
     }
 
-    static _lock = new String("lock")
-
-    def ajaxSaveCurrentExtent = {
+    def ajaxSaveCurrentExtent() {
         def top = params.double("top")
         def left = params.double("left")
         def bottom = params.double("bottom")
@@ -159,7 +159,7 @@ class MapController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-    def ajaxSaveLayerOpacity = {
+    def ajaxSaveLayerOpacity() {
         def layerName = params.layerName
         def opacity = params.float("opacity")
 
@@ -177,7 +177,7 @@ class MapController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-    def browseLayersFragment = {
+    def browseLayersFragment() {
         def layers = layerService.getAllLayers()
 
         def root = new LayerTreeNode(label: 'Unclassified')
@@ -200,7 +200,7 @@ class MapController {
         [layerTree: root]
     }
 
-    def layerSummaryFragment = {
+    def layerSummaryFragment() {
         def layerName = params.layerName;
         def info = [:]
         LayerDefinition layerDefinition = null
@@ -216,7 +216,7 @@ class MapController {
         [layerName: layerName, layerDefinition: layerDefinition]
     }
 
-    def layerToolsFragment = {
+    def layerToolsFragment() {
         def layerName = params.layerName;
         def userInstance = springSecurityService.currentUser as User
         if (layerName) {
@@ -228,14 +228,14 @@ class MapController {
         }
     }
 
-    def layerSetsFragment = {
+    def layerSetsFragment() {
         def globalLayerSets = LayerSet.findAllWhere(user: null)
         def userInstance = springSecurityService.currentUser as User
         def userLayerSets = LayerSet.findAllByUser(userInstance)
         [globalLayerSets: globalLayerSets, userLayerSets: userLayerSets]
     }
 
-    def layerSetSummaryFragment = {
+    def layerSetSummaryFragment() {
         def layerSet = LayerSet.get(params.int("layerSetId"))
         def layerDescriptions = [:]
         layerSet?.layers?.each {
@@ -245,7 +245,7 @@ class MapController {
         [layerSet: layerSet, layerDescriptions: layerDescriptions]
     }
 
-    def addLayerSet = {
+    def addLayerSet() {
         def layerSet = LayerSet.get(params.int("layerSetId"))
         def replaceExisting = params.boolean("replaceExisting")
         def user = springSecurityService.currentUser as User
@@ -278,22 +278,18 @@ class MapController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-    def ajaxSetMapSelectionMode() {
-        def selectionMode = params.mapSelectionMode as MapSelectionMode
-        boolean success = false
-        if (selectionMode) {
-            try {
-                def user = springSecurityService.currentUser as User
-                def appState = user.applicationState;
-                appState.lock();
-                appState.mapSelectionMode = selectionMode
-                appState.save(flush: true, failOnError: true)
-                success = true
-            } catch (Exception ex) {
-                ex.printStackTrace()
-            }
+    def ajaxSetSelectedSidebarTab() {
+        def success = false
+        try {
+            def user = springSecurityService.currentUser as User
+            def appState = user.applicationState;
+            appState.lock();
+            appState.sidebarSelectedTab = params.selectedTab
+            appState.save(flush: true, failOnError: true)
+            success = true
+        } finally {
+            render([status: success ? 'ok' : 'failed'] as JSON)
         }
-        render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
 }

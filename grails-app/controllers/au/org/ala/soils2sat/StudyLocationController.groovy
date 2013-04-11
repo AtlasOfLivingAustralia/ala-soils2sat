@@ -20,20 +20,20 @@ class StudyLocationController {
         render (results as JSON)
     }
 
-    def getSelectedPlots() {
-        def user = springSecurityService.currentUser as User
-        def candidates = studyLocationService.getStudyLocations()
-        def results = []
-        if (user) {
-            candidates.each {
-                if (user.applicationState?.containsPlot(it.siteName)) {
-                    results.add(it)
-                }
-            }
-        }
-
-        render (results as JSON)
-    }
+//    def getSelectedPlots() {
+//        def user = springSecurityService.currentUser as User
+//        def candidates = studyLocationService.getStudyLocations()
+//        def results = []
+//        if (user) {
+//            candidates.each {
+//                if (user.applicationState?.containsPlot(it.siteName)) {
+//                    results.add(it)
+//                }
+//            }
+//        }
+//
+//        render (results as JSON)
+//    }
 
     def getUserDisplayedPoints() {
         def user = springSecurityService.currentUser as User
@@ -42,13 +42,12 @@ class StudyLocationController {
         def plotSelectedOnly = user && user.applicationState?.plotOnlySelectedLocations
         def appState = user.applicationState
 
-        def source = appState.mapSelectionMode == MapSelectionMode.StudyLocation ? appState.selectedPlots?.collect { it.name } : appState.selectedVisits?.collect { it.studyLocationName }
+        def source = appState.selectedPlotNames
 
         candidates.each { candidate ->
             // check if in the 'selected' source
             candidate.selected = source.find { it == candidate.siteName }
             if (!plotSelectedOnly || candidate.selected && !(results.contains(candidate))) {
-                candidate.selectionMode = appState.mapSelectionMode
                 results << candidate
             }
         }
@@ -93,10 +92,10 @@ class StudyLocationController {
         def data =[:]
         def fieldNames = ['latitude', 'longitude']
         def fieldUnits = [:]
-        if (userInstance && appState?.layers && appState?.selectedPlots && appState?.selectedPlots.size() > 1) {
+        if (userInstance && appState?.layers && appState?.selectedPlotNames?.size() > 1) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
-            for (StudyLocation studyLocation : appState.selectedPlots) {
-                def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation.name)
+            for (String studyLocation : appState.selectedPlotNames) {
+                def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
                 def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
                 def studyLocationResults = JSON.parse(url.text)
                 def temp = [:]
@@ -112,7 +111,7 @@ class StudyLocationController {
                     temp[fieldName] = it.value
                     fieldUnits[fieldName] = it.units
                 }
-                data[studyLocation.name] = temp
+                data[studyLocation] = temp
             }
         }
 
@@ -133,8 +132,8 @@ class StudyLocationController {
 
         def results = [:]
 
-        appState.selectedPlots.each { studyLocation ->
-            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation.name)
+        appState.selectedPlotNames.each { studyLocation ->
+            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
             def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
             results[studyLocation.name] = studyLocationTaxaList
         }
@@ -145,9 +144,9 @@ class StudyLocationController {
             def newList = []
             candidateEntry.value.each { taxa ->
                 def include = true
-                appState.selectedPlots.each { studyLocation ->
-                    if (studyLocation.name != candidateEntry.key) {
-                        def list = results[studyLocation.name]
+                appState.selectedPlotNames.each { studyLocation ->
+                    if (studyLocation != candidateEntry.key) {
+                        def list = results[studyLocation]
                         if (!list.contains(taxa)) {
                             include = false
                         }
@@ -159,21 +158,21 @@ class StudyLocationController {
                 }
             }
 
-            appState.selectedPlots.each { studyLocation ->
-                results[studyLocation.name] = newList
+            appState.selectedPlotNames?.each { studyLocation ->
+                results[studyLocation] = newList
             }
 
         } else if (params.diffMode?.toLowerCase() == 'inverseintersect') {
 
             def newResults = [:]
 
-            appState.selectedPlots.each { studyLocation ->
+            appState.selectedPlotNames?.each { studyLocation ->
                 def newList = []
-                def candidateList = results[studyLocation.name]
+                def candidateList = results[studyLocation]
                 candidateList.each { taxa ->
                     def include = true
                     results.each { kvp ->
-                        if (kvp.key != studyLocation.name) {
+                        if (kvp.key != studyLocation) {
                             if (kvp.value.contains(taxa)) {
                                 include = false
                             }
@@ -183,7 +182,7 @@ class StudyLocationController {
                         newList << taxa
                     }
                 }
-                newResults[studyLocation.name] = newList
+                newResults[studyLocation] = newList
             }
             results = newResults
         }
@@ -226,8 +225,8 @@ class StudyLocationController {
 
         def results = [:]
 
-        appState.selectedPlots.each { studyLocation ->
-            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation.name)
+        appState.selectedPlotNames.each { studyLocation ->
+            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
             def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
             results[studyLocation.name] = studyLocationTaxaList
         }
@@ -241,9 +240,9 @@ class StudyLocationController {
         while (!finished) {
             finished = true
             def values= []
-            appState.selectedPlots.each { studyLocation ->
+            appState.selectedPlotNames.each { studyLocation ->
                 def value = null
-                def fieldList = results[studyLocation.name] as List
+                def fieldList = results[studyLocation] as List
                 if (fieldList.size() > rowIndex) {
                     value = fieldList[rowIndex]
                     finished = false;
@@ -262,14 +261,14 @@ class StudyLocationController {
         def appState = userInstance.applicationState
         def results = getCompareData(userInstance)
         def columnHeaders = ["field"]
-        appState.selectedPlots.each {
-            columnHeaders << it.name
+        appState.selectedPlotNames?.each {
+            columnHeaders << it
         }
         writer.writeNext(columnHeaders as String[])
         results.fieldNames.each { fieldName ->
             def lineItems = [fieldName]
-            appState.selectedPlots.each { studyLocation ->
-                def value = results.data[studyLocation.name][fieldName]
+            appState.selectedPlotNames?.each { studyLocation ->
+                def value = results.data[studyLocation][fieldName]
                 lineItems << value ?: ''
             }
             writer.writeNext(lineItems as String[])
@@ -290,51 +289,51 @@ class StudyLocationController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-    def deselectStudyLocation() {
-        def studyLocationName = params.studyLocationName
-        def success = false
-        if (studyLocationName) {
-            def userInstance = springSecurityService.currentUser as User
-            def appState = userInstance?.applicationState
-            appState.lock()
-            def existing = appState?.selectedPlots?.find {
-                it.name == studyLocationName
-            }
-            if (existing) {
-                appState.removeFromSelectedPlots(existing)
-                userInstance.save(flush: true)
-                success = true
-            }
-        }
-        render([status:success ? 'ok' : 'failed'] as JSON)
-    }
+//    def deselectStudyLocation() {
+//        def studyLocationName = params.studyLocationName
+//        def success = false
+//        if (studyLocationName) {
+//            def userInstance = springSecurityService.currentUser as User
+//            def appState = userInstance?.applicationState
+//            appState.lock()
+//            def existing = appState?.selectedPlotNames?.find {
+//                it == studyLocationName
+//            }
+//            if (existing) {
+//                appState.removeFromSelectedPlots(existing)
+//                userInstance.save(flush: true)
+//                success = true
+//            }
+//        }
+//        render([status:success ? 'ok' : 'failed'] as JSON)
+//    }
 
-    def selectStudyLocation() {
-        def studyLocationName = params.studyLocationName
-        def success = false
-        if (studyLocationName) {
-            def userInstance = springSecurityService.currentUser as User
-            def appState = userInstance?.applicationState
-
-            appState.lock()
-
-            def existing = appState?.selectedPlots?.find {
-                it.name == studyLocationName
-            }
-            if (!existing) {
-
-                def studyLocation = StudyLocation.findByName(studyLocationName)
-                if (!studyLocation) {
-                    studyLocation = new StudyLocation(name:studyLocationName)
-                }
-
-                appState.addToSelectedPlots(studyLocation)
-                appState.save(flush: true)
-                success = true
-            }
-        }
-        render([status:success ? 'ok' : 'failed'] as JSON)
-    }
+//    def selectStudyLocation() {
+//        def studyLocationName = params.studyLocationName
+//        def success = false
+//        if (studyLocationName) {
+//            def userInstance = springSecurityService.currentUser as User
+//            def appState = userInstance?.applicationState
+//
+//            appState.lock()
+//
+//            def existing = appState?.selectedPlots?.find {
+//                it.name == studyLocationName
+//            }
+//            if (!existing) {
+//
+//                def studyLocation = StudyLocation.findByName(studyLocationName)
+//                if (!studyLocation) {
+//                    studyLocation = new StudyLocation(name:studyLocationName)
+//                }
+//
+//                appState.addToSelectedPlots(studyLocation)
+//                appState.save(flush: true)
+//                success = true
+//            }
+//        }
+//        render([status:success ? 'ok' : 'failed'] as JSON)
+//    }
 
     def deselectStudyLocationVisit() {
         def studyLocationVisitId = params.studyLocationVisitId
@@ -388,21 +387,19 @@ class StudyLocationController {
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
-
-    def selectStudyLocations() {
-        def studyLocationNames = params.studyLocationNames?.split(",");
+    def selectStudyLocationVisits() {
+        def studyLocationVisitIds = params.studyLocationVisitIds?.split(",");
         def success = false
-        if (studyLocationNames) {
+        if (studyLocationVisitIds) {
             def userInstance = springSecurityService.currentUser as User
             def appState = userInstance.applicationState
             appState.lock()
-            studyLocationNames.each { studyLocationName ->
-                def existing = appState?.selectedPlots?.find {
-                    it.name == studyLocationName
+            studyLocationVisitIds.each { visitId ->
+                def existing = appState?.selectedVisits?.find {
+                    it.studyLocationVisitId == visitId
                 }
                 if (!existing) {
-                    def studyLocation = new StudyLocation(name:studyLocationName)
-                    appState.addToSelectedPlots(studyLocation)
+                    // Can't do this until we get a service method to return visit details from an id!
                 }
             }
             appState?.save(flush: true, failOnError: true)
@@ -410,6 +407,30 @@ class StudyLocationController {
         }
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
+
+
+
+//    def selectStudyLocations() {
+//        def studyLocationNames = params.studyLocationNames?.split(",");
+//        def success = false
+//        if (studyLocationNames) {
+//            def userInstance = springSecurityService.currentUser as User
+//            def appState = userInstance.applicationState
+//            appState.lock()
+//            studyLocationNames.each { studyLocationName ->
+//                def existing = appState?.selectedPlotNames?.find {
+//                    it == studyLocationName
+//                }
+//                if (!existing) {
+//                    def studyLocation = new StudyLocation(name:studyLocationName)
+//                    appState.addToSelectedPlots(studyLocation)
+//                }
+//            }
+//            appState?.save(flush: true, failOnError: true)
+//            success = true
+//        }
+//        render([status: success ? 'ok' : 'failed'] as JSON)
+//    }
 
     def clearSelectedStudyLocationVisits() {
         def success = false
@@ -422,16 +443,16 @@ class StudyLocationController {
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
 
-    def clearSelectedStudyLocations() {
-        def success = false
-        def userInstance = springSecurityService.currentUser as User
-        def appState = userInstance?.applicationState
-        if (appState?.selectedPlots) {
-            appState.selectedPlots.clear();
-            appState.save(flush: true)
-        }
-        render([status:success ? 'ok' : 'failed'] as JSON)
-    }
+//    def clearSelectedStudyLocations() {
+//        def success = false
+//        def userInstance = springSecurityService.currentUser as User
+//        def appState = userInstance?.applicationState
+//        if (appState?.selectedPlots) {
+//            appState.selectedPlots.clear();
+//            appState.save(flush: true)
+//        }
+//        render([status:success ? 'ok' : 'failed'] as JSON)
+//    }
 
     def studyLocationSummary() {
         def studyLocationName = params.studyLocationName as String
@@ -439,8 +460,8 @@ class StudyLocationController {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
-        def isSelected = appState.selectedPlots.find {
-            it.name == studyLocationName
+        def isSelected = appState.selectedPlotNames.find {
+            it == studyLocationName
         }
 
         [studyLocationSummary:studyLocationSummary, studyLocationName: studyLocationName, isSelected: isSelected != null]
@@ -504,7 +525,7 @@ class StudyLocationController {
         }
         def visitDetail = studyLocationService.getVisitDetails(studyLocationVisitId)
 
-        def isSelected = appState.selectedVisits.find { it.studyLocationVisitId = studyLocationVisitId }
+        def isSelected = appState.selectedVisits.find { it.studyLocationVisitId == studyLocationVisitId }
 
         [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visitDetail: visitDetail, visitSummary: visitSummary, isSelected: isSelected]
     }
@@ -555,13 +576,15 @@ class StudyLocationController {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
         def nextSiteName = siteName
-        def current = appState.selectedPlots.find {
-            it.name == siteName
+        def selectedPlotNames = appState.selectedPlotNames
+        def current = selectedPlotNames.find {
+            it == siteName
         }
+
         if (current) {
-            def index = appState.selectedPlots.indexOf(current)
-            if (index < appState.selectedPlots.size() - 1) {
-                nextSiteName = appState.selectedPlots[index + 1].name
+            def index = selectedPlotNames?.indexOf(current)
+            if (index < selectedPlotNames.size() - 1) {
+                nextSiteName = selectedPlotNames[index + 1].name
             }
         }
 
@@ -573,13 +596,14 @@ class StudyLocationController {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
         def prevSiteName = siteName
-        def current = appState.selectedPlots.find {
+        def selectedPlotNames = appState.selectedPlotNames
+        def current = selectedPlotNames.find {
             it.name == siteName
         }
         if (current) {
-            def index = appState.selectedPlots.indexOf(current)
+            def index = selectedPlotNames.indexOf(current)
             if (index > 0) {
-                prevSiteName = appState.selectedPlots[index - 1].name
+                prevSiteName = selectedPlotNames[index - 1].name
             }
         }
 

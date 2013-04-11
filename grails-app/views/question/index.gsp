@@ -21,7 +21,7 @@
 
             <div class="alert alert-info">
                 <strong>Selected study locations:</strong>
-                ${userInstance.applicationState.selectedPlots.collect({ it.name }).join(", ")}
+                ${userInstance.applicationState.selectedPlotNames.collect({ it }).join(", ")}
             </div>
 
             <div class="well well-small">

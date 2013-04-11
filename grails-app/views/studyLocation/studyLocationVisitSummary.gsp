@@ -41,10 +41,11 @@
             <legend>
                 <table style="width:100%">
                     <tr>
-                        <td>Study Location&nbsp;&#187;&nbsp;
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a>&nbsp;&#187;&nbsp;
-                        Visit Summary</td>
-                        <td></td>
+                        <td>
+                            <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
+                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
+                            Visit Summary
+                        </td>
                     </tr>
                 </table>
             </legend>

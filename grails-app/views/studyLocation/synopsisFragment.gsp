@@ -1,4 +1,4 @@
-<g:set var="deselectVisible" value="${appState?.selectedPlots?.find { it.name == studyLocationName }}" />
+<g:set var="deselectVisible" value="${appState?.selectedPlotNames?.find { it == studyLocationName }}" />
 
 <div>
     <div id="studyLocationSummaryPanel" class="well well-small">

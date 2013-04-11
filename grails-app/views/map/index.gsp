@@ -80,15 +80,15 @@
         });
     }
 
-    function selectPlot(studyLocationName, successCallback) {
-        $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation')}?studyLocationName=" + studyLocationName).done(function (data) {
-            refreshSidebar();
+    %{--function selectPlot(studyLocationName, successCallback) {--}%
+        %{--$.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation')}?studyLocationName=" + studyLocationName).done(function (data) {--}%
+            %{--refreshSidebar();--}%
 
-            if (successCallback) {
-                successCallback();
-            }
-        });
-    }
+            %{--if (successCallback) {--}%
+                %{--successCallback();--}%
+            %{--}--}%
+        %{--});--}%
+    %{--}--}%
 
     function selectVisit(studyLocationName, studyLocationVisitId, successCallback) {
         $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit')}?studyLocationName=" + studyLocationName + "&studyLocationVisitId=" + visitId).done(function () {
@@ -110,36 +110,36 @@
     }
 
 
-    function selectPlots(studyLocationNames, successCallback) {
-        var studyLocationstring = studyLocationNames.join(",");
-        $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocations')}?studyLocationNames=" + studyLocationstring).done(function (data) {
-            refreshSidebar();
-            refreshStudyLocationPoints();
-            if (successCallback) {
-                successCallback();
-            }
-        });
-    }
+    %{--function selectPlots(studyLocationNames, successCallback) {--}%
+        %{--var studyLocationstring = studyLocationNames.join(",");--}%
+        %{--$.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocations')}?studyLocationNames=" + studyLocationstring).done(function (data) {--}%
+            %{--refreshSidebar();--}%
+            %{--refreshStudyLocationPoints();--}%
+            %{--if (successCallback) {--}%
+                %{--successCallback();--}%
+            %{--}--}%
+        %{--});--}%
+    %{--}--}%
 
-    function deselectPlot(studyLocationName, successCallback) {
-        $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation')}?studyLocationName=" + studyLocationName).done(function (data) {
-            refreshSidebar();
-            refreshStudyLocationPoints();
-            if (successCallback) {
-                successCallback();
-            }
-        });
-    }
+    %{--function deselectPlot(studyLocationName, successCallback) {--}%
+        %{--$.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation')}?studyLocationName=" + studyLocationName).done(function (data) {--}%
+            %{--refreshSidebar();--}%
+            %{--refreshStudyLocationPoints();--}%
+            %{--if (successCallback) {--}%
+                %{--successCallback();--}%
+            %{--}--}%
+        %{--});--}%
+    %{--}--}%
 
-    function clearSelectedPlots(successCallback) {
-        $.ajax("${createLink(controller:'studyLocation', action:'clearSelectedStudyLocations')}").done(function (data) {
-            refreshSidebar();
-            refreshStudyLocationPoints();
-            if (successCallback) {
-                successCallback();
-            }
-        });
-    }
+    %{--function clearSelectedPlots(successCallback) {--}%
+        %{--$.ajax("${createLink(controller:'studyLocation', action:'clearSelectedStudyLocations')}").done(function (data) {--}%
+            %{--refreshSidebar();--}%
+            %{--refreshStudyLocationPoints();--}%
+            %{--if (successCallback) {--}%
+                %{--successCallback();--}%
+            %{--}--}%
+        %{--});--}%
+    %{--}--}%
 
     function clearSelectedVisits(successCallback) {
         $.ajax("${createLink(controller:'studyLocation', action:'clearSelectedStudyLocationVisits')}").done(function (data) {
@@ -172,7 +172,7 @@
         return true;
     }
 
-    function compareSelectedPlots() {
+    function compareSelected() {
         showModal({
             url: "${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}",
             title: "Compare Study Locations",
@@ -241,17 +241,9 @@
             var pinIcon = null;
 
             if (result.selected) {
-                if (result.selectionMode.name == 'StudyLocationVisit') {
-                    pinIcon = visitSelectedIcon.clone();
-                } else {
-                    pinIcon = selectedIcon.clone();
-                }
+                pinIcon = selectedIcon.clone();
             } else {
-                if (result.selectionMode.name == 'StudyLocationVisit') {
-                    pinIcon = visitIcon.clone();
-                } else {
-                    pinIcon = icon.clone();
-                }
+                pinIcon = icon.clone();
             }
 
             var marker = new OpenLayers.Marker(location, pinIcon);

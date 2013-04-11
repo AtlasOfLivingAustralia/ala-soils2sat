@@ -23,7 +23,7 @@
 
             <div class="alert alert-info">
                 <div>
-                    <strong>Selected study locations:</strong>&nbsp;${userInstance.applicationState.selectedPlots.collect({ it.name }).join(", ")}
+                    <strong>Selected study locations:</strong>&nbsp;${userInstance.applicationState.selectedPlotNames.collect({ it }).join(", ")}
                 </div>
                 <div>
                     <strong>Question:</strong>&nbsp;${question.text}

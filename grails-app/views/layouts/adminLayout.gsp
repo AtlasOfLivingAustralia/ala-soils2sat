@@ -18,7 +18,7 @@
         <legend>
             <table style="width: 100%">
                 <tr>
-                    <td>Administration&nbsp;&#187;&nbsp;<g:pageProperty name="page.pageTitle"/></td>
+                    <td>Administration<sts:navSeperator/><g:pageProperty name="page.pageTitle"/></td>
                     <td style="text-align: right"><span><g:pageProperty name="page.adminButtonBar"/></span></td>
                 </tr>
             </table>

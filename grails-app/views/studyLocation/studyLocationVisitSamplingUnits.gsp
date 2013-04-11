@@ -39,7 +39,7 @@
                             <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}">Visits</a><sts:navSeperator/>
-                        Visit ${visitSummary.visitId} Sampling Units</td>
+                        Visit ${visitSummary.visitId}</td>
                         <td></td>
                     </tr>
                 </table>

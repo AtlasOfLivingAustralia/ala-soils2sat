@@ -309,8 +309,8 @@ class S2STagLib {
             def visitDetails = studyLocationService.getVisitDetails(studyLocationVisitId)
             def mb = new MarkupBuilder(out)
             mb.span() {
-                mkp.yield(studyLocationName)
-                mkp.yieldUnescaped("&nbsp;-&nbsp;")
+//                mkp.yield(studyLocationName)
+//                mkp.yieldUnescaped("&nbsp;-&nbsp;")
                 mkp.yield(visitDetails.visitStartDate)
             }
         }
