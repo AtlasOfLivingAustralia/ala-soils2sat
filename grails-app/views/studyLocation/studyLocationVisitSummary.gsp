@@ -10,29 +10,23 @@
     <body>
 
         <script type="text/javascript">
+
             $(document).ready(function() {
 
-                $(".btnSelect").click(function(e) {
+                $("#btnSelect").click(function(e) {
                     e.preventDefault();
-                    var visitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
-                    if (visitId) {
-                        $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit', params:[studyLocationName: studyLocationName])}&studyLocationVisitId=" + visitId).done(function() {
-                            window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationName: studyLocationName])}";
-                        });
-                    }
+                    $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}").done(function() {
+                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}";
+                    });
+
                 });
 
-                $(".btnDeselect").click(function(e) {
+                $("#btnDeselect").click(function(e) {
                     e.preventDefault();
-                    var visitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
-                    if (visitId) {
-                        $.ajax("${createLink(controller: 'studyLocation', action:'deselectStudyLocationVisit')}?studyLocationVisitId=" + visitId).done(function() {
-                            window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationName: studyLocationName])}";
-                        });
-                    }
+                    $.ajax("${createLink(controller: 'studyLocation', action:'deselectStudyLocationVisit', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}").done(function() {
+                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}";
+                    });
                 });
-
-
             });
 
         </script>
@@ -44,47 +38,70 @@
                         <td>
                             <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
-                            Visit Summary
-                        </td>
+                        Visit ${visitSummary.visitId}</td>
+                        <td></td>
                     </tr>
                 </table>
             </legend>
 
             <div class="well well-small">
-                <h4>Study Location Visits</h4>
+
+                <table style="width: 100%">
+                    <tr>
+                        <td>
+                            <h4>Study Location Visit Summary</h4>
+                        </td>
+                        <td>
+                            <div style="float: right">
+                                <g:if test="${isSelected}">
+                                    <button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location visit</button>
+                                </g:if>
+                                <g:else>
+                                    <button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location visit</button>
+                                </g:else>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <td>Study Location</td>
+                        <td>${studyLocationSummary.name}</td>
+                    </tr>
+                    <tr>
+                        <td>Start Date</td>
+                        <td><sts:formatDateStr date="${visitDetail.startDate}"/></td>
+                    </tr>
+                    <tr>
+                        <td>End Date</td>
+                        <td><sts:formatDateStr date="${visitDetail.endDate}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Observers</td>
+                        <td>${visitSummary.observers?.join(", ")}</td>
+                    </tr>
+                    <tr>
+                        <td>Visit Notes</td>
+                        <td>${visitDetail.visitNotes}</td>
+                    </tr>
+
+                </table>
+
+                <h4>Study Location Visit Sampling Units</h4>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Visit</th>
-                            <th>Dates</th>
+                            <th>Date</th>
                             <th>Observers</th>
-                            <th>Sampling activities</th>
-                            <th></th>
+                            <th>Sampling Unit</th>
                         </tr>
                     </thead>
-                    <g:each in="${visitSummaries}" var="visit">
-                        <tr studyLocationVisitId="${visit.visitId}">
-                            <g:set var="samplesURL" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, studyLocationVisitId: visit.visitId])}" />
-                            <td><a href="${samplesURL}">${visit.visitId}</a></td>
-                            <td>Visit&nbsp;Start&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.startDate}"/><br/>
-                                Visit&nbsp;End&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.endDate}"/>
-                            </td>
-                            <td>${visit.observers?.join(", ")}</td>
-                            <td>
-                                <ul>
-                                    <g:each in="${visit.samplingUnitNames}" var="samplingUnitCode">
-                                        <li><a href="#"><sts:formatSamplingUnitName code="${samplingUnitCode}"/></a></li>
-                                    </g:each>
-                                </ul>
-                            </td>
-                            <td>
-                                <g:if test="${appState.selectedVisits?.find { it.studyLocationVisitId == visit.visitId }}">
-                                    <button class="btnDeselect btn btn-small btn-warning pull-right">Deselect</button>
-                                </g:if>
-                                <g:else>
-                                    <button class="btnSelect btn btn-small btn-info pull-right">Select</button>
-                                </g:else>
-                            </td>
+                    <g:each in="${visitSummary.samplingUnitSummaryList}" var="su">
+                        <tr>
+                            <td><sts:formatDateStr date="${su.sampleDate}"/></td>
+                            <td>${su.observerNames?.join(", ")}</td>
+                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, studyLocationVisitId: visitSummary.visitId, samplingUnit: su.samplingUnit])}">${su.description ?: su.samplingUnit}</a> </td>
                         </tr>
                     </g:each>
                 </table>

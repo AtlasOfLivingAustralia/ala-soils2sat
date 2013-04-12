@@ -16,8 +16,7 @@
                         <td>
                             <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}">Visits</a><sts:navSeperator/>
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: studyLocationName, studyLocationVisitId: visitDetail.id])}">Sampling Units</a><sts:navSeperator/>
+                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName, studyLocationVisitId: visitDetail.id])}">Visit ${visitDetail.id}</a><sts:navSeperator/>
                             ${samplingUnit}</td>
                         <td></td>
                     </tr>

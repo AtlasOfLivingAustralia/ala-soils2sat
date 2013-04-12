@@ -135,7 +135,7 @@ class StudyLocationController {
         appState.selectedPlotNames.each { studyLocation ->
             def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
             def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
-            results[studyLocation.name] = studyLocationTaxaList
+            results[studyLocation] = studyLocationTaxaList
         }
 
         if (params.diffMode?.toLowerCase() == 'intersect') {
@@ -228,7 +228,7 @@ class StudyLocationController {
         appState.selectedPlotNames.each { studyLocation ->
             def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
             def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
-            results[studyLocation.name] = studyLocationTaxaList
+            results[studyLocation] = studyLocationTaxaList
         }
 
         def columnHeaders = results.keySet().toArray() as String[]
@@ -467,7 +467,7 @@ class StudyLocationController {
         [studyLocationSummary:studyLocationSummary, studyLocationName: studyLocationName, isSelected: isSelected != null]
     }
 
-    def studyLocationVisitSummary() {
+    def studyLocationVisitsFragment() {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
         def visitSummaries = studyLocationSummary.visitSummaries
@@ -513,7 +513,7 @@ class StudyLocationController {
         [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: rank, radius: radius]
     }
 
-    def studyLocationVisitSamplingUnits() {
+    def studyLocationVisitSummary() {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
         def studyLocationName = params.studyLocationName
@@ -558,13 +558,16 @@ class StudyLocationController {
             case "SOIL_SAMPLING":
                 dataList = visitDetail.soilSampleList
                 break
+            case "BASAL_AREA":
+                dataList = visitDetail.basalAreaList
+                break;
             default:
-            break;
+                break;
         }
 
         def colHeadings = dataList[0]?.collect { it.key }
 
-        colHeadings.removeAll(['siteLocationVisitId'])
+        colHeadings?.removeAll(['siteLocationVisitId'])
 
         samplingUnit = WordUtils.capitalizeFully(samplingUnit.replaceAll('_', ' '))
 
@@ -584,7 +587,7 @@ class StudyLocationController {
         if (current) {
             def index = selectedPlotNames?.indexOf(current)
             if (index < selectedPlotNames.size() - 1) {
-                nextSiteName = selectedPlotNames[index + 1].name
+                nextSiteName = selectedPlotNames[index + 1]
             }
         }
 
@@ -598,12 +601,12 @@ class StudyLocationController {
         def prevSiteName = siteName
         def selectedPlotNames = appState.selectedPlotNames
         def current = selectedPlotNames.find {
-            it.name == siteName
+            it == siteName
         }
         if (current) {
             def index = selectedPlotNames.indexOf(current)
             if (index > 0) {
-                prevSiteName = selectedPlotNames[index - 1].name
+                prevSiteName = selectedPlotNames[index - 1]
             }
         }
 

@@ -10,7 +10,7 @@
 
     <body>
 
-        <g:set var="visitSummaryLink" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName])}"/>
+        <g:set var="visitSummaryLink" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitsFragment', params: [studyLocationName: studyLocationName])}"/>
 
         <style type="text/css">
 
@@ -32,25 +32,26 @@
 
             $(document).ready(function () {
 
+                //load the environmental data (async)
+                $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationLayersFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                    $("#environmentalDataSection").html(html);
+                });
+
+
                 $('a[data-toggle="tab"]').on('shown', function (e) {
-                    $("#environmentalLayersTab").html("");
                     var tabHref = $(this).attr('href');
-                    if (tabHref == '#environmentalLayersTab') {
-                        $("#environmentalLayersTab").html("Retrieving data for study location... <sts:spinner/>");
-                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationLayersFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
-                            $("#environmentalLayersTab").html(html);
-                        });
-                    } else if (tabHref == "#taxaTab") {
+                    if (tabHref == "#taxaTab") {
                         $("#taxaTab").html("Retrieving taxa data for study location... <sts:spinner/>");
                         $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName, radius: 0.5, rank:'species'])}").done(function (html) {
                             $("#taxaTab").html(html);
                         });
+                    } else if (tabHref == "#visitsTab") {
+                        $("#visitsTab").html("Retrieving Study Location Visits... <sts:spinner/>");
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitsFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                            $("#visitsTab").html(html);
+                        });
                     }
-                });
 
-                $("#btnViewVisitSummaries").click(function (e) {
-                    e.preventDefault();
-                    window.location = "${visitSummaryLink}";
                 });
 
                 $("#btnDeselect").click(function(e) {
@@ -60,26 +61,26 @@
                     });
                 });
 
-                $("#btnDeselectAndReturn").click(function(e) {
-                    e.preventDefault();
-                    $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
-                        window.location = "${createLink(controller: "map", action: "index")}";
-                    });
-                });
+                %{--$("#btnDeselectAndReturn").click(function(e) {--}%
+                    %{--e.preventDefault();--}%
+                    %{--$.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {--}%
+                        %{--window.location = "${createLink(controller: "map", action: "index")}";--}%
+                    %{--});--}%
+                %{--});--}%
 
-                $("#btnSelect").click(function(e) {
-                    e.preventDefault();
-                    $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
-                        window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";
-                    });
-                });
+                %{--$("#btnSelect").click(function(e) {--}%
+                    %{--e.preventDefault();--}%
+                    %{--$.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {--}%
+                        %{--window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";--}%
+                    %{--});--}%
+                %{--});--}%
 
-                $("#btnSelectAndReturn").click(function(e) {
-                    e.preventDefault();
-                    $.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {
-                        window.location = "${createLink(controller: "map", action: "index")}";
-                    });
-                });
+                %{--$("#btnSelectAndReturn").click(function(e) {--}%
+                    %{--e.preventDefault();--}%
+                    %{--$.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {--}%
+                        %{--window.location = "${createLink(controller: "map", action: "index")}";--}%
+                    %{--});--}%
+                %{--});--}%
 
                 $("#btnMoveNext").click(function(e) {
                     e.preventDefault();
@@ -101,7 +102,7 @@
                     <tr>
                         <td><a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>${studyLocationName}</td>
                         <td>
-                            <button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})
+                            %{--<button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})--}%
                             <g:if test="${isSelected}">
                                 <button id="btnMoveNext" style="margin-right:5px" class="btn btn-small pull-right">Show next selected&nbsp;<i class="icon icon-arrow-right"></i></button>
                                 <button id="btnMovePrevious" style="margin-right:5px" class="btn btn-small pull-right"><i class="icon icon-arrow-left"></i>&nbsp;Show previous selected</button>
@@ -115,24 +116,12 @@
             <div class="well well-small">
 
                 <div class="tabbable">
-                    %{--<div style="float: right">--}%
-                        %{--<g:if test="${isSelected}">--}%
-                            %{--<button id="btnDeselectAndReturn" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect and return to map</button>--}%
-                            %{--<button id="btnDeselect" style="margin-right:5px" class="btn btn-small btn-warning pull-right">Deselect study location</button>--}%
-                        %{--</g:if>--}%
-                        %{--<g:else>--}%
-                            %{--<button id="btnSelectAndReturn" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select and return to map</button>--}%
-                            %{--<button id="btnSelect" style="margin-right:5px" class="btn btn-small btn-info pull-right">Select study location</button>--}%
-                        %{--</g:else>--}%
-                    %{--</div>--}%
 
                     <ul class="nav nav-tabs" style="margin-bottom: 0px">
                         <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
-                        <li><a href="#environmentalLayersTab" data-toggle="tab">Environmental data</a></li>
                         <li><a href="#taxaTab" data-toggle="tab">Taxa data</a></li>
-
+                        <li><a href="#visitsTab" data-toggle="tab">Study Location Visits</a></li>
                     </ul>
-
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="detailsTab">
@@ -192,10 +181,6 @@
                                     <td class="fieldColumn">Last visit date</td>
                                     <td><sts:formatDateStr date="${studyLocationSummary.lastVisitDate}"/></td>
                                 </tr>
-                                %{--<tr>--}%
-                                %{--<td class="fieldColumn">Number of sampling units</td>--}%
-                                %{--<td>${studyLocationSummary.data.numSamplingUnits}</td>--}%
-                                %{--</tr>--}%
                                 <tr>
                                     <td class="fieldColumn">Sampling Methods that have been performed at this site</td>
                                     <td>
@@ -207,13 +192,19 @@
                                     </td>
                                 </tr>
                             </table>
-                        </div>
-
-                        <div class="tab-pane" id="environmentalLayersTab">
+                            <h4>Environmental Data</h4>
+                            <small>* Determined by the selected layers on map page</small>
+                            <div id="environmentalDataSection">
+                                <sts:loading message="Loading environmental data" />
+                            </div>
                         </div>
 
                         <div class="tab-pane" id="taxaTab">
                         </div>
+
+                        <div class="tab-pane" id="visitsTab">
+                        </div>
+
                     </div>
                 </div>
             </div>

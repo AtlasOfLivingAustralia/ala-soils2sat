@@ -415,7 +415,7 @@
 
     function showVisitDetails(studyLocationName, studyLocationVisitId) {
         if (studyLocationVisitId && studyLocationName) {
-            window.location = "${createLink(controller: 'studyLocation', action:'studyLocationVisitSamplingUnits', )}?studyLocationVisitId=" + studyLocationVisitId + "&studyLocationName=" + studyLocationName
+            window.location = "${createLink(controller: 'studyLocation', action:'studyLocationVisitSummary', )}?studyLocationVisitId=" + studyLocationVisitId + "&studyLocationName=" + studyLocationName
             return true;
         }
     }

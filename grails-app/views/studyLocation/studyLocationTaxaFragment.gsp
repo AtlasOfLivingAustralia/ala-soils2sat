@@ -8,7 +8,7 @@
     </thead>
     <g:each in="${taxaList}" var="taxon">
       <tr>
-        <td><a href="http://bie.ala.org.au/species/${taxon}">${taxon}</a></td>
+        <td><sts:taxaHomePageLink name="${taxon}" /></td>
       </tr>
     </g:each>
   </table>

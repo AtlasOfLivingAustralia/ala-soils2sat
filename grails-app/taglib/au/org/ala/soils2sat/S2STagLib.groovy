@@ -321,4 +321,25 @@ class S2STagLib {
         out << "&nbsp;&#187;&nbsp;"
     }
 
+    def loading = { attrs, body ->
+        def message = attrs.message ?: "Loading..."
+        def mb = new MarkupBuilder(out)
+        mb.span() {
+            mb.img(src:resource(dir: '/images', file:'spinner.gif'))
+            mkp.yieldUnescaped("&nbsp;")
+            mkp.yield(message)
+        }
+    }
+
+    def taxaHomePageLink = { attrs, body ->
+        def name = attrs.name
+        if (name) {
+        def mb = new MarkupBuilder(out)
+            mb.a(href:"http://bie.ala.org.au/species/${name}", target:'ala-window') {
+                mkp.yield(name)
+                mb.img(src:resource(dir:'images', file:'external-link.png'))
+            }
+        }
+    }
+
 }

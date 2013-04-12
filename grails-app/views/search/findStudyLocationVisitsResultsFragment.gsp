@@ -25,7 +25,7 @@
                 <g:each in="${results}" var="result">
                     <tr class="studyLocationSearchResultRow" studyLocationName="${result.siteName}" studyLocationVisitId="${result.studyLocationVisitId}">
                         <td>VISIT: ${result.siteName} (${result.zone} ${result.easting} ${result.northing})</td>
-                        <td>[ <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSamplingUnits', params: [studyLocationName: result.siteName, studyLocationVisitId: result.studyLocationVisitId])}">View Visit Summary</a> ]
+                        <td>[ <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: result.siteName, studyLocationVisitId: result.studyLocationVisitId])}">View Visit Summary</a> ]
                         </td>
                         <td>
                             <g:set var="selected" value="${!appState.containsVisit(result.studyLocationVisitId as String)}"/>

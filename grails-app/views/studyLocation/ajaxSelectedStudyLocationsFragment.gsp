@@ -3,7 +3,7 @@
         <g:each in="${appState?.selectedVisits}">
             <tr studyLocationName="${it.studyLocationName}" studyLocationVisitId="${it.studyLocationVisitId}">
                 <td>
-                    <a class="studyLocationVisitDetailsLink" href="${createLink(controller:'studyLocation', action:'studyLocationVisitSamplingUnits', params:[studyLocationName:it.studyLocationName,studyLocationVisitId: it.studyLocationVisitId])}"><sts:formatVisitLabel studyLocationName="${it.studyLocationName}" studyLocationVisitId="${it.studyLocationVisitId}"/></a>
+                    <a class="studyLocationVisitDetailsLink" href="${createLink(controller:'studyLocation', action:'studyLocationVisitSummary', params:[studyLocationName:it.studyLocationName,studyLocationVisitId: it.studyLocationVisitId])}"><sts:formatVisitLabel studyLocationName="${it.studyLocationName}" studyLocationVisitId="${it.studyLocationVisitId}"/></a>
                     <button class="btn btn-mini pull-right btnRemoveSelectedPlot" title="Remove study location visit"><i class="icon-remove"/></button>
                 </td>
             </tr>
