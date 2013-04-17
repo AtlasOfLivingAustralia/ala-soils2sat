@@ -1,5 +1,7 @@
 package au.org.ala.soils2sat
 
+import javax.persistence.Transient
+
 class UserSearch {
 
     User user
@@ -31,6 +33,17 @@ class UserSearch {
         bottom nullable: true
         right nullable: true
         useBoundingBox nullable: true
+    }
+
+    @Transient
+    public void clear() {
+        searchText = ""
+        useBoundingBox = false
+        top = null
+        left = null
+        bottom = null
+        right = null
+        criteria?.clear()
     }
 
 }

@@ -38,6 +38,12 @@ class S2SUserDetailsService implements GrailsUserDetailsService {
                 applicationState.save(flush: true, failOnError: true)
             }
 
+            // clear any existing UserSearch...
+            def userSearch = user.applicationState.currentSearch
+            if (userSearch) {
+                userSearch.clear()
+            }
+
             return new GrailsUser(user.username, user.password, user.enabled, !user.accountExpired, !user.passwordExpired, !user.accountLocked, authorities ?: NO_ROLES, user.id)
         }
     }

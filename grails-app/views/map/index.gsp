@@ -493,7 +493,9 @@
         </div>
 
         <div id="sidebarContainer" class="span4">
-            <div id="sidebarContent"></div>
+            <div id="sidebarContent">
+                <sts:loading message="Loading..." />
+            </div>
         </div>
     </div>
 </div>

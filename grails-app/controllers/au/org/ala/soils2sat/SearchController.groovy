@@ -14,11 +14,6 @@ class SearchController {
         redirect(action: 'findStudyLocations')
     }
 
-//    def findStudyLocationFragment() {
-//        def userInstance = springSecurityService.currentUser as User
-//        [userInstance: userInstance, appState: userInstance?.applicationState]
-//    }
-
     def findStudyLocations() {
         def userInstance = springSecurityService.currentUser as User
         def userSearch = userInstance.applicationState.currentSearch
@@ -51,7 +46,9 @@ class SearchController {
         def userSearch = userInstance.applicationState.currentSearch
 
         if (!userSearch) {
-
+            flash.message = "An error occurred - no current user?"
+            redirect(action:'index')
+            return
         }
 
         def searchResults = null
@@ -356,6 +353,16 @@ class SearchController {
     def ajaxEditSearchCriteriaFragment() {
         def criteria = SearchCriteria.get(params.int("criteriaId"))
         [criteria: criteria]
+    }
+
+    def clearCurrentSearch() {
+        def userInstance = springSecurityService.currentUser as User
+        def userSearch = userInstance.applicationState.currentSearch
+        if (userSearch) {
+            userSearch.clear()
+        }
+
+        redirect(action:'index')
     }
 
 }

@@ -60,6 +60,11 @@
             doSearch();
         });
 
+        $("#btnStartOver").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller:'search', action:'clearCurrentSearch')}";
+        });
+
         $("#searchText").keydown(function (e) {
             if (e.keyCode == 13) {
                 e.preventDefault();
@@ -122,7 +127,7 @@
             e.preventDefault();
             showModal({
                 url: "${createLink(action:'ajaxAddSearchCriteriaFragment')}",
-                title: "Add search criteria",
+                title: "Add Search Criteria",
                 height: 520,
                 width: 700,
                 onClose: function () {
@@ -152,9 +157,7 @@
                 e.preventDefault();
                 var studyLocationVisitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
                 if (studyLocationVisitId) {
-                    deselectVisit(studyLocationVisitId, function () {
-                        renderSelectedList();
-                    });
+                    deselectVisit(studyLocationVisitId);
                 }
             });
         });
@@ -166,6 +169,9 @@
 
     function selectVisit(studyLocationName, studyLocationVisitId, successCallback) {
         $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit')}?studyLocationName=" + studyLocationName + "&studyLocationVisitId=" + studyLocationVisitId).done(function () {
+
+            renderSelectedList();
+
             if (successCallback) {
                 successCallback();
             }
@@ -174,6 +180,8 @@
 
     function deselectVisit(studyLocationVisitId, successCallback) {
         $.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocationVisit')}?studyLocationVisitId=" + studyLocationVisitId).done(function (data) {
+
+            renderSelectedList();
 
             if (successCallback) {
                 successCallback();
@@ -457,12 +465,15 @@
 
                     <div id="searchCriteria"></div>
 
-                    <button type="button" id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add search criteria
-                    </button>
-                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-remove icon-white"></i>&nbsp;Remove all criteria
-                    </button>
+                    <button type="button" id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add Search Criteria</button>
+                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-remove icon-white"></i>&nbsp;Remove All Criteria</button>
 
-                    <button type="button" id="btnSearch" class="btn btn-primary pull-right">Search</button>
+                    <button type="button" id="btnSearch" class="btn btn-primary pull-right">
+                        <i class="icon-search icon-white"></i>&nbsp;Search
+                    </button>
+                    <button type="button" id="btnStartOver" class="btn pull-right" style="margin-right: 5px">
+                        <i class="icon-remove-circle"></i>&nbsp;Start over
+                    </button>
                 </form>
             </div>
 
@@ -476,6 +487,7 @@
                 <h5>Selected Study Location Visits</h5>
 
                 <div id="selectedStudyLocations">
+                    <sts:loading message="Loading selected visits..." />
                 </div>
 
                 <div>
