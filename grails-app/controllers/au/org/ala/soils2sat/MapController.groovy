@@ -77,15 +77,11 @@ class MapController {
     }
 
     def sideBarFragment() {
+
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
-        def selectedVisitDetails = [:]
-        appState.selectedVisits?.each {
-            def details = studyLocationService.getVisitDetails(it.studyLocationVisitId)
-            selectedVisitDetails[it.studyLocationVisitId] = details
-        }
 
-        [userInstance: userInstance, appState: appState, selectedVisitDetails: selectedVisitDetails ]
+        [userInstance: userInstance, appState: appState ]
     }
 
     def ajaxSetLayerVisibility() {
