@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class SearchCriteria {
+class SearchCriteria implements Serializable {
 
     SearchCriteriaDefinition criteriaDefinition
     String value

@@ -20,7 +20,7 @@
 
         </script>
 
-        <div class="container-fluid">
+        <div class="container">
             <legend>
                 <table style="width:100%">
                     <tr>
@@ -31,17 +31,23 @@
                 </table>
             </legend>
 
-            <div class="well well-small">
-                <h4>Selected Study Location Visits</h4>
-                <table>
-                    <g:each in="${appState.selectedVisits}" var="visit">
-                        <tr>
-                            <td style="width:30px; vertical-align: middle"><g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0px" name="visitId" checked="true" value="${visit.studyLocationVisitId}" /></td>
-                            <td>${visit.studyLocationName}<sts:navSeperator/>${visit.studyLocationVisitId} <sts:formatVisitLabel studyLocationName="${visit.studyLocationName}" studyLocationVisitId="${visit.studyLocationVisitId}" /> </td>
-                        </tr>
-                    </g:each>
-                </table>
+            <div class="row">
+                <div class="span12">
+                    <g:form>
+                        <div class="well well-small">
+                        <h4>Data Extraction Results</h4>
+                            Success: ${extractionResults.success}
+                            <ul>
+                                <li>Link to download (zip file): ${extractionResults.url}</li>
+                                <li>DOI</li>
+                                <li>RIF/CS Receipt info</li>
+                            </ul>
+                        </div>
 
+                        <g:link class="btn btn-primary" event="finish">Return to Map</g:link>
+
+                    </g:form>
+                </div>
             </div>
         </div>
     </body>

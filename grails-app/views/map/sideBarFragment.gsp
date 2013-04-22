@@ -140,7 +140,7 @@
 
     $(".btnExtract").click(function (e) {
         e.preventDefault();
-        window.location = "${createLink(controller:'extract', action:'index')}";
+        window.location = "${createLink(controller:'extract')}";
     });
 
 

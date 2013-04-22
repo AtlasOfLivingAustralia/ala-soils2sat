@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class EnvironmentalLayer {
+class EnvironmentalLayer implements Serializable {
 
     String name
     boolean visible

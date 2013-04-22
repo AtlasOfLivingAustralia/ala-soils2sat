@@ -54,6 +54,7 @@ grails.project.dependency.resolution = {
         runtime ':springcache:1.3.1'
         runtime ':csv:0.3.1'
         runtime ':spring-security-core:1.2.7.3'
+        runtime ':webflow:2.0.8.1'
 
     }
 }

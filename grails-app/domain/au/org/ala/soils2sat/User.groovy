@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class User {
+class User implements Serializable {
 
 	transient springSecurityService
 

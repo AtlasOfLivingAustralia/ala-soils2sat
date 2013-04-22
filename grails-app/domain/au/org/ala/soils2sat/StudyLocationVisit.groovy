@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class StudyLocationVisit {
+class StudyLocationVisit implements Serializable {
 
     String studyLocationName
     String studyLocationVisitId

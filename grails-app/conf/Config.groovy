@@ -63,9 +63,14 @@ aekosServiceRoot = "http://s2s-dev.ecoinformatics.org.au:8080/s2s-services"
 spatialPortalRoot = "http://spatial.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
+extractRepositoryRoot = '/data/soils2sat'
+
 environments {
     development {
         grails.logging.jul.usebridge = true
+    }
+    test {
+
     }
     production {
         grails.logging.jul.usebridge = false

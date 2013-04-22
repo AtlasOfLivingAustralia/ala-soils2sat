@@ -2,7 +2,7 @@ package au.org.ala.soils2sat
 
 import javax.persistence.Transient
 
-class UserApplicationState {
+class UserApplicationState implements Serializable {
 
     // List<StudyLocation> selectedPlots
     List<StudyLocationVisit> selectedVisits

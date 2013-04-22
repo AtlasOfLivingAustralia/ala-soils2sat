@@ -64,16 +64,31 @@
                 </div>
             </div>
         </div>
-        <g:if test="${flash.message}">
+        <g:if test="${message}">
             <div class="container">
                 <div class="row">
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        ${flash.message}
+                    <div class="span12">
+                        <div class="alert alert-info">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            ${flash.message}
+                        </div>
                     </div>
                 </div>
             </div>
         </g:if>
+
+        <g:if test="${errorMessage}">
+            <div class="container">
+                <div class="row">
+                    <div class="span12">
+                        <div class="alert alert-error">
+                            ${errorMessage}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </g:if>
+
         <g:layoutBody/>
         <r:layoutResources />
         <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>

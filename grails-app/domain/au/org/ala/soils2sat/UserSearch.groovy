@@ -2,7 +2,7 @@ package au.org.ala.soils2sat
 
 import javax.persistence.Transient
 
-class UserSearch {
+class UserSearch implements Serializable {
 
     User user
     String name
