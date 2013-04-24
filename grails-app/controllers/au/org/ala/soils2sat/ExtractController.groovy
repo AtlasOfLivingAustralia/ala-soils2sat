@@ -88,4 +88,31 @@ class ExtractController {
 
     }
 
+    def downloadPackage() {
+        def packageName = params.packageName
+
+        if (!packageName) {
+            // TODO: return a HTTP error code
+            return
+        }
+
+        def extract = DataExtraction.findByPackageName(packageName)
+        if (!extract) {
+            // TODO:return HTTP error code
+        }
+
+        File f = new File(extract.localFile)
+        if (!f.exists()) {
+            // TODO: return HTTP error code
+            return
+        }
+
+        response.setHeader("Content-Disposition", "attachment;filename=" + packageName +".zip");
+        response.setContentType("application/zip");
+
+        // write the file contents to the output stream
+        response.outputStream << f.newInputStream()
+
+    }
+
 }

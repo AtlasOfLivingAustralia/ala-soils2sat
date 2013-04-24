@@ -64,6 +64,7 @@ spatialPortalRoot = "http://spatial.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
 extractRepositoryRoot = '/data/soils2sat'
+extractDownloadRoot = 'http://localhost/data/soils2sat/'
 
 environments {
     development {

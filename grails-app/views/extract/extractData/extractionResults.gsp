@@ -38,7 +38,7 @@
                         <h4>Data Extraction Results</h4>
                             Success: ${extractionResults.success}
                             <ul>
-                                <li>Link to download (zip file): ${extractionResults.url}</li>
+                                <li>Package: <a href="${extractionResults.packageUrl}">Download zip file</a></li>
                                 <li>DOI</li>
                                 <li>RIF/CS Receipt info</li>
                             </ul>
