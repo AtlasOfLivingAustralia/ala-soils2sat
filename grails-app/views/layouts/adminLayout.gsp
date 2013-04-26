@@ -9,6 +9,29 @@
             opacity: .25;
         }
 
+        /* Pagination fix */
+        .pagination .disabled, .pagination .currentStep, .pagination .step {
+            float: left;
+            padding: 0 14px;
+            border-right: 1px solid;
+            line-height: 34px;
+            border-right-color: rgba(0, 0, 0, 0.15);
+        }
+        .pagination .prevLink {
+            border-right: 1px solid #DDD !important;
+            line-height: 34px;
+            vertical-align: middle;
+            padding: 0 14px;
+            float: left;
+        }
+
+        .pagination .nextLink {
+            vertical-align: middle;
+            line-height: 34px;
+            padding: 0 14px;
+        }
+
+
         </style>
     </head>
 
@@ -33,6 +56,7 @@
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'samplingUnits')}" title="Sampling Units" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'ecologicalContexts')}" title="Ecological Contexts" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'matrix')}" active="Matrix" title="Questions Matrix" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'dataExtractions')}" title="Data Extractions" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'advancedSettings')}" title="Advanced Settings" />
                 </ul>
             </div>

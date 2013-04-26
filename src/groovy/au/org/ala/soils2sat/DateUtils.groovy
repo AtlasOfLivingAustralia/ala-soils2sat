@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 class DateUtils {
 
     public static String S2S_DATE_FORMAT = "yyyy-MM-dd"
+    public static String S2S_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
     public static Date tryParse(dateStr) {
         if (dateStr) {

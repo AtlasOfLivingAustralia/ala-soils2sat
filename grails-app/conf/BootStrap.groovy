@@ -4,6 +4,8 @@ import au.org.ala.soils2sat.UserRole
 
 class BootStrap {
 
+    def grailsApplication
+
     def init = { servletContext ->
 
         def roles = ['ROLE_USER','ROLE_ADMIN']
@@ -25,6 +27,11 @@ class BootStrap {
                 userRole = new UserRole(user:admin, role: role)
                 userRole.save(flush: true, failOnError: true)
             }
+        }
+
+        def extractDirectory = new File(grailsApplication.config.extractRepositoryRoot)
+        if (!extractDirectory.exists()) {
+            extractDirectory.mkdirs()
         }
 
     }

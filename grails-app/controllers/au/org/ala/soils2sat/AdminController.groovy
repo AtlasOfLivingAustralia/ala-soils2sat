@@ -908,4 +908,26 @@ class AdminController {
 
     }
 
+    def dataExtractions() {
+
+        params.max = params.max ?: 10
+        params.sort= params.sort ?: "date"
+        params.order= params.order ?: "desc"
+
+        def extractions = DataExtraction.list(params)
+
+        [extractions: extractions]
+    }
+
+    def deleteDataExtraction() {
+        def extract = DataExtraction.findByPackageName(params.packageName)
+        if (extract) {
+            extract.delete()
+            flash.message = "Data extraction package ${params.packageName} deleted"
+        } else {
+            flash.errorMessafge = "Package name missing or package not found!"
+        }
+        redirect(action:'dataExtractions')
+    }
+
 }

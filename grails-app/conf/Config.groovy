@@ -63,8 +63,7 @@ aekosServiceRoot = "http://s2s-dev.ecoinformatics.org.au:8080/s2s-services"
 spatialPortalRoot = "http://spatial.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
-extractRepositoryRoot = '/data/soils2sat'
-extractDownloadRoot = 'http://localhost/data/soils2sat/'
+extractRepositoryRoot = '/data/soils2sat/extracts'
 
 environments {
     development {
