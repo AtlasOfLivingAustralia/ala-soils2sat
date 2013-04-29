@@ -41,7 +41,7 @@
         <legend>
             <table style="width: 100%">
                 <tr>
-                    <td>Administration<sts:navSeperator/><g:pageProperty name="page.pageTitle"/></td>
+                    <td><a href="${createLink(controller: 'map')}">Map</a><sts:navSeperator/>User Profile<sts:navSeperator/><g:pageProperty name="page.pageTitle"/></td>
                     <td style="text-align: right"><span><g:pageProperty name="page.adminButtonBar"/></span></td>
                 </tr>
             </table>
@@ -50,15 +50,8 @@
         <div class="row-fluid">
             <div class="span3">
                 <ul class="nav nav-list nav-stacked nav-tabs">
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'userList')}" title="Users" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'layerSets')}" title="Layer Sets" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'searchCriteria')}" title="Search Criteria" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'samplingUnits')}" title="Sampling Units" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'ecologicalContexts')}" title="Ecological Contexts" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'matrix')}" active="Matrix" title="Questions Matrix" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'dataExtractions')}" title="Data Extractions" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'tools')}" title="Tools" />
-                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'settings')}" title="Settings" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'userProfile', action: 'index')}" title="Details" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'userProfile', action: 'extractions')}" title="My Extractions" active="Extractions" />
                 </ul>
             </div>
 

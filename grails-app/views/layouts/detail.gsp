@@ -64,25 +64,25 @@
                 </div>
             </div>
         </div>
-        <g:if test="${message}">
+        <g:if test="${message ?: flash.message}">
             <div class="container">
                 <div class="row">
                     <div class="span12">
                         <div class="alert alert-info">
                             <button type="button" class="close" data-dismiss="alert">×</button>
-                            ${flash.message}
+                            ${message ?: flash.message}
                         </div>
                     </div>
                 </div>
             </div>
         </g:if>
 
-        <g:if test="${errorMessage}">
+        <g:if test="${errorMessage ?: flash.errorMessage}">
             <div class="container">
                 <div class="row">
                     <div class="span12">
                         <div class="alert alert-error">
-                            ${errorMessage}
+                            ${errorMessage ?: flash.errorMessage}
                         </div>
                     </div>
                 </div>

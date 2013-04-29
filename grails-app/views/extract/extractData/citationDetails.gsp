@@ -33,20 +33,27 @@
 
             <div class="row">
                 <div class="span12">
-                    <g:form>
+                    <g:form class="form-horizontal">
                         <div class="well well-small">
-                        <h4>Data Extraction Results</h4>
-                            Success: ${extractionResults.success}
-                            <ul>
-                                <li>Package: <a href="${extractionResults.packageUrl}">Download zip file</a></li>
-                                <li>DOI</li>
-                                <li>RIF/CS Receipt info</li>
-                                <li>Creator info : ${creatorSurname}, ${creatorGivenNames}</li>
-                            </ul>
+                        <h4>Citation Details</h4>
+
+                        <div class="control-group">
+                            <label class="control-label" for="surname">Creator Surname</label>
+                            <div class="controls">
+                                <g:textField name="surname" value="${creatorSurname}"/>
+                            </div>
                         </div>
 
-                        <g:link class="btn btn-primary" event="finish">Return to Map</g:link>
+                        <div class="control-group">
+                            <label class="control-label" for="givenNames">Creator Given Names</label>
+                            <div class="controls">
+                                <g:textField name="givenNames" value="${creatorGivenNames}"/>
+                            </div>
+                        </div>
 
+                        <g:link class="btn" event="cancel">Cancel</g:link>
+                        <g:link class="btn" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
+                        <g:submitButton name="continue" class="btn btn-primary" value="Extract Data" />
                     </g:form>
                 </div>
             </div>

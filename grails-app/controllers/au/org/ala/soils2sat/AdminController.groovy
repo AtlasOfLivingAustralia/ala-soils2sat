@@ -505,8 +505,30 @@ class AdminController {
         redirect(action: "samplingUnits")
     }
 
-    def advancedSettings() {
+    def tools() {
 
+    }
+
+    def settings() {
+        def settings = Setting.list()
+        [settings: settings]
+    }
+
+    def editSetting() {
+        def setting = Setting.get(params.id)
+        [setting: setting]
+    }
+
+    def updateSetting() {
+        def setting = Setting.get(params.id)
+        if (setting) {
+            setting.value = params.value
+            flash.message ="Setting ${setting?.key} updated"
+        } else {
+            flash.message = "Setting not saved!!! Empty or invalid setting id specified"
+        }
+
+        redirect(action:'settings')
     }
 
     def clearLayersCacheAjax() {
@@ -581,7 +603,7 @@ class AdminController {
         }
 
 
-        redirect(action:'advancedSettings')
+        redirect(action:'tools')
     }
 
     def exportSamplingUnits() {

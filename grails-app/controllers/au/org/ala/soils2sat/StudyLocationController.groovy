@@ -12,28 +12,13 @@ class StudyLocationController {
     def springSecurityService
     def studyLocationService
     def biocacheService
-    def layerService
+    def settingService
 
     def getPlots() {
         def results = studyLocationService.getStudyLocations()
 
         render (results as JSON)
     }
-
-//    def getSelectedPlots() {
-//        def user = springSecurityService.currentUser as User
-//        def candidates = studyLocationService.getStudyLocations()
-//        def results = []
-//        if (user) {
-//            candidates.each {
-//                if (user.applicationState?.containsPlot(it.siteName)) {
-//                    results.add(it)
-//                }
-//            }
-//        }
-//
-//        render (results as JSON)
-//    }
 
     def getUserDisplayedPoints() {
         def user = springSecurityService.currentUser as User
@@ -134,7 +119,7 @@ class StudyLocationController {
 
         appState.selectedPlotNames.each { studyLocation ->
             def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
-            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
+            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude)
             results[studyLocation] = studyLocationTaxaList
         }
 
@@ -227,7 +212,7 @@ class StudyLocationController {
 
         appState.selectedPlotNames.each { studyLocation ->
             def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
-            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, 10, params.rank ?: 'family')
+            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude)
             results[studyLocation] = studyLocationTaxaList
         }
 
@@ -408,30 +393,6 @@ class StudyLocationController {
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
 
-
-
-//    def selectStudyLocations() {
-//        def studyLocationNames = params.studyLocationNames?.split(",");
-//        def success = false
-//        if (studyLocationNames) {
-//            def userInstance = springSecurityService.currentUser as User
-//            def appState = userInstance.applicationState
-//            appState.lock()
-//            studyLocationNames.each { studyLocationName ->
-//                def existing = appState?.selectedPlotNames?.find {
-//                    it == studyLocationName
-//                }
-//                if (!existing) {
-//                    def studyLocation = new StudyLocation(name:studyLocationName)
-//                    appState.addToSelectedPlots(studyLocation)
-//                }
-//            }
-//            appState?.save(flush: true, failOnError: true)
-//            success = true
-//        }
-//        render([status: success ? 'ok' : 'failed'] as JSON)
-//    }
-
     def clearSelectedStudyLocationVisits() {
         def success = false
         def userInstance = springSecurityService.currentUser as User
@@ -442,17 +403,6 @@ class StudyLocationController {
         }
         render([status:success ? 'ok' : 'failed'] as JSON)
     }
-
-//    def clearSelectedStudyLocations() {
-//        def success = false
-//        def userInstance = springSecurityService.currentUser as User
-//        def appState = userInstance?.applicationState
-//        if (appState?.selectedPlots) {
-//            appState.selectedPlots.clear();
-//            appState.save(flush: true)
-//        }
-//        render([status:success ? 'ok' : 'failed'] as JSON)
-//    }
 
     def studyLocationSummary() {
         def studyLocationName = params.studyLocationName as String
@@ -487,11 +437,13 @@ class StudyLocationController {
         def layerData = [:]
         if (studyLocationSummary) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
-            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
-            def studyLocationResults = JSON.parse(url.text)
-            studyLocationResults.each {
-                def fieldName = it.layername ?: it.field
-                layerData[fieldName] = "${it.value}${it.units? ' (' + it.units + ')' :''}"
+            if (layerNames) {
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
+                def studyLocationResults = JSON.parse(url.text)
+                studyLocationResults.each {
+                    def fieldName = it.layername ?: it.field
+                    layerData[fieldName] = "${it.value}${it.units? ' (' + it.units + ')' :''}"
+                }
             }
         }
 
@@ -505,12 +457,9 @@ class StudyLocationController {
         def studyLocationName = params.studyLocationName
         def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
 
-        def rank = params.rank ?: 'family';
-        float radius = params.float("radius") ?: 10
+        def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude)
 
-        def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude, radius, rank)
-
-        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: rank, radius: radius]
+        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: settingService.observationsRank, radius: settingService.observationRadius]
     }
 
     def studyLocationVisitSummary() {

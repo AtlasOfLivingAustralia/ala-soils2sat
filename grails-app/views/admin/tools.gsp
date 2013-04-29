@@ -5,7 +5,7 @@
         <r:require module='jqueryui'/>
         <r:require module='bootstrap_responsive'/>
         <meta name="layout" content="adminLayout"/>
-        <title>Soils to Satellites - Admin - Advanced Settings</title>
+        <title>Soils to Satellites - Admin - Tools</title>
     </head>
 
     <body>
@@ -16,7 +16,7 @@
                 $("#btnClearLayersCache").click(function(e) {
                     e.preventDefault();
                     $.ajax("${createLink(controller: 'admin', action:'clearLayersCacheAjax')}").done(function(result) {
-                        this.location = "${createLink(controller: 'admin', action:'advancedSettings')}";
+                        this.location = "${createLink(controller: 'admin', action:'tools')}";
                     });
                 });
 
@@ -28,14 +28,14 @@
                 $("#btnClearAusPlotsCache").click(function(e) {
                     e.preventDefault();
                     $.ajax("${createLink(controller: 'admin', action:'clearAusPlotsCacheAjax')}").done(function(result) {
-                        this.location = "${createLink(controller: 'admin', action:'advancedSettings')}";
+                        this.location = "${createLink(controller: 'admin', action:'tools')}";
                     });
                 });
 
             });
 
         </script>
-        <content tag="pageTitle">Advanced Settings</content>
+        <content tag="pageTitle">Tools</content>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>

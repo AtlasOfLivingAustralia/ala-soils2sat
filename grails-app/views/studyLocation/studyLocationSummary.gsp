@@ -30,13 +30,23 @@
 
         <script type="text/javascript">
 
+            function afterSelectionChanged() {
+                refreshVisitsTab();
+            }
+
+            function refreshVisitsTab() {
+                $("#visitsTab").html("Retrieving Study Location Visits... <sts:spinner/>");
+                $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitsFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                    $("#visitsTab").html(html);
+                });
+            }
+
             $(document).ready(function () {
 
                 //load the environmental data (async)
                 $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationLayersFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
                     $("#environmentalDataSection").html(html);
                 });
-
 
                 $('a[data-toggle="tab"]').on('shown', function (e) {
                     var tabHref = $(this).attr('href');
@@ -46,10 +56,7 @@
                             $("#taxaTab").html(html);
                         });
                     } else if (tabHref == "#visitsTab") {
-                        $("#visitsTab").html("Retrieving Study Location Visits... <sts:spinner/>");
-                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitsFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
-                            $("#visitsTab").html(html);
-                        });
+                        refreshVisitsTab();
                     }
 
                 });
@@ -60,27 +67,6 @@
                         window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";
                     });
                 });
-
-                %{--$("#btnDeselectAndReturn").click(function(e) {--}%
-                    %{--e.preventDefault();--}%
-                    %{--$.ajax("${createLink(controller:'studyLocation', action:'deselectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {--}%
-                        %{--window.location = "${createLink(controller: "map", action: "index")}";--}%
-                    %{--});--}%
-                %{--});--}%
-
-                %{--$("#btnSelect").click(function(e) {--}%
-                    %{--e.preventDefault();--}%
-                    %{--$.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {--}%
-                        %{--window.location = "${createLink(controller: "studyLocation", action: "studyLocationSummary", params: ['studyLocationName': studyLocationName])}";--}%
-                    %{--});--}%
-                %{--});--}%
-
-                %{--$("#btnSelectAndReturn").click(function(e) {--}%
-                    %{--e.preventDefault();--}%
-                    %{--$.ajax("${createLink(controller:'studyLocation', action:'selectStudyLocation', params: ['studyLocationName': studyLocationName])}").done(function(e) {--}%
-                        %{--window.location = "${createLink(controller: "map", action: "index")}";--}%
-                    %{--});--}%
-                %{--});--}%
 
                 $("#btnMoveNext").click(function(e) {
                     e.preventDefault();
@@ -120,7 +106,7 @@
                     <ul class="nav nav-tabs" style="margin-bottom: 0px">
                         <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
                         <li><a href="#taxaTab" data-toggle="tab">Taxa data</a></li>
-                        <li><a href="#visitsTab" data-toggle="tab">Study Location Visits</a></li>
+                        <li><a href="#visitsTab" id="visitsTabLink" data-toggle="tab">Study Location Visits</a></li>
                     </ul>
 
                     <div class="tab-content">

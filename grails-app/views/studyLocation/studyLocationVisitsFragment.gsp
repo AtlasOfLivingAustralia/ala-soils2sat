@@ -47,7 +47,9 @@
             var visitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
             if (visitId) {
                 $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit', params:[studyLocationName: studyLocationName])}&studyLocationVisitId=" + visitId).done(function() {
-                    window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitsFragment', params:[studyLocationName: studyLocationName])}";
+                    if (afterSelectionChanged) {
+                        afterSelectionChanged();
+                    }
                 });
             }
         });
@@ -57,7 +59,9 @@
             var visitId = $(this).parents("[studyLocationVisitId]").attr("studyLocationVisitId");
             if (visitId) {
                 $.ajax("${createLink(controller: 'studyLocation', action:'deselectStudyLocationVisit')}?studyLocationVisitId=" + visitId).done(function() {
-                    window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitsFragment', params:[studyLocationName: studyLocationName])}";
+                    if (afterSelectionChanged) {
+                        afterSelectionChanged();
+                    }
                 });
             }
         });

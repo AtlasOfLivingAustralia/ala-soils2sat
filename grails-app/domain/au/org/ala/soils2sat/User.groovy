@@ -11,13 +11,15 @@ class User implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
     UserApplicationState applicationState
+    UserProfile userProfile
 
-    static hasOne = [applicationState: UserApplicationState]
+    static hasOne = [applicationState: UserApplicationState, userProfile: UserProfile]
 
 	static constraints = {
 		username blank: false, unique: true
 		password blank: false
         applicationState nullable: true
+        userProfile nullable: true
 	}
 
 	static mapping = {

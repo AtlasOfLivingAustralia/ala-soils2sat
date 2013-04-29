@@ -7,12 +7,13 @@ class ExtractController {
 
     def index() {
         def user = springSecurityService.currentUser as User
-        if (user) {
-            redirect(action:'extractData')
+        if (!user) {
+            flash.message = "No user!"
+            redirect(controller: 'map', action:'index')
             return
         }
-        flash.message = "No user!"
-        redirect(controller: 'map', action:'index')
+
+        redirect(action:'extractData')
     }
 
     def extractDataFlow = {
@@ -20,6 +21,7 @@ class ExtractController {
         initialize {
             action {
                 def user = springSecurityService.currentUser as User
+
                 def appState = user.applicationState
                 def selectedVisitIds = []
                 appState?.selectedVisits?.each {
@@ -58,8 +60,31 @@ class ExtractController {
         }
 
         selectSamplingUnits {
-            on("continue").to "extractAndPackage"
+            on("continue").to "citationDetails"
             on("back").to "showVisits"
+            on("cancel").to "cancel"
+        }
+
+        citationDetails {
+            onEntry {
+                def user = springSecurityService.currentUser as User
+                if (user.userProfile) {
+                    if (!flow.creatorSurname) {
+                        flow.creatorSurname = user.userProfile.surname
+                    }
+                    if (!flow.creatorGivenNames) {
+                        flow.creatorGivenNames = user.userProfile.givenNames
+                    }
+                }
+            }
+
+            on("continue") {
+
+                flow.creatorSurname = params.get("surname")
+                flow.creatorGivenNames = params.get("givenNames")
+
+            }.to "extractAndPackage"
+            on("back").to "selectSamplingUnits"
             on("cancel").to "cancel"
         }
 
