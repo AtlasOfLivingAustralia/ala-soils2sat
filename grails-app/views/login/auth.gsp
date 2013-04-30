@@ -14,7 +14,7 @@
 <div id='login' class="container-fluid">
 	<div class="row-fluid">
         <div class="hero-unit">
-            <h3><g:message code="springSecurity.login.header"/></h3>
+            <h3>Please Login</h3>
 
             <g:if test='${flash.message}'>
                 <div class="alert alert-error">
@@ -24,14 +24,14 @@
 
             <form class="form-horizontal" action='${postUrl}' method='POST' id='loginForm' autocomplete='off'>
                 <div class="control-group">
-                    <label class="control-label" for='username'><g:message code="springSecurity.login.username.label"/>:</label>
+                    <label class="control-label" for='username'>Username:</label>
                     <div class="controls">
                         <input type='text' name='j_username' id='username' placeholder="Email" value="${username}"/>
                     </div>
                 </div>
 
                 <div class="control-group">
-                    <label class="control-label" for='password'><g:message code="springSecurity.login.password.label"/>:</label>
+                    <label class="control-label" for='password'>Password:</label>
                     <div class="controls">
                         <input type='password' name='j_password' id='password' placeholder="password" value="${password}" />
                     </div>
@@ -48,7 +48,7 @@
 
                 <div class="control-group">
                     <div class="controls">
-                        <input class="btn btn-primary" type='submit' id="submit" value='${message(code: "springSecurity.login.button")}'/>
+                        <input class="btn btn-primary" type='submit' id="submit" value='Login' />
                     </div>
                 </div>
                 <div>
