@@ -33,21 +33,19 @@
 
             <div class="row">
                 <div class="span12">
-                    <g:form>
-                        <div class="well well-small">
-                        <h4>Data Extraction Results</h4>
-                            Success: ${extractionResults.success}
-                            <ul>
-                                <li>Package: <a href="${extractionResults.packageUrl}">Download zip file</a></li>
-                                <li>DOI</li>
-                                <li>RIF/CS Receipt info</li>
-                                <li>Creator info : ${creatorSurname}, ${creatorGivenNames}</li>
-                            </ul>
-                        </div>
-
-                        <g:link class="btn btn-small btn-primary" event="finish">Return to Map</g:link>
-
-                    </g:form>
+                    <div class="well well-small">
+                        <h4>Extract Data</h4>
+                        Some explanatory text that outlines what is going to happen, including:
+                        <ul>
+                            <li>Confirming/selecting which visits to export</li>
+                            <li>Confirming/selecting which sampling units to export</li>
+                            <li>The minting of a DOI</li>
+                            <li>The publication of a RIF/CS thing</li>
+                            <li>The actual extraction and packaging of the data</li>
+                        </ul>
+                    </div>
+                    <g:link class="btn btn-small" event="cancel">Cancel</g:link>
+                    <g:link class="btn btn-small btn-primary" event="continue">Next&nbsp;<i class="icon-chevron-right icon-white"></i></g:link>
                 </div>
             </div>
         </div>

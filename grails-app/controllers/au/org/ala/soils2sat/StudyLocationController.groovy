@@ -13,6 +13,7 @@ class StudyLocationController {
     def studyLocationService
     def biocacheService
     def settingService
+    def extractService
 
     def getPlots() {
         def results = studyLocationService.getStudyLocations()
@@ -73,34 +74,7 @@ class StudyLocationController {
 
     private Map getCompareData(User userInstance) {
         def appState = userInstance?.applicationState
-
-        def data =[:]
-        def fieldNames = ['latitude', 'longitude']
-        def fieldUnits = [:]
-        if (userInstance && appState?.layers && appState?.selectedPlotNames?.size() > 1) {
-            def layerNames = appState.layers.collect({ it.name }).join(",")
-            for (String studyLocation : appState.selectedPlotNames) {
-                def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
-                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
-                def studyLocationResults = JSON.parse(url.text)
-                def temp = [:]
-                temp.latitude = studyLocationSummary.latitude
-                temp.longitude = studyLocationSummary.longitude
-
-                studyLocationResults.each {
-                    println it
-                    def fieldName = it.layername
-                    if (!fieldNames.contains(fieldName)) {
-                        fieldNames << fieldName
-                    }
-                    temp[fieldName] = it.value
-                    fieldUnits[fieldName] = it.units
-                }
-                data[studyLocation] = temp
-            }
-        }
-
-        return [data: data, fieldNames: fieldNames, fieldUnits: fieldUnits]
+        return extractService.getLayerDataForLocations(appState.selectedPlotNames, appState.layers)
     }
 
     def compareStudyLocationsFragment = {
@@ -273,52 +247,6 @@ class StudyLocationController {
         }
         render([status: success ? 'ok' : 'failed'] as JSON)
     }
-
-//    def deselectStudyLocation() {
-//        def studyLocationName = params.studyLocationName
-//        def success = false
-//        if (studyLocationName) {
-//            def userInstance = springSecurityService.currentUser as User
-//            def appState = userInstance?.applicationState
-//            appState.lock()
-//            def existing = appState?.selectedPlotNames?.find {
-//                it == studyLocationName
-//            }
-//            if (existing) {
-//                appState.removeFromSelectedPlots(existing)
-//                userInstance.save(flush: true)
-//                success = true
-//            }
-//        }
-//        render([status:success ? 'ok' : 'failed'] as JSON)
-//    }
-
-//    def selectStudyLocation() {
-//        def studyLocationName = params.studyLocationName
-//        def success = false
-//        if (studyLocationName) {
-//            def userInstance = springSecurityService.currentUser as User
-//            def appState = userInstance?.applicationState
-//
-//            appState.lock()
-//
-//            def existing = appState?.selectedPlots?.find {
-//                it.name == studyLocationName
-//            }
-//            if (!existing) {
-//
-//                def studyLocation = StudyLocation.findByName(studyLocationName)
-//                if (!studyLocation) {
-//                    studyLocation = new StudyLocation(name:studyLocationName)
-//                }
-//
-//                appState.addToSelectedPlots(studyLocation)
-//                appState.save(flush: true)
-//                success = true
-//            }
-//        }
-//        render([status:success ? 'ok' : 'failed'] as JSON)
-//    }
 
     def deselectStudyLocationVisit() {
         def studyLocationVisitId = params.studyLocationVisitId

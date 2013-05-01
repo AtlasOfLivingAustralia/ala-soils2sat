@@ -48,7 +48,7 @@
 
             <p style="">
                 <button id="btnCompare" class="btn btn-small btn-primary">Compare</button>
-                <button class="btn btn-small btnExtract">Explore/Extract</button>
+                <button class="btn btn-small btnExtract">Extract Data</button>
                 <button class="btn btn-small" id="btnClearSelectedVisits">Remove All</button>
             </p>
 

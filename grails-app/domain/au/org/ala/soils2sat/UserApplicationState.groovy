@@ -38,7 +38,13 @@ class UserApplicationState implements Serializable {
 
     @Transient
     public List<String> getSelectedPlotNames() {
-        return selectedVisits.collect { it.studyLocationName }
+        def names = []
+        selectedVisits.collect {
+            if (!names.contains(it.studyLocationName)) {
+                names << it.studyLocationName
+            }
+        }
+        return names
     }
 
     @Transient

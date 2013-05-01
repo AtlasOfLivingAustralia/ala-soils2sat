@@ -64,9 +64,9 @@
                             </table>
                         </div>
 
-                        <g:link class="btn" event="cancel">Cancel</g:link>
-                        <g:link class="btn" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
-                        <g:link class="btn btn-primary" event="continue">Continue&nbsp;<i class="icon-chevron-right icon-white"></i></g:link>
+                        <g:link class="btn btn-small" event="cancel">Cancel</g:link>
+                        <g:link class="btn btn-small" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
+                        <g:link class="btn btn-small btn-primary" event="continue">Next&nbsp;<i class="icon-chevron-right icon-white"></i></g:link>
 
                     </g:form>
                 </div>

@@ -30,11 +30,16 @@ class ExtractController {
                 flow.selectedVisitIds = selectedVisitIds
                 [appState: appState, user: user]
             }
-            on("success").to "showVisits"
+            on("success").to "startPage"
         }
 
         def isCollection = { object ->
             [Collection, Object[]].any { it.isAssignableFrom(object.getClass()) }
+        }
+
+        startPage {
+            on("continue").to "showVisits"
+            on("cancel").to "cancel"
         }
 
         showVisits {
@@ -56,6 +61,7 @@ class ExtractController {
                 }
                 flow.selectedVisitIds = selectedVisitIds
             }.to "selectSamplingUnits"
+            on("back").to "startPage"
             on("cancel").to "cancel"
         }
 

@@ -1,12 +1,12 @@
 package au.org.ala.soils2sat
 
-import au.com.bytecode.opencsv.CSVWriter
+import grails.converters.JSON
 import org.apache.commons.io.FilenameUtils
+import org.grails.plugins.csv.CSVWriter
 import org.h2.store.fs.FileUtils
 
 import java.text.SimpleDateFormat
 import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 class ExtractService {
@@ -16,6 +16,7 @@ class ExtractService {
     def logService
     def grailsApplication
     def grailsLinkGenerator
+
 
     def extractAndPackageData(User user, List<String> visitIds, List<String> samplingUnits) {
 
@@ -42,8 +43,13 @@ class ExtractService {
             OutputStream bos = new BufferedOutputStream(zipStream)
             OutputStreamWriter writer = new OutputStreamWriter(bos)
 
-            writeZipEntry(zipStream, writer, "manifest.text", writeManifest)
+            def manifestEntries = []
 
+            manifestEntries << writeZipEntry(user, zipStream, writer, "environmentalLayers.txt", writeLayerData(visitIds))
+            manifestEntries << writeZipEntry(user, zipStream, writer, "studyLocationDetails.txt", writeStudyLocations(visitIds))
+            manifestEntries << writeZipEntry(user, zipStream, writer, "studyLocationVisitDetails.txt", writeStudyLocationVisits(visitIds))
+
+            writeZipEntry(user, zipStream, writer, "manifest.text", writeManifestFactory(manifestEntries))
 
             zipStream.flush()
             zipStream.close()
@@ -65,18 +71,182 @@ class ExtractService {
         return [success: true, packageUrl: downloadUrl, DOI: '', message:'']
     }
 
-    private void writeZipEntry(ZipOutputStream zipStream, Writer writer, String filename, Closure closure) {
+    private ManifestEntry writeZipEntry(User user, ZipOutputStream zipStream, Writer writer, String filename, Closure closure) {
+        def manifestEntry = new ManifestEntry(filename: filename)
         zipStream.putNextEntry(new ZipEntry(filename))
         if (closure) {
-            closure(writer)
+            closure(user, writer, manifestEntry)
         }
         writer.flush()
         zipStream.closeEntry()
+        return manifestEntry
     }
 
+    def writeManifestFactory(List<ManifestEntry> entries) {
 
-    def writeManifest = { Writer writer ->
-        writer << "This is the manifest File!"
+        return { User user, Writer writer, manifestEntry ->
+            entries.each { entry ->
+                writer << entry.filename << "\t" << entry.comment << "\n"
+            }
+        }
     }
 
+    def writeStudyLocationVisits(List<String> visitIds) {
+
+        return { User user, Writer writer, manifestEntry ->
+
+            def csvWriter = new CSVWriter(writer, {
+                id { it.id }
+                siteLocationId { it.siteLocationId }
+                visitStartDate { it.visitStartDate }
+                photopointsExistq { it.photopointsExistq }
+                photopointLat1 { it.photopointLat1 }
+                photopointLong1 { it.photopointLong1 }
+                leafAreaIndexExistsq { it.leafAreaIndexExistsq }
+                visitNotes { it.visitNotes }
+                state { it.state }
+                agency { it.agency }
+                describedBy { it.describedBy }
+                locationDescription { it.locationDescription }
+                swMarkerEasting { it.swMarkerEasting }
+                swMarkerNorthing { it.swMarkerNorthing }
+                swMarkerMgaZones { it.swMarkerMgaZones }
+                swMarkerDatum { it.swMarkerDatum }
+                method { it.method }
+                erosion { it.erosion }
+                abundance { it.abundance }
+                microreliefType { it.microreliefType }
+                drainage { it.drainage }
+                disturbance { it.disturbance }
+                surfaceCoarseFragsAbundance { it.surfaceCoarseFragsAbundance }
+                surfaceSoilCondition { it.surfaceSoilCondition }
+                climaticCondition { it.climaticCondition }
+                vegetationCondition { it.vegetationCondition }
+                asc { it.asc }
+                observer1 { it.observer1 }
+                observer2 { it.observer2 }
+                okToPublish { it.okToPublish }
+            })
+
+            visitIds.each { visitId ->
+                def visitDetails = studyLocationService.getVisitDetails(visitId)
+                csvWriter.write(visitDetails)
+
+            }
+
+            manifestEntry.comment = "Selected Study Location Visit details"
+        }
+    }
+
+    def writeStudyLocations(List<String> visitIds) {
+        def studyLocationNames = getStudyLocationNames(visitIds)
+        return { User user, Writer writer, manifestEntry ->
+
+            def csvWriter = new CSVWriter(writer, {
+                studyLocationName { it.siteLocationName }
+                establishedDate { it.establishedDate }
+                description { it.description }
+                bioregionName { it.bioregionName }
+                property { it.property }
+                zone { it.zone }
+                easting { it.easting }
+                northing { it.northing }
+                method { it.method }
+                datum { it.datum }
+                plotPermanentlyMarkedq { it.plotPermanentlyMarkedq }
+                plotAlignedToGridq { it.plotAlignedToGridq }
+                landformPattern { it.landformPattern }
+                landformElement { it.landformElement }
+                siteSlope { it.siteSlope }
+                siteAspect { it.siteAspect }
+                surfaceStrewSize { it.surfaceStrewSize }
+                plot100mBy100m { it.plot100mBy100m }
+                comments { it.comments }
+            })
+
+            studyLocationNames.each { studyLocationName ->
+                def details= studyLocationService.getStudyLocationDetails(studyLocationName)
+                csvWriter.write(details)
+            }
+
+            manifestEntry.comment = "Study Location details for the selected visits"
+        }
+    }
+
+    private List<String> getStudyLocationNames(List<String> visitIds) {
+        def results = []
+        if (visitIds) {
+            visitIds.each { visitId ->
+                def name = studyLocationService.getStudyLocatioNameForVisitId(visitId)
+                if (name && !results.contains(name)) {
+                    results << name
+                }
+            }
+        }
+
+        return results
+    }
+
+    def writeLayerData(List<String> visitIds) {
+
+        return { User user, Writer writer, manifestEntry ->
+            final UserApplicationState appState = user.applicationState
+            def columnHeaders = ["field"]
+            appState.selectedPlotNames?.each {
+                columnHeaders << it
+            }
+
+            def results = getLayerDataForLocations(appState.selectedPlotNames, appState.layers)
+
+            def csvWriter = new au.com.bytecode.opencsv.CSVWriter(writer)
+            csvWriter.writeNext(columnHeaders as String[])
+
+            results.fieldNames.each { fieldName ->
+                def lineItems = [fieldName]
+                appState.selectedPlotNames?.each { studyLocation ->
+                    def value = results.data[studyLocation][fieldName]
+                    lineItems << value ?: ''
+                }
+                csvWriter.writeNext(lineItems as String[])
+            }
+
+            manifestEntry.comment = "Values of selected environment layers at selected study locations"
+        }
+    }
+
+    public Map getLayerDataForLocations(List<String> locationNames, List<EnvironmentalLayer> layers) {
+
+        def data =[:]
+        def fieldNames = ['latitude', 'longitude']
+        def fieldUnits = [:]
+        if (locationNames && layers) {
+            def layerNames = layers.collect({ it.name }).join(",")
+            for (String studyLocationName : locationNames) {
+                def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
+                def studyLocationResults = JSON.parse(url.text)
+                def temp = [:]
+                temp.latitude = studyLocationSummary.latitude
+                temp.longitude = studyLocationSummary.longitude
+
+                studyLocationResults.each {
+                    def fieldName = it.layername
+                    if (!fieldNames.contains(fieldName)) {
+                        fieldNames << fieldName
+                    }
+                    temp[fieldName] = it.value
+                    fieldUnits[fieldName] = it.units
+                }
+                data[studyLocationName] = temp
+            }
+        }
+
+        return [data: data, fieldNames: fieldNames, fieldUnits: fieldUnits]
+    }
+
+}
+
+class ManifestEntry {
+    String filename
+    String comment
 }

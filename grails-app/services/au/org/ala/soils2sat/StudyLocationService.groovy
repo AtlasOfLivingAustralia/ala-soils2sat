@@ -49,7 +49,7 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
-    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName}")
     def getSearchTraits() {
         def traits = proxyServiceCall(grailsApplication, "getSearchTraits", [])
         return traits
@@ -64,6 +64,30 @@ class StudyLocationService extends ServiceBase {
     @Override
     protected String getServiceRootUrl() {
         return "${grailsApplication.config.aekosServiceRoot}"
+    }
+
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#siteId}")
+    public getStudyLocationNameForId(String siteId) {
+        def locations = getStudyLocations()
+        def names = []
+        locations.each { location ->
+            names << location.siteName
+        }
+
+        def results = proxyServiceCall(grailsApplication, "getStudyLocationSummary", [siteNames: names.join(",")])?.studyLocationSummaryList
+        for (def location : results) {
+            if (location.siteLocSysId?.toString() == siteId) {
+                return location.siteLocationName
+            }
+        }
+
+        return null
+    }
+
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
+    public String getStudyLocatioNameForVisitId(String visitId) {
+        def visitDetails = getVisitDetails(visitId)
+        return getStudyLocationNameForId(visitDetails?.siteLocationId?.toString())
     }
 
 }
