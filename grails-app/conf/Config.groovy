@@ -63,6 +63,9 @@ aekosServiceRoot = "http://s2s-dev.ecoinformatics.org.au:8080/s2s-services"
 spatialPortalRoot = "http://spatial.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
+doiServiceRoot = "https://doi.tern.uq.edu.au/test/"
+doiAppId = "223cbd7ba9c5ad519636ad0cb6b1b74d"
+
 extractRepositoryRoot = '/data/soils2sat/extracts'
 
 environments {

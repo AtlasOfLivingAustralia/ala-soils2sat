@@ -1,7 +1,10 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
+import org.apache.commons.io.FileSystemUtils
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.IOUtils
+import org.apache.tomcat.jni.FileInfo
 import org.grails.plugins.csv.CSVWriter
 import org.h2.store.fs.FileUtils
 
@@ -17,27 +20,29 @@ class ExtractService {
     def grailsApplication
     def grailsLinkGenerator
 
-
-    def extractAndPackageData(User user, List<String> visitIds, List<String> samplingUnits) {
-
-        logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits}")
-
+    private String generateVisitPackageName() {
         // Create a unique package name based on date and number of packages already created.
-
-        def lastDailyId = LastDailyId.nextNumber
-
+        boolean fileExists = true // Assume the package already exists until it is actually tested
+        def packageName = ""
         def sdf = new SimpleDateFormat("yyyyMMdd")
+        while (fileExists) {
+            def lastDailyId = LastDailyId.nextNumber
+            packageName = String.format("SLV-%s-%04d",sdf.format(lastDailyId.date), lastDailyId.lastNumber)
+            fileExists = new File(constructLocalFileArchivePath(packageName)).exists()
+        }
+        return packageName
+    }
 
-        def packageName = String.format("SLV-%s-%04d",sdf.format(lastDailyId.date), lastDailyId.lastNumber)
-
-        logService.log("Package name is '${packageName}'")
+    private String constructLocalFileArchivePath(String packageName) {
         def localPath = FilenameUtils.concat((String) grailsApplication.config.extractRepositoryRoot, packageName + ".zip")
-        logService.log("Download local filepath is '$localPath'")
+        return localPath
+    }
 
-        def downloadUrl = grailsLinkGenerator.link(controller: 'extract', action:'downloadPackage', params:[packageName: packageName], absolute: true)
+    private String createArchiveFile(String packageName, User user, List<String> visitIds, List<String> samplingUnits) {
+
+        def localPath = constructLocalFileArchivePath(packageName)
 
         try {
-
             def fileStream = new FileOutputStream(new File(localPath))
             def zipStream = new ZipOutputStream(fileStream)
             OutputStream bos = new BufferedOutputStream(zipStream)
@@ -55,20 +60,42 @@ class ExtractService {
             zipStream.close()
 
         } catch (Exception ex) {
-
             ex.printStackTrace()
             // clean up...
             if (FileUtils.exists(localPath)) {
                 FileUtils.delete(localPath)
             }
-            return [success: false, packageUrl: '', DOI: '', message:ex.message]
+            throw ex
         }
 
-        // Create a record for this extract
-        def dataExtraction = new DataExtraction(packageName: packageName, username: user.username, date: new Date(), localFile: localPath)
-        dataExtraction.save()
+        return localPath
+    }
 
-        return [success: true, packageUrl: downloadUrl, DOI: '', message:'']
+
+    def extractAndPackageData(User user, List<String> visitIds, List<String> samplingUnits) {
+
+        try {
+            logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits}")
+
+            def packageName = generateVisitPackageName()
+            logService.log("Package name is '${packageName}'")
+
+            def localPath = createArchiveFile(packageName, user, visitIds, samplingUnits)
+            logService.log("Download local filepath is '$localPath'")
+
+            def downloadUrl = grailsLinkGenerator.link(controller: 'extract', action:'downloadPackage', params:[packageName: packageName], absolute: true)
+            logService.log("Download URL is '$downloadUrl'")
+
+            // Mint a DOI for this extract
+
+            // Create a record for this extract
+            def dataExtraction = new DataExtraction(packageName: packageName, username: user.username, date: new Date(), localFile: localPath)
+            dataExtraction.save()
+
+            return [success: true, packageUrl: downloadUrl, DOI: '', message:'']
+        } catch (Exception ex) {
+            return [success: false, packageUrl: '', DOI: '', message: ex.message]
+        }
     }
 
     private ManifestEntry writeZipEntry(User user, ZipOutputStream zipStream, Writer writer, String filename, Closure closure) {
