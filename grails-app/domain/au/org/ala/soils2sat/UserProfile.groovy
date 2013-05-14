@@ -9,6 +9,12 @@ class UserProfile implements Serializable {
 
     static belongsTo = [user:User]
 
+    static transients = ['fullName']
+
+    public String getFullName() {
+        return "${givenNames}, ${surname}"
+    }
+
     static constraints = {
         surname nullable: true
         givenNames nullable: true

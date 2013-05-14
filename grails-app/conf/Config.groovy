@@ -65,6 +65,12 @@ biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
 doiServiceRoot = "https://doi.tern.uq.edu.au/test/"
 doiAppId = "223cbd7ba9c5ad519636ad0cb6b1b74d"
+doiUserId = "David.Baird@csiro.au"
+doiS2SRoot = "http://soils2sat-dev.ala.org.au"
+
+rest.https.cert.hostnameVerifier = 'BROWSER_COMPATIBLE'
+/** Enforce SSL Socket Factory */
+rest.https.sslSocketFactory.enforce = false
 
 extractRepositoryRoot = '/data/soils2sat/extracts'
 

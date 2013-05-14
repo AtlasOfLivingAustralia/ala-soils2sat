@@ -19,6 +19,7 @@ class ExtractService {
     def logService
     def grailsApplication
     def grailsLinkGenerator
+    def DOIService
 
     private String generateVisitPackageName() {
         // Create a unique package name based on date and number of packages already created.
@@ -86,13 +87,19 @@ class ExtractService {
             def downloadUrl = grailsLinkGenerator.link(controller: 'extract', action:'downloadPackage', params:[packageName: packageName], absolute: true)
             logService.log("Download URL is '$downloadUrl'")
 
-            // Mint a DOI for this extract
-
             // Create a record for this extract
             def dataExtraction = new DataExtraction(packageName: packageName, username: user.username, date: new Date(), localFile: localPath)
-            dataExtraction.save()
+            dataExtraction.save(failOnError: true)
 
-            return [success: true, packageUrl: downloadUrl, DOI: '', message:'']
+            // Mint a DOI for this extract
+            String doi = ""
+            try {
+                doi = this.DOIService.mintDOI(dataExtraction, user)
+            } catch (DOIMintingFailedException doimex) {
+                doi = "DOI Minting Failed: " + doimex.message
+            }
+
+            return [success: true, packageUrl: downloadUrl, DOI: doi, message:'']
         } catch (Exception ex) {
             return [success: false, packageUrl: '', DOI: '', message: ex.message]
         }

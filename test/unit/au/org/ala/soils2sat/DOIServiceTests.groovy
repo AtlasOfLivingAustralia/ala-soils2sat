@@ -12,6 +12,6 @@ import org.junit.*
 class DOIServiceTests {
 
     void testSomething() {
-        fail "Implement me"
+        println service.buildRequestXML('creatorName', 'title', ['ALA', 'Soils2Sat', 'AEKOS', 'AUSPLOTS'])
     }
 }
