@@ -2,8 +2,8 @@ package au.org.ala.soils2sat
 
 import grails.converters.JSON
 import ala.soils2sat.CodeTimer
-import grails.plugin.springcache.annotations.CacheFlush
-import org.springframework.cache.annotation.Cacheable
+import grails.plugin.cache.CacheEvict
+import grails.plugin.cache.Cacheable
 
 class LayerService {
 
@@ -64,7 +64,7 @@ class LayerService {
         return results
     }
 
-    @CacheFlush("S2S_LayerCache")
+    @CacheEvict("S2S_LayerCache")
     public void flushCache() {
         logService.log("Flushing Layer Cache")
     }

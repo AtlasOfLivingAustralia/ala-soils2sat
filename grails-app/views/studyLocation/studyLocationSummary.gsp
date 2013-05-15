@@ -10,7 +10,7 @@
 
     <body>
 
-        <g:set var="visitSummaryLink" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitsFragment', params: [studyLocationName: studyLocationName])}"/>
+        %{--<g:set var="visitSummaryLink" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitsFragment', params: [studyLocationName: studyLocationName])}"/>--}%
 
         <style type="text/css">
 
@@ -115,45 +115,37 @@
                             <table class="table table-bordered table-striped">
                                 <tr>
                                     <td class="fieldColumn">Location (Lat, Long)</td>
-                                    <td>${studyLocationSummary.longitude}, ${studyLocationSummary.latitude}</td>
+                                    <td>${studyLocationDetails.longitude}, ${studyLocationDetails.latitude}</td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Location (UTM)</td>
-                                    <td>${studyLocationSummary.data.easting}, ${studyLocationSummary.data.northing} (${studyLocationSummary.data.zone as Integer})</td>
+                                    <td>${studyLocationDetails.easting}, ${studyLocationDetails.northing} (${studyLocationDetails.mgaZone as Integer})</td>
                                 </tr>
 
                                 <tr>
                                     <td class="fieldColumn">Bioregion Name</td>
-                                    <td>${studyLocationSummary.data.bioregionName}</td>
+                                    <td>${studyLocationDetails.bioregionName}</td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Landform element</td>
-                                    <td>${studyLocationSummary.data.landformElement}</td>
+                                    <td>${studyLocationDetails.landformElement}</td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Landform pattern</td>
-                                    <td>${studyLocationSummary.data.landformPattern}</td>
+                                    <td>${studyLocationDetails.landformPattern}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fieldColumn">Number of distinct plant species (Unverified)</td>
-                                    <td>${studyLocationSummary.data.numDistinctPlantSpeciesUnverified}</td>
-                                </tr>
-                                <tr>
-                                    <td class="fieldColumn">Number of distinct plant species (Verified)</td>
-                                    <td>${studyLocationSummary.data.numDistinctPlantSpeciesVerified}</td>
-                                </tr>
-                                <tr>
-                                    <td class="fieldColumn">Total number of distinct plant species</td>
-                                    <td>${studyLocationSummary.data.numDistinctPlantSpeciesTotal}</td>
+                                    <td class="fieldColumn">Number of distinct plant species</td>
+                                    <td>${studyLocationDetails.numberOfDistinctPlantSpecies}</td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Number of visits</td>
-                                    <td><a href="${visitSummaryLink}">${studyLocationSummary.data.numVisits}</a></td>
+                                    <td>${studyLocationDetails.numberOfVisits}</td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Observers</td>
                                     <td>
-                                        <g:set var="observers" value="${studyLocationSummary.observers}"/>
+                                        <g:set var="observers" value="${studyLocationDetails.observers}"/>
                                         <g:each in="${observers}" var="observer" status="i">
                                             <a href="#">${observer}</a><g:if test="${i < observers.size()-1}">,&nbsp;</g:if>
                                         </g:each>
@@ -161,18 +153,18 @@
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">First visit date</td>
-                                    <td><sts:formatDateStr date="${studyLocationSummary.firstVisitDate}"/></td>
+                                    <td><sts:formatDateStr date="${studyLocationDetails.firstVisitDate}"/></td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Last visit date</td>
-                                    <td><sts:formatDateStr date="${studyLocationSummary.lastVisitDate}"/></td>
+                                    <td><sts:formatDateStr date="${studyLocationDetails.lastVisitDate}"/></td>
                                 </tr>
                                 <tr>
                                     <td class="fieldColumn">Sampling Methods that have been performed at this site</td>
                                     <td>
                                         <ul>
-                                            <g:each in="${studyLocationSummary.data.samplingUnitTypeList}" var="unit">
-                                                <li><a href="#"><sts:formatSamplingUnitName code="${unit}"/></a></li>
+                                            <g:each in="${studyLocationDetails.samplingUnits}" var="unit">
+                                                <li><a href="#">${unit.description}</a></li>
                                             </g:each>
                                         </ul>
                                     </td>

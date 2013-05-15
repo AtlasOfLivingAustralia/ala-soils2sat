@@ -1,10 +1,7 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
-import org.apache.commons.io.FileSystemUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.IOUtils
-import org.apache.tomcat.jni.FileInfo
 import org.grails.plugins.csv.CSVWriter
 import org.h2.store.fs.FileUtils
 
@@ -129,37 +126,37 @@ class ExtractService {
 
         return { User user, Writer writer, manifestEntry ->
 
-            def csvWriter = new CSVWriter(writer, {
-                id { it.id }
-                siteLocationId { it.siteLocationId }
-                visitStartDate { it.visitStartDate }
-                photopointsExistq { it.photopointsExistq }
-                photopointLat1 { it.photopointLat1 }
-                photopointLong1 { it.photopointLong1 }
-                leafAreaIndexExistsq { it.leafAreaIndexExistsq }
-                visitNotes { it.visitNotes }
-                state { it.state }
-                agency { it.agency }
-                describedBy { it.describedBy }
-                locationDescription { it.locationDescription }
-                swMarkerEasting { it.swMarkerEasting }
-                swMarkerNorthing { it.swMarkerNorthing }
-                swMarkerMgaZones { it.swMarkerMgaZones }
-                swMarkerDatum { it.swMarkerDatum }
-                method { it.method }
-                erosion { it.erosion }
-                abundance { it.abundance }
-                microreliefType { it.microreliefType }
-                drainage { it.drainage }
-                disturbance { it.disturbance }
-                surfaceCoarseFragsAbundance { it.surfaceCoarseFragsAbundance }
-                surfaceSoilCondition { it.surfaceSoilCondition }
-                climaticCondition { it.climaticCondition }
-                vegetationCondition { it.vegetationCondition }
-                asc { it.asc }
-                observer1 { it.observer1 }
-                observer2 { it.observer2 }
-                okToPublish { it.okToPublish }
+            def csvWriter = new CSVWriter(writer, { StudyLocationVisitDetailsTO visit ->
+                id { visit.studyLocationVisitId }
+                studyLocationId { visit.studyLocationId }
+                visitStartDate { visit.visitStartDate }
+                // photopointsExistq { it.photopointsExistq }
+                //photopointLat1 { it.photopointLat1 }
+                //photopointLong1 { it.photopointLong1 }
+                //leafAreaIndexExistsq { it.leafAreaIndexExistsq }
+                visitNotes { visit.visitNotes }
+                // state { it.state }
+                // agency { it.agency }
+                //describedBy { it.describedBy }
+                locationDescription { visit.locationDescription }
+                pitMarkerEasting { visit.pitMarkerEasting }
+                pitMarkerNorthing { visit.pitMarkerNorthing }
+                pitMarkerMgaZones { visit.pitMarkerMgaZones }
+                pitMarkerDatum { visit.pitMarkerDatum }
+                // method { it.method }
+                erosionType { visit.erosionType }
+                erosionAbundance { visit.erosionAbundance }
+                microrelief { visit.microrelief }
+                drainageType { visit.drainageType }
+                disturbance { visit.disturbance }
+                surfaceCoarseFragsAbundance { visit.surfaceCoarseFragsAbundance }
+                // surfaceSoilCondition { visit.surfaceSoilCondition }
+                climaticCondition { visit.climaticCondition }
+                vegetationCondition { visit.vegetationCondition }
+//                asc { it.asc }
+                observer1 { visit.observers?.size() > 0 ? visit.observers?.getAt(0) : '' }
+                observer2 { visit.observers?.size() > 1 ? visit.observers?.getAt(0) : '' }
+//                okToPublish { it.okToPublish }
             })
 
             visitIds.each { visitId ->
@@ -199,7 +196,7 @@ class ExtractService {
             })
 
             studyLocationNames.each { studyLocationName ->
-                def details= studyLocationService.getStudyLocationDetails(studyLocationName)
+                def details= studyLocationService.getStudyLocationDetailsOld(studyLocationName)
                 csvWriter.write(details)
             }
 
@@ -211,7 +208,7 @@ class ExtractService {
         def results = []
         if (visitIds) {
             visitIds.each { visitId ->
-                def name = studyLocationService.getStudyLocatioNameForVisitId(visitId)
+                def name = studyLocationService.getStudyLocationNameForVisitId(visitId)
                 if (name && !results.contains(name)) {
                     results << name
                 }

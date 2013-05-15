@@ -38,7 +38,7 @@ class SearchService extends ServiceBase {
 
                 if (match) {
                     // if these study locations match, we add their visits to the temp result sets...
-                    def details = studyLocationService.getStudyLocationDetails(studyLocation.siteName)
+                    def details = studyLocationService.getStudyLocationDetailsOld(studyLocation.siteName)
 
                     details.data.siteLocationVisitList?.each { visit ->
                         visit.studyLocation = studyLocation
@@ -190,7 +190,7 @@ class SearchService extends ServiceBase {
     }
 
     boolean testStudyLocationCriteria(SearchCriteria criteria, Map candidate) {
-        def details = studyLocationService.getStudyLocationDetails(candidate.siteName)
+        def details = studyLocationService.getStudyLocationDetailsOld(candidate.siteName)
         def valueStr = Eval.x(details.data, 'x.' + criteria.criteriaDefinition.fieldName)
         if (valueStr) {
             return SearchCriteriaUtils.eval(criteria, valueStr as String)
@@ -200,7 +200,7 @@ class SearchService extends ServiceBase {
 
 
     boolean testVisitCriteriaForStudyLocation(SearchCriteria criteria, Map candidate) {
-        def details = studyLocationService.getStudyLocationDetails(candidate.siteName)
+        def details = studyLocationService.getStudyLocationDetailsOld(candidate.siteName)
         // at least one of the visits must match the criteria...
         for (def visit : details.data.siteLocationVisitList) {
             if (testVisitCriteriaForVisit(criteria, visit)) {

@@ -32,7 +32,8 @@ class StudyLocationController {
 
         candidates.each { candidate ->
             // check if in the 'selected' source
-            candidate.selected = source.find { it == candidate.siteName }
+            candidate.selected = source.find { it == candidate.studyLocationName }
+
             if (!plotSelectedOnly || candidate.selected && !(results.contains(candidate))) {
                 results << candidate
             }
@@ -334,25 +335,25 @@ class StudyLocationController {
 
     def studyLocationSummary() {
         def studyLocationName = params.studyLocationName as String
-        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
         def isSelected = appState.selectedPlotNames.find {
             it == studyLocationName
-        }
+        } != null
 
-        [studyLocationSummary:studyLocationSummary, studyLocationName: studyLocationName, isSelected: isSelected != null]
+        [studyLocationDetails:studyLocationDetails, studyLocationName: studyLocationName, isSelected: isSelected != null]
     }
 
     def studyLocationVisitsFragment() {
         def studyLocationName = params.studyLocationName
-        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
-        def visitSummaries = studyLocationSummary.visitSummaries
+        def studyLocationVisits = studyLocationService.getStudyLocationVisits(studyLocationName)
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
-        [studyLocation:studyLocationSummary, studyLocationName: studyLocationName, visitSummaries: visitSummaries, userInstance: userInstance, appState: appState]
+        [studyLocation:studyLocationDetails, studyLocationName: studyLocationName, visitSummaries: studyLocationVisits, userInstance: userInstance, appState: appState]
     }
 
     def studyLocationLayersFragment() {
@@ -361,12 +362,12 @@ class StudyLocationController {
         def appState = userInstance?.applicationState
 
         def studyLocationName = params.studyLocationName
-        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
         def layerData = [:]
-        if (studyLocationSummary) {
+        if (studyLocationDetails) {
             def layerNames = appState.layers.collect({ it.name }).join(",")
             if (layerNames) {
-                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationDetails.latitude}/${studyLocationDetails.longitude}")
                 def studyLocationResults = JSON.parse(url.text)
                 studyLocationResults.each {
                     def fieldName = it.layername ?: it.field
@@ -375,7 +376,7 @@ class StudyLocationController {
             }
         }
 
-        [layerData: layerData, studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary]
+        [layerData: layerData, studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails]
     }
 
     def studyLocationTaxaFragment() {
@@ -383,28 +384,29 @@ class StudyLocationController {
         def appState = userInstance?.applicationState
 
         def studyLocationName = params.studyLocationName
-        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
 
-        def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude)
+        def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
 
-        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, taxaList: studyLocationTaxaList, rank: settingService.observationsRank, radius: settingService.observationRadius]
+        [studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails, taxaList: studyLocationTaxaList, rank: settingService.observationsRank, radius: settingService.observationRadius]
     }
 
     def studyLocationVisitSummary() {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
-        def studyLocationName = params.studyLocationName
+
         def studyLocationVisitId = params.studyLocationVisitId
 
-        def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
-        def visitSummary = studyLocationSummary.visitSummaries?.find {
-            it.visitId == studyLocationVisitId
-        }
+        // TODO: Remove this once visits work from the service properly
+        studyLocationVisitId = '2760'
+
         def visitDetail = studyLocationService.getVisitDetails(studyLocationVisitId)
+        def studyLocationName = visitDetail?.studyLocationName
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
 
         def isSelected = appState.selectedVisits.find { it.studyLocationVisitId == studyLocationVisitId }
 
-        [studyLocationName: studyLocationName, studyLocationSummary: studyLocationSummary, visitDetail: visitDetail, visitSummary: visitSummary, isSelected: isSelected]
+        [studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails, visitDetail: visitDetail, isSelected: isSelected]
     }
 
     def ajaxSelectedStudyLocationsFragment() {

@@ -11,18 +11,18 @@
             </tr>
         </thead>
         <g:each in="${visitSummaries}" var="visit">
-            <tr studyLocationVisitId="${visit.visitId}">
-                <g:set var="samplesURL" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName, studyLocationVisitId: visit.visitId])}" />
-                <td><a href="${samplesURL}">${visit.visitId}</a></td>
-                <td>Visit&nbsp;Start&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.startDate}"/><br/>
-                    Visit&nbsp;End&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.endDate}"/>
+            <tr studyLocationVisitId="${visit.studyLocationVisitId}">
+                <g:set var="samplesURL" value="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: studyLocationName, studyLocationVisitId: visit.studyLocationVisitId])}" />
+                <td><a href="${samplesURL}">${visit.studyLocationVisitId}</a></td>
+                <td>Visit&nbsp;Start&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.visitStartDate}"/><br/>
+                    Visit&nbsp;End&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.visitEndDate}"/>
                 </td>
                 <td>${visit.observers?.join(", ")}</td>
                 <td>
                     <ul>
-                        <g:each in="${visit.samplingUnitNames}" var="samplingUnitCode">
-                            <li><a href="#"><sts:formatSamplingUnitName code="${samplingUnitCode}"/></a></li>
-                        </g:each>
+                        %{--<g:each in="${visit.samplingUnitNames}" var="samplingUnitCode">--}%
+                            %{--<li><a href="#"><sts:formatSamplingUnitName code="${samplingUnitCode}"/></a></li>--}%
+                        %{--</g:each>--}%
                     </ul>
                 </td>
                 <td>

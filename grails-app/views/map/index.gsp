@@ -234,6 +234,8 @@
 
             var result = results[resultKey];
 
+            console.log(result);
+
             var location = new OpenLayers.LonLat(parseFloat(result.longitude), parseFloat(result.latitude));
 
             location.transform(latLongProj, map.getProjectionObject());
@@ -249,7 +251,7 @@
             var marker = new OpenLayers.Marker(location, pinIcon);
 
             studyLocations.addMarker(marker);
-            marker.tag = result.siteName;
+            marker.tag = result.studyLocationName;
 
             marker.events.register('mouseover', marker, function (e) {
                 showPlotHover(this.tag);

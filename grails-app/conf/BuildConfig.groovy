@@ -54,10 +54,10 @@ grails.project.dependency.resolution = {
         build ":tomcat:$grailsVersion"
 
         runtime ":database-migration:1.3.2"
-        runtime ':springcache:1.3.1'
-        runtime ':csv:0.3.1'
-        runtime ':spring-security-core:1.2.7.3'
-        runtime ':webflow:2.0.8.1'
+        compile ':cache:1.0.1'
+        compile ':csv:0.3.1'
+        compile ':spring-security-core:1.2.7.3'
+        compile ':webflow:2.0.8.1'
         compile ':rest:0.7'
 
     }

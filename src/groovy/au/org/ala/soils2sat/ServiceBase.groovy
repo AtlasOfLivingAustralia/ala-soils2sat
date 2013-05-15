@@ -10,6 +10,8 @@ abstract class ServiceBase {
 
         String url = "${serviceRootUrl}/${servicePath}"
         if (params) {
+            url = params.serviceUrl ?: url
+            params.remove('serviceUrl')
             url += '?'
             params.each {
                 url += it.key + "=" + it.value + '&'
@@ -25,6 +27,9 @@ abstract class ServiceBase {
             def u = new URL(url)
             def results = u.getText()
             return JSON.parse(results)
+        } catch (Exception ex) {
+            ex.printStackTrace()
+            return null
         } finally {
             timer.stop(true)
         }

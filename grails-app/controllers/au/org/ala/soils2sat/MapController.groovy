@@ -102,9 +102,9 @@ class MapController {
 
     def ajaxPlotHover() {
         def studyLocationName = params.studyLocationName
-        StudyLocationSummary studyLocation = null
+        def studyLocation = null
         if (studyLocationName) {
-            studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
+            studyLocation = studyLocationService.getStudyLocationDetails(studyLocationName)
         }
 
         [studyLocation: studyLocation, studyLocationName: studyLocationName]

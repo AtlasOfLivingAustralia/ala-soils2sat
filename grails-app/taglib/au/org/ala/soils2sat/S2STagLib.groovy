@@ -2,11 +2,7 @@ package au.org.ala.soils2sat
 
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang.WordUtils
-import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
-import org.codehaus.groovy.grails.web.pages.discovery.GroovyPageLocator
-
 import java.text.SimpleDateFormat
-import org.codehaus.groovy.grails.web.json.JSONObject
 
 /**
  *
@@ -307,11 +303,13 @@ class S2STagLib {
 
         if (studyLocationName && studyLocationVisitId) {
             def visitDetails = studyLocationService.getVisitDetails(studyLocationVisitId)
-            def mb = new MarkupBuilder(out)
-            mb.span() {
-//                mkp.yield(studyLocationName)
-//                mkp.yieldUnescaped("&nbsp;-&nbsp;")
-                mkp.yield(visitDetails.visitStartDate)
+            if (visitDetails) {
+                def mb = new MarkupBuilder(out)
+                mb.span() {
+    //                mkp.yield(studyLocationName)
+    //                mkp.yieldUnescaped("&nbsp;-&nbsp;")
+                    mkp.yield(visitDetails?.visitStartDate)
+                }
             }
         }
 

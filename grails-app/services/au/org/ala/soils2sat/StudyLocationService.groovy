@@ -1,8 +1,9 @@
 package au.org.ala.soils2sat
 
-import grails.plugin.springcache.annotations.CacheFlush
+import grails.plugin.cache.CacheEvict
+import grails.plugin.cache.Cacheable
 import org.codehaus.groovy.grails.web.json.JSONElement
-import org.springframework.cache.annotation.Cacheable
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class StudyLocationService extends ServiceBase {
 
@@ -10,43 +11,71 @@ class StudyLocationService extends ServiceBase {
     def layerService
     def logService
 
-    @Cacheable("S2S_StudyLocationCache")
-    List<StudyLocationSearchResult> getStudyLocations() {
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName}")
+    List<StudyLocationTO> getStudyLocations() {
         def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocations")
-        def results = new ArrayList<StudyLocationSearchResult>()
-        studyLocations?.results?.each { studyLocation ->
-            def result = new StudyLocationSearchResult(siteName: studyLocation.siteName, date: studyLocation.date, longitude: studyLocation.longitude, latitude: studyLocation.latitude)
-            results.add(result)
+        def results = new ArrayList<StudyLocationTO>()
+        studyLocations?.each { studyLocation ->
+            if (!studyLocation.longitude && !studyLocation.latitude) {
+                // print "Discarding studyLocation (no position data): " + studyLocation.studyLocationName
+            }
+
+            def map = cleanMap(studyLocation)
+            results << new StudyLocationTO(map)
         }
 
+        return results
+    }
+
+    private Map cleanMap(JSONElement elem) {
+        elem.each {
+            if (it.value instanceof JSONObject.Null) {
+                it.value = null
+            }
+        }
+        return elem
+    }
+
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
+    public StudyLocationDetailsTO getStudyLocationDetails(String studyLocationName) {
+        def details = proxyServiceCall(grailsApplication, "getStudyLocationDetails/${studyLocationName}", [:])
+        if (!details) {
+            return null
+        }
+        def to = new StudyLocationDetailsTO(cleanMap(details))
+        return to
+    }
+
+    public List<StudyLocationVisitTO> getStudyLocationVisits(String studyLocationName) {
+        def details = getStudyLocationDetailsOld(studyLocationName)
+        def results = []
+        details.data.siteLocationVisitList?.each {
+            def visit = new StudyLocationVisitTO(visitStartDate: it.visitStartDate, visitEndDate: it.visitStartDate, studyLocationName:  studyLocationName, studyLocationVisitId: it.id )
+            results << visit
+        }
+//        def details = proxyServiceCall(grailsApplication, "getStudyLocationVisits/${studyLocationName}", [:])
+//        println details
+//        return details
         return results
     }
 
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
-    StudyLocationSummary getStudyLocationSummary(String studyLocationName) {
-        def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocationSummary", [siteNames: studyLocationName])?.studyLocationSummaryList
-        StudyLocationSummary result = null
-        if (studyLocations) {
-            studyLocations.each { studyLocation ->
-                result = new StudyLocationSummary(name: studyLocation.siteLocationName, longitude: studyLocation.longitude, latitude: studyLocation.latitude, data: studyLocation)
-            }
-        }
-
-        return result
-    }
-
-    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
-    def getStudyLocationDetails(String studyLocationName) {
-        def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName])
+    def getStudyLocationDetailsOld(String studyLocationName) {
+        def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName, serviceUrl:'http://s2s-dev.ecoinformatics.org.au:8080/s2s-services/getSiteLocationDetails'])
         def results = new StudyLocationDetails(details)
+
+
+
         return results
     }
 
-    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
+    // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
     def getVisitDetails(String visitId) {
-        def details = proxyServiceCall(grailsApplication, "getSiteLocationVisitDetails", [siteLocationVisitId: visitId])
-        def results = details
-        return results
+        def details = proxyServiceCall(grailsApplication, "getStudyLocationVisitDetails/${visitId}")
+
+        def visit = new StudyLocationVisitDetailsTO(cleanMap(details))
+
+        return visit
     }
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName}")
@@ -55,7 +84,7 @@ class StudyLocationService extends ServiceBase {
         return traits
     }
 
-    @CacheFlush("S2S_LayerCache")
+    @CacheEvict("S2S_LayerCache")
     public void flushCache() {
         logService.log("Flushing Layer Cache")
     }
@@ -85,9 +114,9 @@ class StudyLocationService extends ServiceBase {
     }
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
-    public String getStudyLocatioNameForVisitId(String visitId) {
+    public String getStudyLocationNameForVisitId(String visitId) {
         def visitDetails = getVisitDetails(visitId)
-        return getStudyLocationNameForId(visitDetails?.siteLocationId?.toString())
+        return visitDetails?.studyLocationName
     }
 
 }

@@ -15,16 +15,16 @@
 
                 $("#btnSelect").click(function(e) {
                     e.preventDefault();
-                    $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}").done(function() {
-                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}";
+                    $.ajax("${createLink(controller: 'studyLocation', action:'selectStudyLocationVisit', params:[studyLocationVisitId: visitDetail?.studyLocationVisitId, studyLocationName: studyLocationName])}").done(function() {
+                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitDetail?.studyLocationVisitId, studyLocationName: studyLocationName])}";
                     });
 
                 });
 
                 $("#btnDeselect").click(function(e) {
                     e.preventDefault();
-                    $.ajax("${createLink(controller: 'studyLocation', action:'deselectStudyLocationVisit', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}").done(function() {
-                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitSummary.visitId, studyLocationName: studyLocationName])}";
+                    $.ajax("${createLink(controller: 'studyLocation', action:'deselectStudyLocationVisit', params:[studyLocationVisitId: visitDetail?.studyLocationVisitId, studyLocationName: studyLocationName])}").done(function() {
+                        window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitDetail?.studyLocationVisitId, studyLocationName: studyLocationName])}";
                     });
                 });
             });
@@ -38,7 +38,7 @@
                         <td>
                             <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
-                        Visit ${visitSummary.visitId}</td>
+                        Visit ${visitDetail?.studyLocationVisitId}</td>
                         <td></td>
                     </tr>
                 </table>
@@ -67,25 +67,30 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <td>Study Location</td>
-                        <td>${studyLocationSummary.name}</td>
+                        <td>${studyLocationDetails?.studyLocationName}</td>
                     </tr>
                     <tr>
                         <td>Start Date</td>
-                        <td><sts:formatDateStr date="${visitDetail.startDate}"/></td>
+                        <td><sts:formatDateStr date="${visitDetail?.visitStartDate}"/></td>
                     </tr>
                     <tr>
                         <td>End Date</td>
-                        <td><sts:formatDateStr date="${visitDetail.endDate}"/></td>
+                        <td><sts:formatDateStr date="${visitDetail?.visitEndDate ?: visitDetail.visitStartDate}"/></td>
                     </tr>
                     <tr>
                         <td>Observers</td>
-                        <td>${visitSummary.observers?.join(", ")}</td>
+                        <td>${visitDetail?.observers?.collect { it.observerName } ?.join(", ")}</td>
                     </tr>
                     <tr>
                         <td>Visit Notes</td>
-                        <td>${visitDetail.visitNotes}</td>
+                        <td>${visitDetail?.visitNotes}</td>
                     </tr>
-
+                    <g:each in="['climaticCondition', 'disturbance', 'drainageType', 'erosionAbundance', 'erosionType', 'locationDescription', 'microrelief', 'soilObservationType', 'surfaceCoarseFragsAbundance', 'surfaceCoarseFragsLithology','surfaceCoarseFragsSize','surfaceCoarseFragsType', 'vegetationCondition']" var="propName">
+                        <tr>
+                            <td>${propName}</td>
+                            <td>${visitDetail?.getAt(propName)}</td>
+                        </tr>
+                    </g:each>
                 </table>
 
                 <h4>Study Location Visit Sampling Units</h4>
@@ -97,11 +102,11 @@
                             <th>Sampling Unit</th>
                         </tr>
                     </thead>
-                    <g:each in="${visitSummary.samplingUnitSummaryList}" var="su">
+                    <g:each in="${visitDetail?.samplingUnits}" var="su">
                         <tr>
-                            <td><sts:formatDateStr date="${su.sampleDate}"/></td>
-                            <td>${su.observerNames?.join(", ")}</td>
-                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, studyLocationVisitId: visitSummary.visitId, samplingUnit: su.samplingUnit])}">${su.description ?: su.samplingUnit}</a> </td>
+                            <td></td>
+                            <td></td>
+                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnit: su.id])}">${su.description}</a> </td>
                         </tr>
                     </g:each>
                 </table>
