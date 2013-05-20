@@ -48,6 +48,10 @@
                     $("#environmentalDataSection").html(html);
                 });
 
+                $.ajax("${createLink(controller: 'visualisation', action:'studyLocationVisualisations', params:[studyLocationName: studyLocationName])}").done(function(html) {
+                    $("#studyLocationVisualisations").html(html);
+                });
+
                 $('a[data-toggle="tab"]').on('shown', function (e) {
                     var tabHref = $(this).attr('href');
                     if (tabHref == "#taxaTab") {
@@ -170,11 +174,16 @@
                                     </td>
                                 </tr>
                             </table>
+
+                            <div id="studyLocationVisualisations"></div>
+
                             <h4>Environmental Data</h4>
                             <small>* Determined by the selected layers on map page</small>
                             <div id="environmentalDataSection">
                                 <sts:loading message="Loading environmental data" />
                             </div>
+
+
                         </div>
 
                         <div class="tab-pane" id="taxaTab">

@@ -59,6 +59,7 @@ grails.project.dependency.resolution = {
         compile ':spring-security-core:1.2.7.3'
         compile ':webflow:2.0.8.1'
         compile ':rest:0.7'
+        compile ":google-visualization:0.6.2"
 
     }
 }

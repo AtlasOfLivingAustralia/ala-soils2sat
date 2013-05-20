@@ -15,10 +15,14 @@
         <link rel="apple-touch-icon" sizes="114x114" href="${resource(dir: 'images', file: 'apple-touch-icon-retina.png')}">
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'soils2sat.css')}" type="text/css">
         <link rel="stylesheet" href="${resource(dir: '/jqwidgets/styles', file: 'jqx.base.css')}" type="text/css"/>
+
         <g:javascript library="application"/>
         <r:require module='jqueryui' />
         <r:require module="bootstrap"/>
         <r:layoutResources />
+
+        <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
         <Style type="text/css">
 
         body {
@@ -31,7 +35,7 @@
             $(document).ready(function() {
 
                 $("#btnAdministration").click(function(e) {
-                  window.location = "${createLink(controller: 'admin')}";
+                    window.location = "${createLink(controller: 'admin')}";
                 });
 
             });
@@ -89,7 +93,7 @@
             </div>
         </g:if>
 
-        <g:layoutBody/>
+        <g:layoutBody />
         <r:layoutResources />
         <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
     </body>
