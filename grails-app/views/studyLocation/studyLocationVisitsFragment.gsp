@@ -6,7 +6,7 @@
                 <th>Visit</th>
                 <th>Dates</th>
                 <th>Observers</th>
-                <th>Sampling activities</th>
+                %{--<th>Sampling activities</th>--}%
                 <th></th>
             </tr>
         </thead>
@@ -17,16 +17,16 @@
                 <td>Visit&nbsp;Start&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.visitStartDate}"/><br/>
                     Visit&nbsp;End&nbsp;Date:&nbsp;<sts:formatDateStr date="${visit.visitEndDate}"/>
                 </td>
-                <td>${visit.observers?.join(", ")}</td>
-                <td>
-                    <ul>
+                <td>${visit.observers?.collect({ it.observerName })?.join(", ")}</td>
+                %{--<td>--}%
+                    %{--<ul>--}%
                         %{--<g:each in="${visit.samplingUnitNames}" var="samplingUnitCode">--}%
                             %{--<li><a href="#"><sts:formatSamplingUnitName code="${samplingUnitCode}"/></a></li>--}%
                         %{--</g:each>--}%
-                    </ul>
-                </td>
+                    %{--</ul>--}%
+                %{--</td>--}%
                 <td>
-                    <g:if test="${appState.selectedVisits?.find { it.studyLocationVisitId == visit.visitId }}">
+                    <g:if test="${appState.selectedVisits?.find { it.studyLocationVisitId == visit.studyLocationVisitId }}">
                         <button class="btnDeselect btn btn-small btn-warning pull-right">Deselect</button>
                     </g:if>
                     <g:else>

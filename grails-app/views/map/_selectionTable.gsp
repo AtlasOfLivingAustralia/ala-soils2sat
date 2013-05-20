@@ -9,7 +9,7 @@
                 <g:set var="visit" value="${obj}" />
                 <tr studyLocationVisitId="${visit.studyLocationVisitId}" studyLocationName="${visit.studyLocationName}">
                     <td><sts:navSeperator />&nbsp;
-                        <a class="studyLocationVisitDetailsLink" href="#"><sts:formatVisitLabel studyLocationVisitId="${visit.studyLocationVisitId}" studyLocationName="${visit.studyLocationName}" /></a>
+                        <a class="studyLocationVisitDetailsLink" href="#"><sts:formatVisitLabel studyLocationVisitId="${visit.studyLocationVisitId}" /></a>
                         <button class="btn btn-mini pull-right btnRemoveSelectedVisit" title="Remove study location visit"><i class="icon-remove"/></button>
                     </td>
                 </tr>

@@ -47,34 +47,36 @@ class StudyLocationService extends ServiceBase {
     }
 
     public List<StudyLocationVisitTO> getStudyLocationVisits(String studyLocationName) {
-        def details = getStudyLocationDetailsOld(studyLocationName)
+        def visits = proxyServiceCall(grailsApplication, "getStudyLocationVisits/${studyLocationName}", [:])
         def results = []
-        details.data.siteLocationVisitList?.each {
-            def visit = new StudyLocationVisitTO(visitStartDate: it.visitStartDate, visitEndDate: it.visitStartDate, studyLocationName:  studyLocationName, studyLocationVisitId: it.id )
+        visits?.each {
+            def visit = new StudyLocationVisitTO(studyLocationVisitId: it.studyLocationVisitId, visitStartDate: it.visitStartDate, visitEndDate: it.visitStartDate, studyLocationName:  studyLocationName )
+            visit.observers = []
+            it.observers?.each {
+                def observer = new VisitObserverTO(cleanMap(it))
+                visit.observers << observer
+            }
+
             results << visit
         }
-//        def details = proxyServiceCall(grailsApplication, "getStudyLocationVisits/${studyLocationName}", [:])
-//        println details
-//        return details
         return results
+    }
+
+    public getSamplingUnitDetails(String visitId, String samplingUnitTypeId) {
+        return [:]
     }
 
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
     def getStudyLocationDetailsOld(String studyLocationName) {
         def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName, serviceUrl:'http://s2s-dev.ecoinformatics.org.au:8080/s2s-services/getSiteLocationDetails'])
         def results = new StudyLocationDetails(details)
-
-
-
         return results
     }
 
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
     def getVisitDetails(String visitId) {
         def details = proxyServiceCall(grailsApplication, "getStudyLocationVisitDetails/${visitId}")
-
         def visit = new StudyLocationVisitDetailsTO(cleanMap(details))
-
         return visit
     }
 

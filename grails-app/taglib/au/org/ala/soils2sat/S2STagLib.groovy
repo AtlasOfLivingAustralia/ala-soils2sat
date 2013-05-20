@@ -294,20 +294,15 @@ class S2STagLib {
 
     /**
      * @attr studyLocationVisitId
-     * @attr studyLocationName
      */
     def formatVisitLabel = { attrs, body ->
 
-        def studyLocationName = attrs.studyLocationName
         def studyLocationVisitId = attrs.studyLocationVisitId
-
-        if (studyLocationName && studyLocationVisitId) {
+        if (studyLocationVisitId) {
             def visitDetails = studyLocationService.getVisitDetails(studyLocationVisitId)
             if (visitDetails) {
                 def mb = new MarkupBuilder(out)
                 mb.span() {
-    //                mkp.yield(studyLocationName)
-    //                mkp.yieldUnescaped("&nbsp;-&nbsp;")
                     mkp.yield(visitDetails?.visitStartDate)
                 }
             }

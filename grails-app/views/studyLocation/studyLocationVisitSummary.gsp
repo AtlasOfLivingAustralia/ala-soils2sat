@@ -106,7 +106,7 @@
                         <tr>
                             <td></td>
                             <td></td>
-                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationName: studyLocationName, studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnit: su.id])}">${su.description}</a> </td>
+                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnit: su.id])}">${su.description}</a> </td>
                         </tr>
                     </g:each>
                 </table>

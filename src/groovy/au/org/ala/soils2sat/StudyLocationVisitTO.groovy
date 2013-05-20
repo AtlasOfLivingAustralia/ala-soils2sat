@@ -6,5 +6,5 @@ class StudyLocationVisitTO {
     String studyLocationVisitId
     String visitStartDate
     String visitEndDate
-    List<String> observers
+    List<VisitObserverTO> observers
 }

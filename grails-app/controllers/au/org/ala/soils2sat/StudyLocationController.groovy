@@ -380,12 +380,8 @@ class StudyLocationController {
     }
 
     def studyLocationTaxaFragment() {
-        def userInstance = springSecurityService.currentUser as User
-        def appState = userInstance?.applicationState
-
         def studyLocationName = params.studyLocationName
         def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
-
         def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
 
         [studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails, taxaList: studyLocationTaxaList, rank: settingService.observationsRank, radius: settingService.observationRadius]
@@ -396,9 +392,6 @@ class StudyLocationController {
         def appState = userInstance?.applicationState
 
         def studyLocationVisitId = params.studyLocationVisitId
-
-        // TODO: Remove this once visits work from the service properly
-        studyLocationVisitId = '2760'
 
         def visitDetail = studyLocationService.getVisitDetails(studyLocationVisitId)
         def studyLocationName = visitDetail?.studyLocationName
@@ -418,8 +411,9 @@ class StudyLocationController {
 
         def visitId = params.studyLocationVisitId
         def samplingUnit = params.samplingUnit
-        def studyLocationSummary = studyLocationService.getStudyLocationSummary(params.studyLocationName)
         def visitDetail = studyLocationService.getVisitDetails(visitId as String)
+        def studyLocationDetail = studyLocationService.getStudyLocationDetails(visitDetail?.studyLocationName)
+
         def dataList = []
         switch (samplingUnit) {
             case "POINT_INTERCEPT":
@@ -450,7 +444,7 @@ class StudyLocationController {
 
         samplingUnit = WordUtils.capitalizeFully(samplingUnit.replaceAll('_', ' '))
 
-        [visitDetail: visitDetail, studyLocationName: params.studyLocationName, studyLocationSummary: studyLocationSummary, samplingUnit: samplingUnit, columnHeadings: colHeadings, dataList: dataList]
+        [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnit: samplingUnit, columnHeadings: colHeadings, dataList: dataList]
     }
 
     def nextSelectedStudyLocationSummary() {
