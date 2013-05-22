@@ -63,7 +63,60 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getSamplingUnitDetails(String visitId, String samplingUnitTypeId) {
-        return [:]
+        def details = proxyServiceCall(grailsApplication, "getSamplingUnits/${visitId}/getDetails/${samplingUnitTypeId}")
+        if (details) {
+
+            details.samplingUnitData?.each {
+                cleanMap(it)
+            }
+
+            details.samplingUnitData = details?.samplingUnitData?.sort {
+                it.id
+            }
+        }
+
+        return details
+    }
+
+    public getSoilPhForStudyLocation(String studyLocationName) {
+        // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
+        List<StudyLocationVisitTO> visits = getStudyLocationVisits(studyLocationName)
+        def rows = []
+        def visit = visits.max { it.visitStartDate }
+        if (visit) {
+            def samplingUnit = getSamplingUnitDetails(visit.studyLocationVisitId, "7")
+            if (samplingUnit?.samplingUnitData) {
+                rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, pH: it.ph ] }
+            }
+            rows = rows?.sort { it.upperDepth }
+        }
+        return rows
+    }
+
+    public getSoilECForStudyLocation(String studyLocationName) {
+        // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
+        List<StudyLocationVisitTO> visits = getStudyLocationVisits(studyLocationName)
+        def rows = []
+        def visit = visits.max { it.visitStartDate }
+        if (visit) {
+            def samplingUnit = getSamplingUnitDetails(visit.studyLocationVisitId, "7")
+            if (samplingUnit?.samplingUnitData) {
+                rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, EC: it.ec ] }
+            }
+            rows = rows?.sort { it.upperDepth }
+        }
+        return rows
+    }
+
+    public getVoucheredTaxaForStudyLocation(String studyLocationName) {
+        def vouchers = proxyServiceCall(grailsApplication, "getStudyLocationVouchers/${studyLocationName}")
+        def taxa = []
+        vouchers.each { voucher ->
+            if (voucher.herbariumDetermination && !voucher.herbariumDetermination.toString().equalsIgnoreCase('NO ID')) {
+                taxa << voucher.herbariumDetermination
+            }
+        }
+        return taxa?.sort { it }
     }
 
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")

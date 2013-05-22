@@ -20,12 +20,19 @@ class BiocacheService extends ServiceBase {
             }
         }
 
-        return results
+        return results?.sort { it }
     }
 
     @Override
     protected String getServiceRootUrl() {
         return "${grailsApplication.config.biocacheServiceRoot}"
+    }
+
+    List<String> getWeedsOfNationalSignificance() {
+        // http://lists.ala.org.au/ws/speciesListItems/dr823
+        def list = proxyServiceCall(grailsApplication, '', [serviceUrl:'http://lists.ala.org.au/ws/speciesListItems/dr823'])
+        def results = list.collect { it.name }
+        return results
     }
 
 }

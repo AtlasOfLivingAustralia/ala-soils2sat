@@ -5,7 +5,7 @@
         <r:require module='jqueryui'/>
         <r:require module='bootstrap_responsive'/>
         <meta name="layout" content="detail"/>
-        <title>Sampling Unit details - ${studyLocationDetail?.studyLocationName} - Visit <sts:formatDateStr date="${visitDetail.visitStartDate}" />  - ${samplingUnit}</title>
+        <title>Sampling Unit details - ${studyLocationDetail?.studyLocationName} - Visit <sts:formatDateStr date="${visitDetail.visitStartDate}" />  - ${samplingUnitName}</title>
     </head>
 
     <body>
@@ -17,13 +17,13 @@
                             <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationDetail.studyLocationName])}">${studyLocationDetail.studyLocationName}</a><sts:navSeperator/>
                             <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}">Visit ${visitDetail.studyLocationVisitId}</a><sts:navSeperator/>
-                            ${samplingUnit}</td>
+                            ${samplingUnitName}</td>
                         <td></td>
                     </tr>
                 </table>
             </legend>
 
-            <h4>Sampling Unit - ${samplingUnit}</h4>
+            <h4>Sampling Unit - ${samplingUnitName}</h4>
             <small>
                 <table class="table table-bordered table-striped table-condensed">
                     <thead>

@@ -93,20 +93,16 @@
                     </g:each>
                 </table>
 
-                <h4>Study Location Visit Sampling Units</h4>
+                <h4>Sampling Units</h4>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Observers</th>
                             <th>Sampling Unit</th>
                         </tr>
                     </thead>
                     <g:each in="${visitDetail?.samplingUnits}" var="su">
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnit: su.id])}">${su.description}</a> </td>
+                            <td><a href="${createLink(controller: 'studyLocation', action:'samplingUnitDetail', params:[studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnitTypeId: su.id])}">${su.description}</a> </td>
                         </tr>
                     </g:each>
                 </table>

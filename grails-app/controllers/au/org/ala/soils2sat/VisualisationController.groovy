@@ -2,18 +2,37 @@ package au.org.ala.soils2sat
 
 class VisualisationController {
 
+    def studyLocationService
+    def biocacheService
+
     def studyLocationVisualisations() {
 
         [studyLocationName: params.studyLocationName]
     }
 
-    def plantSpeciesBreakdownByLocation() {
+    def plantSpeciesBreakdownBySource() {
 
         def columns = [['string',"Label"],['number', "%"]]
+
+        def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationName)
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(params.studyLocationName)
+        def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+        def both = []
+        alaNames.each {
+            if (ausplotsNames.contains(it)) {
+                both.add(it)
+            }
+        }
+
+        both.each {
+            ausplotsNames.remove(it)
+            alaNames.remove(it)
+        }
+
         def data = [
-            ["Both AusPlots & ALA", 100],
-            ["AusPlots only", 100],
-            ["ALA Only", 100]
+            ["Both AusPlots & ALA", both.size()],
+            ["AusPlots only", ausplotsNames.size()],
+            ["ALA Only", alaNames.size()]
         ]
 
         [columns: columns, data: data]
@@ -26,11 +45,15 @@ class VisualisationController {
             ['number', "Soil EC"]
         ]
 
-        def data = [
-            ["0.00 - 0.05", 0.09 ],
-            ["0.05 - 0.15", 0.1 ],
-            ["0.15 - 0.30", 0.3 ]
-        ];
+        def samplingUnitData = studyLocationService.getSoilECForStudyLocation(params.studyLocationName)
+        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", it.EC ]}
+
+
+        // is there at least one row with non-null data?
+        def nonNull = data.find { it[1] != null }
+        if (!nonNull) {
+            data = []
+        }
 
         def colors = [ '#4E81BD' ]
 
@@ -46,15 +69,19 @@ class VisualisationController {
             columns << ['number', "pH ${it.pH}"]
         }
 
-        def data = [
-            [depth: "0.00 - 0.05", ph: 9.7],
-            [depth: "0.05 - 0.15", ph: 7 ],
-            [depth: "0.15 - 0.30", ph: 5.3]
-        ]
+        def realData = studyLocationService.getSoilPhForStudyLocation(params.studyLocationName)
+
+        def data = realData?.collect { [depth: "${it.upperDepth} - ${it.lowerDepth}", ph: it.pH ]}
 
         def adjustedData = []
 
-        data.each { element ->
+        // is there at least one row with non-null data?
+        def nonNull = data.find { it.ph != null }
+        if (!nonNull) {
+            data = []
+        }
+
+        data?.each { element ->
             def row = [element.depth]
             boolean found = false
             litmusColors.each { color ->
@@ -79,13 +106,29 @@ class VisualisationController {
 
     public weedNonWeedBreakdownForLocation() {
 
+        def weedList = biocacheService.getWeedsOfNationalSignificance()?.sort { it }
+
+        def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationName)
+
+        println weedList
+        println ausplotsNames
+
+        def weedCount = 0
+        weedList.each { weedName ->
+            def weed = ausplotsNames.find { it.trim()?.equalsIgnoreCase(weedName.trim()) }
+            if (weed) {
+                weedCount++
+            }
+        }
+
+
         def columns = [
             ['string', 'Label'], ['number', 'abundance']
         ]
 
         def data = [
-            ['Non-Weed species', 123],
-            ['Weed species', 23]
+            ['Non-Weed species', ausplotsNames.size() - weedCount],
+            ['Weed species', weedCount]
         ]
 
         def colors = ['#99B958', '#BD4E4C']

@@ -382,9 +382,10 @@ class StudyLocationController {
     def studyLocationTaxaFragment() {
         def studyLocationName = params.studyLocationName
         def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
-        def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+        def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(studyLocationName)
+        def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
 
-        [studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails, taxaList: studyLocationTaxaList, rank: settingService.observationsRank, radius: settingService.observationRadius]
+        [studyLocationDetails: studyLocationDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames]
     }
 
     def studyLocationVisitSummary() {
@@ -410,41 +411,18 @@ class StudyLocationController {
     def samplingUnitDetail() {
 
         def visitId = params.studyLocationVisitId
-        def samplingUnit = params.samplingUnit
+        def samplingUnitTypeId = params.samplingUnitTypeId
         def visitDetail = studyLocationService.getVisitDetails(visitId as String)
         def studyLocationDetail = studyLocationService.getStudyLocationDetails(visitDetail?.studyLocationName)
-
-        def dataList = []
-        switch (samplingUnit) {
-            case "POINT_INTERCEPT":
-                dataList = visitDetail.pointInterceptWithHerbIdAddedList
-                break
-            case "STRUCTURAL_SUMMARY":
-                dataList = visitDetail.structuralSummaryList
-                break
-            case "SOIL_STRUCTURE":
-                dataList = visitDetail.soilStructureList
-                break
-            case "SOIL_CHARACTER":
-                dataList = visitDetail.soilCharacterisationList
-                break
-            case "SOIL_SAMPLING":
-                dataList = visitDetail.soilSampleList
-                break
-            case "BASAL_AREA":
-                dataList = visitDetail.basalAreaList
-                break;
-            default:
-                break;
-        }
+        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId);
+        def dataList = data?.samplingUnitData
+        def samplingUnitName = data?.samplingUnit?.description
 
         def colHeadings = dataList[0]?.collect { it.key }
 
-        colHeadings?.removeAll(['siteLocationVisitId'])
+        colHeadings.remove('id')
 
-        samplingUnit = WordUtils.capitalizeFully(samplingUnit.replaceAll('_', ' '))
-
-        [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnit: samplingUnit, columnHeadings: colHeadings, dataList: dataList]
+        [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnitTypeId: samplingUnitTypeId, samplingUnitName: samplingUnitName, columnHeadings: colHeadings, dataList: dataList]
     }
 
     def nextSelectedStudyLocationSummary() {
