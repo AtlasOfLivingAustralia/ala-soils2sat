@@ -116,6 +116,7 @@ class StudyLocationService extends ServiceBase {
                 taxa << voucher.herbariumDetermination
             }
         }
+
         return taxa?.sort { it }
     }
 

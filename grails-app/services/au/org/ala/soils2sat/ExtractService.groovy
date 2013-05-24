@@ -1,6 +1,7 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
+import net.sf.json.JSONNull
 import org.apache.commons.io.FilenameUtils
 import org.grails.plugins.csv.CSVWriter
 import org.h2.store.fs.FileUtils
@@ -52,6 +53,18 @@ class ExtractService {
             manifestEntries << writeZipEntry(user, zipStream, writer, "studyLocationDetails.txt", writeStudyLocations(visitIds))
             manifestEntries << writeZipEntry(user, zipStream, writer, "studyLocationVisitDetails.txt", writeStudyLocationVisits(visitIds))
 
+            visitIds.each { visitId ->
+                def visitDetails = studyLocationService.getVisitDetails(visitId)
+                if (visitDetails) {
+                    visitDetails.samplingUnits.each { samplingUnit ->
+                        String samplingUnitId = samplingUnit.id?.toString()
+                        if (!samplingUnits || samplingUnits.contains(samplingUnitId)) {
+                            manifestEntries << writeZipEntry(user, zipStream, writer, "Visit_${visitId}_${samplingUnit.description}.txt", writeSamplingUnit(visitId, samplingUnitId))
+                        }
+                    }
+                }
+            }
+
             writeZipEntry(user, zipStream, writer, "manifest.text", writeManifestFactory(manifestEntries))
 
             zipStream.flush()
@@ -67,6 +80,49 @@ class ExtractService {
         }
 
         return localPath
+    }
+
+    def writeSamplingUnit(String visitId, String samplingUnitTypeId) {
+
+        def samplingUnit = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId)
+        def data = samplingUnit?.samplingUnitData
+        if (!samplingUnit || !data) {
+            return { User user, Writer writer, manifestEntry ->
+                writer.write("Sampling unit data could not be retrieved: SiteVisitId ${visitId}, samplingUnitTypeId ${samplingUnitTypeId}".toString())
+                manifestEntry.comment = "Data for visit ${visitId} and sampling unit type ${samplingUnitTypeId}: Data could not be retrieved"
+            }
+        }
+
+        return { User user, Writer writer, manifestEntry ->
+            Map first = data.first()
+
+            def sb = new StringBuilder()
+            def keySet = first.keySet().sort { it } // always get them entries in the same order
+            // print header row first...
+            keySet().each {
+                sb.append('"').append(it).append('",')
+            }
+            // trim off last comma
+            sb.deleteCharAt(sb.length() - 1);
+            writer << sb << "\n"
+            // now dump all the data...
+            data.each { row ->
+                sb = new StringBuilder()
+                keySet().each { String fieldName ->
+                    def element = row[fieldName]
+                    if (element == null || element == JSONNull) {
+                        element = ""
+                    }
+                    sb.append('"').append(element).append('",')
+                }
+                // trim off last comma
+                sb.deleteCharAt(sb.length() - 1);
+                writer << sb << "\n"
+            }
+
+            manifestEntry.comment = "${samplingUnit.samplingUnit?.description} data for visit ${visitId}"
+        }
+
     }
 
 
@@ -126,37 +182,26 @@ class ExtractService {
 
         return { User user, Writer writer, manifestEntry ->
 
-            def csvWriter = new CSVWriter(writer, { StudyLocationVisitDetailsTO visit ->
-                id { visit.studyLocationVisitId }
-                studyLocationId { visit.studyLocationId }
-                visitStartDate { visit.visitStartDate }
-                // photopointsExistq { it.photopointsExistq }
-                //photopointLat1 { it.photopointLat1 }
-                //photopointLong1 { it.photopointLong1 }
-                //leafAreaIndexExistsq { it.leafAreaIndexExistsq }
-                visitNotes { visit.visitNotes }
-                // state { it.state }
-                // agency { it.agency }
-                //describedBy { it.describedBy }
-                locationDescription { visit.locationDescription }
-                pitMarkerEasting { visit.pitMarkerEasting }
-                pitMarkerNorthing { visit.pitMarkerNorthing }
-                pitMarkerMgaZones { visit.pitMarkerMgaZones }
-                pitMarkerDatum { visit.pitMarkerDatum }
-                // method { it.method }
-                erosionType { visit.erosionType }
-                erosionAbundance { visit.erosionAbundance }
-                microrelief { visit.microrelief }
-                drainageType { visit.drainageType }
-                disturbance { visit.disturbance }
-                surfaceCoarseFragsAbundance { visit.surfaceCoarseFragsAbundance }
-                // surfaceSoilCondition { visit.surfaceSoilCondition }
-                climaticCondition { visit.climaticCondition }
-                vegetationCondition { visit.vegetationCondition }
-//                asc { it.asc }
-                observer1 { visit.observers?.size() > 0 ? visit.observers?.getAt(0) : '' }
-                observer2 { visit.observers?.size() > 1 ? visit.observers?.getAt(0) : '' }
-//                okToPublish { it.okToPublish }
+            def csvWriter = new CSVWriter(writer, {
+                id { StudyLocationVisitDetailsTO visit -> visit.studyLocationVisitId }
+                studyLocationId { StudyLocationVisitDetailsTO visit -> visit.studyLocationId }
+                visitStartDate { StudyLocationVisitDetailsTO visit -> visit.visitStartDate }
+                visitNotes { StudyLocationVisitDetailsTO visit -> visit.visitNotes }
+                locationDescription { StudyLocationVisitDetailsTO visit -> visit.locationDescription }
+                pitMarkerEasting { StudyLocationVisitDetailsTO visit -> visit.pitMarkerEasting }
+                pitMarkerNorthing { StudyLocationVisitDetailsTO visit -> visit.pitMarkerNorthing }
+                pitMarkerMgaZones { StudyLocationVisitDetailsTO visit -> visit.pitMarkerMgaZones }
+                pitMarkerDatum { StudyLocationVisitDetailsTO visit -> visit.pitMarkerDatum }
+                erosionType { StudyLocationVisitDetailsTO visit -> visit.erosionType }
+                erosionAbundance { StudyLocationVisitDetailsTO visit -> visit.erosionAbundance }
+                microrelief { StudyLocationVisitDetailsTO visit -> visit.microrelief }
+                drainageType { StudyLocationVisitDetailsTO visit -> visit.drainageType }
+                disturbance { StudyLocationVisitDetailsTO visit -> visit.disturbance }
+                surfaceCoarseFragsAbundance { StudyLocationVisitDetailsTO visit -> visit.surfaceCoarseFragsAbundance }
+                climaticCondition { StudyLocationVisitDetailsTO visit -> visit.climaticCondition }
+                vegetationCondition { StudyLocationVisitDetailsTO visit -> visit.vegetationCondition }
+                observer1 { StudyLocationVisitDetailsTO visit -> visit.observers?.size() > 0 ? visit.observers?.getAt(0) : '' }
+                observer2 { StudyLocationVisitDetailsTO visit -> visit.observers?.size() > 1 ? visit.observers?.getAt(0) : '' }
             })
 
             visitIds.each { visitId ->
@@ -174,29 +219,19 @@ class ExtractService {
         return { User user, Writer writer, manifestEntry ->
 
             def csvWriter = new CSVWriter(writer, {
-                studyLocationName { it.siteLocationName }
-                establishedDate { it.establishedDate }
-                description { it.description }
+                studyLocationName { it.studyLocationName }
+                firstVisitDate { it.firstVisitDate }
+                lastVisitDate { it.lastVisitDate }
                 bioregionName { it.bioregionName }
-                property { it.property }
-                zone { it.zone }
+                mgaZone { it.mgaZone }
                 easting { it.easting }
                 northing { it.northing }
-                method { it.method }
-                datum { it.datum }
-                plotPermanentlyMarkedq { it.plotPermanentlyMarkedq }
-                plotAlignedToGridq { it.plotAlignedToGridq }
                 landformPattern { it.landformPattern }
                 landformElement { it.landformElement }
-                siteSlope { it.siteSlope }
-                siteAspect { it.siteAspect }
-                surfaceStrewSize { it.surfaceStrewSize }
-                plot100mBy100m { it.plot100mBy100m }
-                comments { it.comments }
             })
 
             studyLocationNames.each { studyLocationName ->
-                def details= studyLocationService.getStudyLocationDetailsOld(studyLocationName)
+                def details= studyLocationService.getStudyLocationDetails(studyLocationName)
                 csvWriter.write(details)
             }
 
@@ -253,7 +288,7 @@ class ExtractService {
         if (locationNames && layers) {
             def layerNames = layers.collect({ it.name }).join(",")
             for (String studyLocationName : locationNames) {
-                def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocationName)
+                def studyLocationSummary = studyLocationService.getStudyLocationDetails(studyLocationName)
                 def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
                 def studyLocationResults = JSON.parse(url.text)
                 def temp = [:]

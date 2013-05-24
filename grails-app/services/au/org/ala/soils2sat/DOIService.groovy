@@ -5,6 +5,8 @@ import groovyx.net.http.HTTPBuilder
 
 class DOIService extends ServiceBase {
 
+    static transactional = false
+
     def grailsApplication
     def grailsLinkGenerator
 

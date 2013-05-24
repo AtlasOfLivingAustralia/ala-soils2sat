@@ -384,8 +384,9 @@ class StudyLocationController {
         def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
         def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(studyLocationName)
         def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+        def weeds = biocacheService.getWeedsOfNationalSignificance()
 
-        [studyLocationDetails: studyLocationDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames]
+        [studyLocationDetails: studyLocationDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames, weeds: weeds]
     }
 
     def studyLocationVisitSummary() {
