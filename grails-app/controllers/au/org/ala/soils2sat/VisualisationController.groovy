@@ -4,10 +4,165 @@ class VisualisationController {
 
     def studyLocationService
     def biocacheService
+    def springSecurityService
+    def layerService
+
+    def studyLocationVisitVisualisations() {
+        def studyLocationVisitDetails = studyLocationService.getVisitDetails(params.studyLocationVisitId)
+        [studyLocationVisitDetails: studyLocationVisitDetails]
+    }
+
+    def structuralSummaryForVisit() {
+
+        def columns = [['string', 'Species'], ['number', 'Upper'], ['number', 'Mid'], ['number', 'Ground']]
+        def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
+        def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, "4")?.samplingUnitData[0]
+
+        def data = [
+                ["U1 ${structuralSummary.upper1Dominant ?:''}", taxaMap[structuralSummary.upper1Dominant] ?: 0, 0, 0],
+                ["U2 ${structuralSummary.upper2Dominant ?:''}", taxaMap[structuralSummary.upper2Dominant] ?: 0, 0, 0],
+                ["U3 ${structuralSummary.upper2Dominant ?:''}", taxaMap[structuralSummary.upper3Dominant] ?: 0, 0, 0],
+                ["U1 ${structuralSummary.mid1Dominant ?:''}", 0, taxaMap[structuralSummary.mid1Dominant] ?: 0, 0],
+                ["U2 ${structuralSummary.mid2Dominant ?:''}", 0, taxaMap[structuralSummary.mid2Dominant] ?: 0, 0],
+                ["U3 ${structuralSummary.mid3Dominant ?:''}", 0, taxaMap[structuralSummary.mid3Dominant] ?: 0, 0],
+                ["U1 ${structuralSummary.ground1Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground1Dominant] ?: 0],
+                ["U2 ${structuralSummary.ground2Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground2Dominant] ?: 0],
+                ["U3 ${structuralSummary.ground3Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground3Dominant] ?: 0],
+        ]
+
+        def colors = ['#4E6228','#652524', '#4E81BD']
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Structural Summary", name:'structuralSummary', stacked: true])
+    }
+
+    public weedNonWeedBreakdownForVisit() {
+
+        def weedList = biocacheService.getWeedsOfNationalSignificance()?.sort { it }
+
+        def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
+        def ausplotsNames = taxaMap.keySet().collect()
+
+        // def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationVisitId)
+
+        def weedCount = 0
+        weedList.each { weedName ->
+            def weed = ausplotsNames.find { it.trim()?.equalsIgnoreCase(weedName.trim()) }
+            if (weed) {
+                weedCount++
+            }
+        }
+
+        def columns = [
+            ['string', 'Label'], ['number', 'abundance']
+        ]
+
+        def data = [
+            ['Non-Weed species', ausplotsNames.size() - weedCount],
+            ['Weed species', weedCount]
+        ]
+
+        def colors = ['#99B958', '#BD4E4C']
+
+        render(view:'weedNonWeedBreakdownForLocation', model: [columns: columns, data: data, colors: colors])
+    }
+
+
+
 
     def studyLocationVisualisations() {
 
         [studyLocationName: params.studyLocationName]
+    }
+
+    def compareStudyLocationVisualisations() {
+
+    }
+
+    def compareLandformElement() {
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def columns = [['string', 'Study Location'], ['number', 'Landform Element']]
+
+        def elementMap = [:]
+        appState.selectedPlotNames.each { studyLocationName ->
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
+            def landformElement = studyLocationDetails.landformElement ?: 'Unspecified'
+            if (elementMap.containsKey(landformElement)) {
+                elementMap[landformElement]++
+            } else {
+                elementMap[landformElement] = 1;
+            }
+        }
+
+        def data = []
+        elementMap.keySet().each {
+            data << [it, elementMap[it]]
+        }
+
+        return [columns: columns, data: data]
+    }
+
+    def compareScalarLayer() {
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def layerName = params.layerName
+        def layerInfo = layerService.getLayerInfo(layerName)
+
+        def title = layerInfo.displayname
+        if (layerInfo.environmentalvalueunits) {
+            title += " (${layerInfo.environmentalvalueunits})"
+        }
+
+        def columns = [['string', 'Study Location'], ['number', layerInfo.displayname]]
+        def data = []
+
+        appState.selectedPlotNames.each { studyLocationName ->
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
+            def values = layerService.getIntersectValues(studyLocationDetails.latitude, studyLocationDetails.longitude, [layerName])
+            data << [studyLocationName, values[layerName] ?: 0]
+        }
+
+        def colors = [ '#4E81BD' ]
+
+        return [columns: columns, data: data, colors: colors, layerInfo: layerInfo, title: title]
+    }
+
+    def compareDistinctSpecies() {
+        def data = []
+        def userInstance = springSecurityService.currentUser as User
+        def appState = userInstance?.applicationState
+        def colors = ['#99B958']
+        def columns = [['string', 'Study Location'], ['number', 'Number of distinct species']]
+        def nameMap = [:]
+        appState.selectedPlotNames.each {
+            nameMap[it] = studyLocationService.getVoucheredTaxaForStudyLocation(it)
+        }
+
+        def distinctMap = [:]
+        appState.selectedPlotNames?.each { studyLocation ->
+            def newList = []
+            def candidateList = nameMap[studyLocation]
+            candidateList.each { taxa ->
+                def include = true
+                nameMap.each { kvp ->
+                    if (include && kvp.key != studyLocation) {
+                        if (kvp.value.contains(taxa)) {
+                            include = false
+                        }
+                    }
+                }
+                if (include) {
+                    newList << taxa
+                }
+            }
+            distinctMap[studyLocation] = newList
+        }
+
+        appState.selectedPlotNames.each {
+            data << [it, distinctMap[it]?.size()]
+        }
+
+        [data: data, colors: colors, columns: columns]
     }
 
     def plantSpeciesBreakdownBySource() {
@@ -109,9 +264,6 @@ class VisualisationController {
         def weedList = biocacheService.getWeedsOfNationalSignificance()?.sort { it }
 
         def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationName)
-
-        println weedList
-        println ausplotsNames
 
         def weedCount = 0
         weedList.each { weedName ->

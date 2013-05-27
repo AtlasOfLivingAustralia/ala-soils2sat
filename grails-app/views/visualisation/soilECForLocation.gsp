@@ -4,7 +4,7 @@
         <sts:spinner />
     </div>
 
-    <gvisualization:barCoreChart dynamicLoading="true" name="chartEC" elementId="${elementId}" columns="${columns}" data="${data}" title="Soil EC" colors="${[colors]}" isStacked="${true}" />
+    <gvisualization:barCoreChart dynamicLoading="true" name="chartEC" elementId="${elementId}" columns="${columns}" data="${data}" title="Soil EC" colors="${colors}" isStacked="${true}" />
 </g:if>
 <g:else>
     <div>No EC data recorded</div>

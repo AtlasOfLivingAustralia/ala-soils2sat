@@ -27,6 +27,11 @@
                         window.location = "${createLink(controller:'studyLocation', action: 'studyLocationVisitSummary', params:[studyLocationVisitId: visitDetail?.studyLocationVisitId, studyLocationName: studyLocationName])}";
                     });
                 });
+
+                $.ajax("${createLink(controller: 'visualisation', action:'studyLocationVisitVisualisations', params:[studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function(html) {
+                    $("#studyLocationVisitVisualisations").html(html);
+                });
+
             });
 
         </script>
@@ -92,6 +97,10 @@
                         </tr>
                     </g:each>
                 </table>
+
+                <div id="studyLocationVisitVisualisations">
+                    <sts:spinner />
+                </div>
 
                 <h4>Sampling Units</h4>
                 <table class="table table-bordered table-striped">

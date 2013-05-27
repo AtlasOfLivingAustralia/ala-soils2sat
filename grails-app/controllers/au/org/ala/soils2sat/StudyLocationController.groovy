@@ -78,7 +78,7 @@ class StudyLocationController {
         return extractService.getLayerDataForLocations(appState.selectedPlotNames, appState.layers)
     }
 
-    def compareStudyLocationsFragment = {
+    def compareStudyLocations = {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
         def results = getCompareData(userInstance)
@@ -93,8 +93,8 @@ class StudyLocationController {
         def results = [:]
 
         appState.selectedPlotNames.each { studyLocation ->
-            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
-            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude)
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocation)
+            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
             results[studyLocation] = studyLocationTaxaList
         }
 

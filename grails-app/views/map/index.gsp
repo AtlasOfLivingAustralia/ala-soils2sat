@@ -173,14 +173,15 @@
     }
 
     function compareSelected() {
-        showModal({
-            url: "${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}",
-            title: "Compare Study Locations",
-            height: 600,
-            width: 800,
-            hideHeader: true
-        });
-        return true;
+        window.location = "${createLink(controller: 'studyLocation', action:'compareStudyLocations')}";
+        %{--showModal({--}%
+            %{--url: "${createLink(controller: 'studyLocation', action:'compareStudyLocationsFragment')}",--}%
+            %{--title: "Compare Study Locations",--}%
+            %{--height: 600,--}%
+            %{--width: 800,--}%
+            %{--hideHeader: true--}%
+        %{--});--}%
+        %{--return true;--}%
     }
 
     function addLayerClicked() {

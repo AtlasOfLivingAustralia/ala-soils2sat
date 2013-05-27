@@ -120,6 +120,22 @@ class StudyLocationService extends ServiceBase {
         return taxa?.sort { it }
     }
 
+    public getPointInterceptTaxaForVisit(String studyLocationVisitId) {
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "0")
+        def taxaMap = [:]
+        samplingUnit?.samplingUnitData?.each {
+            def name = it.herbariumDetermination
+            if (name) {
+                if (taxaMap.containsKey(name)) {
+                    taxaMap[name] ++
+                } else {
+                    taxaMap[name] = 1
+                }
+            }
+        }
+        return taxaMap
+    }
+
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
     def getStudyLocationDetailsOld(String studyLocationName) {
         def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName, serviceUrl:'http://s2s-dev.ecoinformatics.org.au:8080/s2s-services/getSiteLocationDetails'])

@@ -175,7 +175,9 @@
                                 </tr>
                             </table>
 
-                            <div id="studyLocationVisualisations"></div>
+                            <div id="studyLocationVisualisations">
+                                <sts:spinner />
+                            </div>
 
                             <h4>Environmental Data</h4>
                             <small>* Determined by the selected layers on map page</small>
