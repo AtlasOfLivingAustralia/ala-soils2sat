@@ -40,6 +40,11 @@ modules = {
         resource url: '/bootstrap/css/bootstrap-responsive.min.css'
     }
 
+    visualisationHandlers {
+        dependsOn 'jquery'
+        resource url:'/js/visualisationEventHandlers.js'
+    }
+
 }
 
 def getFilesForPath(path) {

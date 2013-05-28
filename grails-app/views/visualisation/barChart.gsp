@@ -20,12 +20,10 @@
         <g:set var="stacked" value="${false}" />
     </g:if>
 
-    <gvisualization:columnCoreChart dynamicLoading="true" name="${name}" elementId="${elementId}" columns="${columns}" data="${data}" title="${title}" colors="${colors}" isStacked="${stacked}"
-                                    select="shimHandler${name}"
-                                    hAxis="${new Expando([slantedText: true, slantedTextAngle: 90, textStyle:new Expando([fontSize:9])])}"
-                                    legend="none"
-    />
+
+    <gvisualization:barCoreChart dynamicLoading="true" name="${name}" elementId="${elementId}" columns="${columns}" data="${data}" title="${title}" colors="${colors}" isStacked="${true}" select="shimHandler${name}" />
+
 </g:if>
 <g:else>
-    <div>No layer data found</div>
+    <div>No data recorded</div>
 </g:else>

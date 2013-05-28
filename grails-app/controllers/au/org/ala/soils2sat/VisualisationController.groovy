@@ -63,7 +63,7 @@ class VisualisationController {
 
         def colors = ['#99B958', '#BD4E4C']
 
-        render(view:'weedNonWeedBreakdownForLocation', model: [columns: columns, data: data, colors: colors])
+        render(view:'pieChart', model:[name:'weedNonWeedBreakdownForLocation', title:'Weed / Non-Weed Species Abundance % Breakdown', columns: columns, data: data, colors: colors])
     }
 
 
@@ -99,7 +99,7 @@ class VisualisationController {
             data << [it, elementMap[it]]
         }
 
-        return [columns: columns, data: data]
+        render(view: 'pieChart', model: [columns: columns, data: data, name:'compareLandformElement', title:'Study Location & Breakdown by Landform Element'])
     }
 
     def compareScalarLayer() {
@@ -184,13 +184,17 @@ class VisualisationController {
             alaNames.remove(it)
         }
 
+
+
         def data = [
             ["Both AusPlots & ALA", both.size()],
             ["AusPlots only", ausplotsNames.size()],
             ["ALA Only", alaNames.size()]
         ]
 
-        [columns: columns, data: data]
+        def colors = ['#99B958', '#4E80BB', '#BD4E4C']
+
+        render(view:'pieChart', model: [columns: columns, name: 'speciesBreakdownBySource', data: data, colors: colors, title:"Plant Species Breakdown by Source", selectHandler:'plantSpeciesBreakDownBySourceClick'])
     }
 
     def soilECForLocation() {
@@ -212,7 +216,7 @@ class VisualisationController {
 
         def colors = [ '#4E81BD' ]
 
-        return [columns: columns, data: data, colors: colors]
+        return render(view:'barChart', model: [columns: columns, name:'soilECForLocation', title:'Soil EC', data: data, colors: colors])
     }
 
     def soilpHForLocation() {
@@ -256,7 +260,7 @@ class VisualisationController {
 
         def colors = litmusColors.collect { it.color }
 
-        [columns: columns, data: adjustedData, colors: colors]
+        render(view:'barChart', model:[name:'soilPhForLocation', title:'Soil pH', columns: columns, data: adjustedData, colors: colors])
     }
 
     public weedNonWeedBreakdownForLocation() {
@@ -285,7 +289,7 @@ class VisualisationController {
 
         def colors = ['#99B958', '#BD4E4C']
 
-        [columns: columns, data: data, colors: colors]
+        render(view:'pieChart', model:[name:'weedNonWeedBreakdownForLocation', title:'Weed / Non-Weed Species Abundance % Breakdown', columns: columns, data: data, colors: colors])
     }
 
     private static getLitmusColors() {
