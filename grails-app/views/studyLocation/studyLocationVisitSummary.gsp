@@ -97,11 +97,6 @@
                         </tr>
                     </g:each>
                 </table>
-
-                <div id="studyLocationVisitVisualisations">
-                    <sts:spinner />
-                </div>
-
                 <h4>Sampling Units</h4>
                 <table class="table table-bordered table-striped">
                     <thead>
@@ -115,6 +110,9 @@
                         </tr>
                     </g:each>
                 </table>
+                <div id="studyLocationVisitVisualisations">
+                    <sts:spinner />
+                </div>
             </div>
         </div>
     </body>

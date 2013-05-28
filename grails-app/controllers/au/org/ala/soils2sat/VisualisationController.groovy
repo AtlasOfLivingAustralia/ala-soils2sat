@@ -275,8 +275,6 @@ class VisualisationController {
             alaNames.remove(it)
         }
 
-
-
         def data = [
             ["Both AusPlots & ALA", both.size()],
             ["AusPlots only", ausplotsNames.size()],
@@ -285,7 +283,54 @@ class VisualisationController {
 
         def colors = ['#99B958', '#4E80BB', '#BD4E4C']
 
-        render(view:'pieChart', model: [columns: columns, name: 'speciesBreakdownBySource', data: data, colors: colors, title:"Plant Species Breakdown by Source", selectHandler:'plantSpeciesBreakDownBySourceClick'])
+        def modalContentLink = createLink(action:'breakdownSpeciesList', params:[studyLocationName: params.studyLocationName])
+
+        render(view:'pieChart', model: [columns: columns, name: 'speciesBreakdownBySource', data: data, colors: colors, title:"Plant Species Breakdown by Source", selectHandler:'plantSpeciesBreakDownBySourceClick', modalContentLink: modalContentLink])
+    }
+
+    def breakdownSpeciesList() {
+        def row = params.int("row")
+
+        def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationName)
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(params.studyLocationName)
+        def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+        def both = []
+        alaNames.each {
+            if (ausplotsNames.contains(it)) {
+                both.add(it)
+            }
+        }
+
+        both.each {
+            ausplotsNames.remove(it)
+            alaNames.remove(it)
+        }
+
+
+        def title = "No Title"
+        def description = "No Description"
+        def nameList = []
+        switch (row) {
+            case 0:
+                title = "Both AusPlots and ALA"
+                description = "These names occur both as AusPlots vouchered specimens from this location, as well as observational data sourced from the Atlas of Living Australia"
+                nameList = both
+                break;
+            case 1:
+                title = "AusPlots only"
+                description = "These names occur only as AusPlots vouchered specimens from this location"
+                nameList = ausplotsNames
+                break;
+            case 2:
+                title = "ALA only"
+                description = "These names occur only in observation records sourced from the Atlas of Living Australia around this area"
+                nameList = alaNames
+                break;
+            default:
+            break;
+        }
+
+        [title: title, description: description, nameList: nameList]
     }
 
     def soilECForLocation() {

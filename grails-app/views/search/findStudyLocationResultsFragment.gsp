@@ -69,6 +69,7 @@
 
     $("#btnSelectAllSearchResults").click(function (e) {
         var studyLocationNames = [];
+
         $(".selectSearchResult").each(function () {
             var studyLocationName = $(this).attr("studyLocationName");
             if (studyLocationName) {

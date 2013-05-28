@@ -3,7 +3,7 @@
     <g:if test="${userSearch?.criteria}">
         <h5>Each of the following criteria must be met:</h5>
         <g:each in="${userSearch.criteria}" var="criteria">
-            <div class="alert alert-info" style="color: black">
+            <div class="alert alert-info" style="color: black; padding-right: 10px">
                 <table style="width: 100%">
                     <tr searchCriteriaId="${criteria.id}">
                         <td>
@@ -15,8 +15,8 @@
                             </g:else>
                             ${au.org.ala.soils2sat.SearchCriteriaUtils.format(criteria, { str -> "<strong>${str}</strong>" as String} )}
                         </td>
-                        <td>
-                            <button type="button" class="btn btn-mini pull-right btnDeleteCriteria" title="Remove this search criteria"><i class="icon-remove"></i></button>
+                        <td style="width: 80px">
+                            <button type="button" class="btn btn-mini pull-right btnDeleteCriteria" title="Remove this search criteria"><i class="icon-remove"></i></button>&nbsp;
                             <button type="button" style="margin-right:5px" class="btn btn-mini pull-right btnEditCriteria" title="Edit search criteria"><i class="icon-edit"></i></button>
                         </td>
                     </tr>

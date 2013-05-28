@@ -94,7 +94,7 @@
 
         $("#btnClearCurrentSelection").click(function (e) {
             e.preventDefault();
-            $.ajax("${createLink(controller:'studyLocation', action:'clearSelectedStudyLocations')}").done(function () {
+            $.ajax("${createLink(controller:'studyLocation', action:'clearSelectedStudyLocationVisits')}").done(function () {
                 renderSelectedList();
             });
         });

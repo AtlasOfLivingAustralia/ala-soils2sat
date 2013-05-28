@@ -33,9 +33,8 @@
     $(".visualisation").each(function() {
         var visLink =$(this).attr("visLink");
         if (visLink) {
+            $(this).html('<img src="../images/spinner.gif" />&nbsp;Loading...');
             var targetElement = $("[visLink='" + visLink + "']");
-
-            targetElement.html("Loading...");
             $.ajax(visLink).done(function(html) {
                 targetElement.html(html);
             });

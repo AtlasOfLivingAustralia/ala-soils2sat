@@ -13,7 +13,7 @@ function showModal(options) {
     var opts = {
         url: options.url ? options.url : false,
         id: options.id ? options.id : 'modal_element_id',
-        height: options.height ? options.height : 400,
+        height: options.height ? options.height : 500,
         width: options.width ? options.width : 600,
         title: options.title ? options.title : 'Modal Title',
         hideHeader: options.hideHeader ? options.hideHeader : false,

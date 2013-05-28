@@ -13,7 +13,7 @@
         function shimHandler${name}() {
             <g:if test="${selectHandler}">
                 if (${selectHandler}) {
-                    ${selectHandler}(${name});
+                    ${selectHandler}(${name}, "${modalContentLink}");
                 }
             </g:if>
         }

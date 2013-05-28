@@ -712,7 +712,7 @@ class AdminController {
         if(request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('filename')
             if (f != null) {
-                def allowedMimeTypes = ['application/json']
+                def allowedMimeTypes = ['application/json', 'application/octet-stream']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.errorMessage = "The file must be one of: ${allowedMimeTypes}"
                     redirect(action:'searchCriteria')

@@ -20,17 +20,17 @@ class SearchService extends ServiceBase {
 
         def tempResults = []
         // below should be replaced by a call to the search service, when it exists.
-        def studyLocations = proxyServiceCall(grailsApplication, "getStudyLocations")?.results
+        def studyLocations = studyLocationService.getStudyLocations()
         if (studyLocations) {
             studyLocations.each { studyLocation ->
                 boolean match = true
                 if (q) {
-                    if (!studyLocation.siteName?.toLowerCase()?.contains(q)) {
+                    if (!studyLocation.studyLocationName?.toLowerCase()?.contains(q)) {
                         match = false
                     }
                 }
 
-                if (boundingBox && match) {
+                if (boundingBox && match && studyLocation.latitude && studyLocation.longitude) {
                     if (!boundingBox.contains(studyLocation.longitude, studyLocation.latitude)) {
                         match = false
                     }
@@ -38,13 +38,11 @@ class SearchService extends ServiceBase {
 
                 if (match) {
                     // if these study locations match, we add their visits to the temp result sets...
-                    def details = studyLocationService.getStudyLocationDetailsOld(studyLocation.siteName)
+                    def visits = studyLocationService.getStudyLocationVisits(studyLocation.studyLocationName)
 
-                    details.data.siteLocationVisitList?.each { visit ->
-                        visit.studyLocation = studyLocation
-                        tempResults << visit
+                    visits?.each { visit ->
+                        tempResults << [visit:visit, studyLocation: studyLocation]
                     }
-
                 }
             }
         }
@@ -70,12 +68,10 @@ class SearchService extends ServiceBase {
 
         def results = new ArrayList<StudyLocationVisitSearchResult>()
 
-        tempResults.each { visit ->
-
-            def result = new StudyLocationVisitSearchResult(siteName: visit.studyLocation.siteName, date: visit.studyLocation.startDate, longitude: visit.studyLocation.longitude, latitude: visit.studyLocation.latitude, easting: visit.studyLocation.easting, northing: visit.studyLocation.northing, zone: visit.studyLocation.zone as Integer, studyLocationVisitId: visit.id )
-            results.add(result)
+        tempResults.each { result ->
+            def searchResult = new StudyLocationVisitSearchResult(siteName: result.visit.studyLocationName, date: result.visit.visitStartDate, longitude: result.studyLocation.longitude, latitude: result.studyLocation.latitude, easting: result.studyLocation.easting as Double, northing: result.studyLocation.northing as Double, zone: result.studyLocation.mgaZone as Integer, studyLocationVisitId: result.visit.studyLocationVisitId )
+            results.add(searchResult)
         }
-
 
         return results
     }
@@ -145,6 +141,7 @@ class SearchService extends ServiceBase {
 
     private boolean testVisitCriteria(SearchCriteria criteria, Map candidateVisit) {
         boolean result = false
+        def visit = candidateVisit.visit
         def studyLocation = candidateVisit.studyLocation
         switch (criteria.criteriaDefinition.type) {
             case CriteriaType.SpatialPortalLayer:
@@ -152,12 +149,12 @@ class SearchService extends ServiceBase {
                 def value = layerService.getIntersectValues(studyLocation.latitude, studyLocation.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
                 result = SearchCriteriaUtils.eval(criteria, value as String)
                 break
-            case CriteriaType.StudyLocationVisit:
-                result = testVisitCriteriaForVisit(criteria, candidateVisit)
-                break
-            case CriteriaType.StudyLocation:
-                result = testStudyLocationCriteria(criteria, studyLocation)
-                break;
+//            case CriteriaType.StudyLocationVisit:
+////                result = testVisitCriteriaForVisit(criteria, candidateVisit)
+//                break
+//            case CriteriaType.StudyLocation:
+////                result = testStudyLocationCriteria(criteria, studyLocation)
+//                break;
             default:
                 // Don't care about other types of criteria, let them through!
                 result = true

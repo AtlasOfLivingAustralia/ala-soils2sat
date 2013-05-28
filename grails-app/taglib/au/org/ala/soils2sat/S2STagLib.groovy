@@ -329,7 +329,7 @@ class S2STagLib {
         if (name) {
         def mb = new MarkupBuilder(out)
             mb.a(href:"http://bie.ala.org.au/species/${name}", target:'ala-window') {
-                mkp.yield(name)
+                span(class:'taxanomicName') { mkp.yield(name) }
                 mb.img(src:resource(dir:'images', file:'external-link.png'))
             }
         }

@@ -313,7 +313,10 @@ class StudyLocationController {
                     it.studyLocationVisitId == visitId
                 }
                 if (!existing) {
-                    // Can't do this until we get a service method to return visit details from an id!
+                    def visitDetails = studyLocationService.getVisitDetails(visitId as String)
+                    def selection = new StudyLocationVisit(studyLocationName: visitDetails.studyLocationName, studyLocationVisitId: visitId)
+                    selection.save(failOnError: true)
+                    appState.addToSelectedVisits(selection)
                 }
             }
             appState?.save(flush: true, failOnError: true)
@@ -412,10 +415,10 @@ class StudyLocationController {
     def samplingUnitDetail() {
 
         def visitId = params.studyLocationVisitId
-        def samplingUnitTypeId = params.samplingUnitTypeId
+        def samplingUnitTypeId = params.int("samplingUnitTypeId")
         def visitDetail = studyLocationService.getVisitDetails(visitId as String)
         def studyLocationDetail = studyLocationService.getStudyLocationDetails(visitDetail?.studyLocationName)
-        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId);
+        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId?.toString());
         def dataList = data?.samplingUnitData
         def samplingUnitName = data?.samplingUnit?.description
 
@@ -426,7 +429,16 @@ class StudyLocationController {
 
         colHeadings?.remove('id')
 
-        [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnitTypeId: samplingUnitTypeId, samplingUnitName: samplingUnitName, columnHeadings: colHeadings, dataList: dataList]
+        def model = [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnitTypeId: samplingUnitTypeId, samplingUnitName: samplingUnitName, columnHeadings: colHeadings, dataList: dataList]
+
+        def view = 'samplingUnitDetail'
+        switch (samplingUnitTypeId) {
+            case 4:
+                view = 'structuralSummaryDetail'
+                break;
+        }
+
+        render(view:view, model:model)
     }
 
     def nextSelectedStudyLocationSummary() {
