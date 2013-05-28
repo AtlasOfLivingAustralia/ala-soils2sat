@@ -25,5 +25,10 @@
 
 </g:if>
 <g:else>
-    <div>No data recorded</div>
+    <div class="muted noDataRecordedChart">
+        <strong class="muted">${title}</strong>
+        <div>
+            No data recorded
+        </div>
+    </div>
 </g:else>

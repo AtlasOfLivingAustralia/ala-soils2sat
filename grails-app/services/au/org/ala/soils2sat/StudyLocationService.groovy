@@ -78,18 +78,35 @@ class StudyLocationService extends ServiceBase {
         return details
     }
 
+    public getSoilPhForStudyLocationVisit(String studyLocationVisitId) {
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "7")
+        def rows = []
+        if (samplingUnit?.samplingUnitData) {
+            rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, pH: it.ph ] }
+        }
+        rows = rows?.sort { it.upperDepth }
+    }
+
+
     public getSoilPhForStudyLocation(String studyLocationName) {
         // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
         List<StudyLocationVisitTO> visits = getStudyLocationVisits(studyLocationName)
         def rows = []
         def visit = visits.max { it.visitStartDate }
         if (visit) {
-            def samplingUnit = getSamplingUnitDetails(visit.studyLocationVisitId, "7")
-            if (samplingUnit?.samplingUnitData) {
-                rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, pH: it.ph ] }
-            }
-            rows = rows?.sort { it.upperDepth }
+            rows = getSoilPhForStudyLocationVisit(visit.studyLocationVisitId)
         }
+        return rows
+    }
+
+    public getSoilECForStudyLocationVisit(String studyLocationVisitId) {
+        // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "7")
+        def rows = []
+        if (samplingUnit?.samplingUnitData) {
+            rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, EC: it.ec ] }
+        }
+        rows = rows?.sort { it.upperDepth }
         return rows
     }
 
@@ -99,11 +116,7 @@ class StudyLocationService extends ServiceBase {
         def rows = []
         def visit = visits.max { it.visitStartDate }
         if (visit) {
-            def samplingUnit = getSamplingUnitDetails(visit.studyLocationVisitId, "7")
-            if (samplingUnit?.samplingUnitData) {
-                rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, EC: it.ec ] }
-            }
-            rows = rows?.sort { it.upperDepth }
+            rows = getSoilECForStudyLocationVisit(visit.studyLocationVisitId)
         }
         return rows
     }
@@ -124,7 +137,7 @@ class StudyLocationService extends ServiceBase {
         def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "0")
         def taxaMap = [:]
         samplingUnit?.samplingUnitData?.each {
-            def name = it.herbariumDetermination
+            def name = StringUtils.collapseSpaces(it.herbariumDetermination)
             if (name) {
                 if (taxaMap.containsKey(name)) {
                     taxaMap[name] ++
@@ -146,8 +159,10 @@ class StudyLocationService extends ServiceBase {
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
     def getVisitDetails(String visitId) {
         def details = proxyServiceCall(grailsApplication, "getStudyLocationVisitDetails/${visitId}")
-        def visit = new StudyLocationVisitDetailsTO(cleanMap(details))
-        return visit
+        if (details) {
+            return new StudyLocationVisitDetailsTO(cleanMap(details))
+        }
+        return null
     }
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName}")

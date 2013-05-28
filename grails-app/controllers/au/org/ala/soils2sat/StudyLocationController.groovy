@@ -419,9 +419,12 @@ class StudyLocationController {
         def dataList = data?.samplingUnitData
         def samplingUnitName = data?.samplingUnit?.description
 
-        def colHeadings = dataList[0]?.collect { it.key }
+        def colHeadings = []
+        if (dataList && dataList[0]) {
+            colHeadings = dataList[0]?.collect { it.key }
+        }
 
-        colHeadings.remove('id')
+        colHeadings?.remove('id')
 
         [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnitTypeId: samplingUnitTypeId, samplingUnitName: samplingUnitName, columnHeadings: colHeadings, dataList: dataList]
     }
@@ -463,6 +466,16 @@ class StudyLocationController {
         }
 
         redirect(action:'studyLocationSummary', params:[studyLocationName:prevSiteName])
+    }
+
+    def studyLocationSamplingUnitDetails() {
+
+        def visits = studyLocationService.getStudyLocationVisits(params.studyLocationName)
+        if (visits) {
+            redirect(controller:'studyLocation', action:'samplingUnitDetail', params:[studyLocationVisitId: visits[0].studyLocationVisitId, samplingUnitTypeId: params.samplingUnitTypeId])
+            return
+        }
+        redirect(action:'studyLocationSummary', params:[studyLocationName: params.studyLocationName])
     }
 
 }

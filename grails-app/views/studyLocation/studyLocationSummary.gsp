@@ -169,7 +169,7 @@
                                     <td>
                                         <ul>
                                             <g:each in="${studyLocationDetails.samplingUnits}" var="unit">
-                                                <li><a href="#">${unit.description}</a></li>
+                                                <li><a href="${createLink(action:'studyLocationSamplingUnitDetails', params:[studyLocationName: studyLocationName, samplingUnitTypeId: unit.id])}">${unit.description}</a></li>
                                             </g:each>
                                         </ul>
                                     </td>

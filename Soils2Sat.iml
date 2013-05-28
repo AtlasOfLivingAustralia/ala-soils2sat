@@ -86,14 +86,24 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.opencsv/opencsv/jars/opencsv-2.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.liquibase/liquibase-core/jars/liquibase-core-2.0.5.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/jboss/javassist/jars/javassist-3.7.ga.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/xml-resolver/xml-resolver/jars/xml-resolver-1.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sourceforge.nekohtml/nekohtml/jars/nekohtml-1.9.9.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.ezmorph/ezmorph/jars/ezmorph-1.0.6.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.json-lib/json-lib/jars/json-lib-2.3-jdk15.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.0.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.0.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.groovy.modules.http-builder/http-builder/jars/http-builder-0.5.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.eclipse.jdt.core.compiler/ecj/jars/ecj-3.7.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="grails-2.2.2" level="application" />
-    <orderEntry type="library" name="grails-2.2.2" level="application" />
+    <orderEntry type="module" module-name="Soils2Sat-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.2.1" level="application" />
   </component>
 </module>
 

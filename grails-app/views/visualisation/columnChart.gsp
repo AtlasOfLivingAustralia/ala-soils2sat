@@ -27,5 +27,10 @@
     />
 </g:if>
 <g:else>
-    <div>No layer data found</div>
+    <div class="muted noDataRecordedChart">
+        <strong class="muted">${title}</strong>
+        <div>
+            No data recorded
+        </div>
+    </div>
 </g:else>

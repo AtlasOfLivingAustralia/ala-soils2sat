@@ -15,24 +15,115 @@ class VisualisationController {
     def structuralSummaryForVisit() {
 
         def columns = [['string', 'Species'], ['number', 'Upper'], ['number', 'Mid'], ['number', 'Ground']]
+        def colors = ['#4E6228','#652524', '#4E81BD']
         def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
-        def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, "4")?.samplingUnitData[0]
+        def data = []
+        if (taxaMap) {
+            def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, "4")?.samplingUnitData[0]
 
-        def data = [
+            // Cleanse duplicate spaces out of taxa names
+            structuralSummary.each {
+                if (it.key?.contains("Dominant")) {
+                    it.value = StringUtils.collapseSpaces(it.value)
+                }
+            }
+
+            data = [
                 ["U1 ${structuralSummary.upper1Dominant ?:''}", taxaMap[structuralSummary.upper1Dominant] ?: 0, 0, 0],
                 ["U2 ${structuralSummary.upper2Dominant ?:''}", taxaMap[structuralSummary.upper2Dominant] ?: 0, 0, 0],
                 ["U3 ${structuralSummary.upper2Dominant ?:''}", taxaMap[structuralSummary.upper3Dominant] ?: 0, 0, 0],
-                ["U1 ${structuralSummary.mid1Dominant ?:''}", 0, taxaMap[structuralSummary.mid1Dominant] ?: 0, 0],
-                ["U2 ${structuralSummary.mid2Dominant ?:''}", 0, taxaMap[structuralSummary.mid2Dominant] ?: 0, 0],
-                ["U3 ${structuralSummary.mid3Dominant ?:''}", 0, taxaMap[structuralSummary.mid3Dominant] ?: 0, 0],
-                ["U1 ${structuralSummary.ground1Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground1Dominant] ?: 0],
-                ["U2 ${structuralSummary.ground2Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground2Dominant] ?: 0],
-                ["U3 ${structuralSummary.ground3Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground3Dominant] ?: 0],
-        ]
+                ["M1 ${structuralSummary.mid1Dominant ?:''}", 0, taxaMap[structuralSummary.mid1Dominant] ?: 0, 0],
+                ["M2 ${structuralSummary.mid2Dominant ?:''}", 0, taxaMap[structuralSummary.mid2Dominant] ?: 0, 0],
+                ["M3 ${structuralSummary.mid3Dominant ?:''}", 0, taxaMap[structuralSummary.mid3Dominant] ?: 0, 0],
+                ["G1 ${structuralSummary.ground1Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground1Dominant] ?: 0],
+                ["G2 ${structuralSummary.ground2Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground2Dominant] ?: 0],
+                ["G3 ${structuralSummary.ground3Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground3Dominant] ?: 0],
+            ]
 
-        def colors = ['#4E6228','#652524', '#4E81BD']
+            // check to see that we actually have some non-zero data...
+            if (isEmptyChartData(data)) {
+                data = []
+            }
+        }
 
         render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Structural Summary", name:'structuralSummary', stacked: true])
+    }
+
+    def soilECForVisit() {
+        def colors = [ '#4E81BD' ]
+        def columns = [
+                ['string',"Depth"],
+                ['number', "Soil EC"]
+        ]
+
+        def samplingUnitData = studyLocationService.getSoilECForStudyLocationVisit(params.studyLocationVisitId)
+        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", it.EC ]}
+
+        // is there at least one row with non-null data?
+        if (isEmptyChartData(data)) {
+            data = []
+        }
+
+        return render(view:'barChart', model: [columns: columns, name:'soilECForVisit', title:'Soil EC', data: data, colors: colors])
+    }
+
+    def soilpHForVisit() {
+
+        def litmusColors = getLitmusColors()
+        def colors = litmusColors.collect { it.color }
+        def columns = [['string',"Depth"]]
+        litmusColors.each {
+            columns << ['number', "pH ${it.pH}"]
+        }
+
+        def realData = studyLocationService.getSoilPhForStudyLocationVisit(params.studyLocationVisitId)
+
+        def data = realData?.collect { [depth: "${it.upperDepth} - ${it.lowerDepth}", ph: it.pH ]}
+
+        def adjustedData = []
+
+        // is there at least one row with non-null data?
+        def nonNull = data.find { it.ph != null }
+        if (!nonNull) {
+            data = []
+        }
+
+        data?.each { element ->
+            def row = [element.depth]
+            boolean found = false
+            litmusColors.each { color ->
+                if (!found && color.pH > element.ph) {
+                    found = true;
+                    if (row.size() > 1) {
+                        row.pop()
+                    }
+                    row << element.ph
+                    row << 0
+                } else {
+                    row << 0
+                }
+            }
+            adjustedData << row
+        }
+
+        render(view:'barChart', model:[name:'soilPhForLocation', title:'Soil pH', columns: columns, data: adjustedData, colors: colors])
+
+    }
+
+    private isEmptyChartData(List data) {
+        // first element of every row is the label, so check every other element, and make sure there is at least one non-zero element
+
+        for (int j =0; j < data.size(); ++j) {
+            def row = data[j]
+            if (row?.size() > 0) {
+                for (int i = 1; i < row.size(); ++i) {
+                    if (row[i]) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
     }
 
     public weedNonWeedBreakdownForVisit() {
@@ -40,34 +131,34 @@ class VisualisationController {
         def weedList = biocacheService.getWeedsOfNationalSignificance()?.sort { it }
 
         def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
-        def ausplotsNames = taxaMap.keySet().collect()
 
-        // def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationVisitId)
-
-        def weedCount = 0
-        weedList.each { weedName ->
-            def weed = ausplotsNames.find { it.trim()?.equalsIgnoreCase(weedName.trim()) }
-            if (weed) {
-                weedCount++
-            }
-        }
-
+        def data = []
+        def colors = ['#99B958', '#BD4E4C']
         def columns = [
             ['string', 'Label'], ['number', 'abundance']
         ]
 
-        def data = [
-            ['Non-Weed species', ausplotsNames.size() - weedCount],
-            ['Weed species', weedCount]
-        ]
+        if (taxaMap) {
+            def ausplotsNames = taxaMap.keySet().collect()
 
-        def colors = ['#99B958', '#BD4E4C']
+            // def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationVisitId)
+
+            def weedCount = 0
+            weedList.each { weedName ->
+                def weed = ausplotsNames.find { it.trim()?.equalsIgnoreCase(weedName.trim()) }
+                if (weed) {
+                    weedCount++
+                }
+            }
+
+            data <<  ['Non-Weed species', ausplotsNames.size() - weedCount]
+            data << ['Weed species', weedCount]
+
+
+        }
 
         render(view:'pieChart', model:[name:'weedNonWeedBreakdownForLocation', title:'Weed / Non-Weed Species Abundance % Breakdown', columns: columns, data: data, colors: colors])
     }
-
-
-
 
     def studyLocationVisualisations() {
 
@@ -199,6 +290,7 @@ class VisualisationController {
 
     def soilECForLocation() {
 
+        def colors = [ '#4E81BD' ]
         def columns = [
             ['string',"Depth"],
             ['number', "Soil EC"]
@@ -207,14 +299,10 @@ class VisualisationController {
         def samplingUnitData = studyLocationService.getSoilECForStudyLocation(params.studyLocationName)
         def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", it.EC ]}
 
-
         // is there at least one row with non-null data?
-        def nonNull = data.find { it[1] != null }
-        if (!nonNull) {
+        if (isEmptyChartData(data)) {
             data = []
         }
-
-        def colors = [ '#4E81BD' ]
 
         return render(view:'barChart', model: [columns: columns, name:'soilECForLocation', title:'Soil EC', data: data, colors: colors])
     }
