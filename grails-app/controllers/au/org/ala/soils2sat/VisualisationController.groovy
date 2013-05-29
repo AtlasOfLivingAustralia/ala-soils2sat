@@ -342,7 +342,7 @@ class VisualisationController {
         ]
 
         def samplingUnitData = studyLocationService.getSoilECForStudyLocation(params.studyLocationName)
-        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", it.EC ]}
+        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", StringUtils.firstNumber(it.EC) ]}
 
         // is there at least one row with non-null data?
         if (isEmptyChartData(data)) {

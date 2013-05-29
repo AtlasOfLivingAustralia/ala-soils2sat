@@ -21,4 +21,25 @@ class StringUtils {
         return argBuf.toString();
     }
 
+    public static String firstNumber(String str) {
+        if (str == null || str.length() == 0) {
+            return str
+        }
+
+        boolean seenDot = false;
+        def sb = new StringBuilder()
+        for (char ch : str) {
+            if (Character.isDigit(ch) || (!seenDot && ch == '.')) {
+                sb.append(ch)
+                if (ch == '.') {
+                    seenDot = true
+                }
+            } else {
+                break;
+            }
+
+        }
+        return sb.toString()
+    }
+
 }
