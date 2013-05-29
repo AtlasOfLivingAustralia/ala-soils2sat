@@ -14,7 +14,7 @@
         </g:each>
     </table>
 
-    Taxa list derived from specimen data collected within ${radius} kilometeres of ${studyLocationDetails?.studyLocationName} (${studyLocationDetails.longitude}, ${studyLocationDetails.latitude})
+    Taxa list derived from specimen data collected within ${radius} kilometers of ${studyLocationDetails?.studyLocationName} (${studyLocationDetails.longitude}, ${studyLocationDetails.latitude})
     <table class="table table-striped table-bordered">
         <thead>
             <tr>

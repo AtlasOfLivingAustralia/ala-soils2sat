@@ -99,7 +99,7 @@ class ExtractService {
             def sb = new StringBuilder()
             def keySet = first.keySet().sort { it } // always get them entries in the same order
             // print header row first...
-            keySet().each {
+            keySet.each {
                 sb.append('"').append(it).append('",')
             }
             // trim off last comma
@@ -108,7 +108,7 @@ class ExtractService {
             // now dump all the data...
             data.each { row ->
                 sb = new StringBuilder()
-                keySet().each { String fieldName ->
+                keySet.each { String fieldName ->
                     def element = row[fieldName]
                     if (element == null || element == JSONNull) {
                         element = ""
@@ -154,7 +154,8 @@ class ExtractService {
 
             return [success: true, packageUrl: downloadUrl, DOI: doi, message:'']
         } catch (Exception ex) {
-            return [success: false, packageUrl: '', DOI: '', message: ex.message]
+            throw ex
+            // return [success: false, packageUrl: '', DOI: '', message: ex.message]
         }
     }
 

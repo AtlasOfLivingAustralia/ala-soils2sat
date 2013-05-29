@@ -14,8 +14,9 @@ class VisualisationController {
 
     def structuralSummaryForVisit() {
 
-        def columns = [['string', 'Species'], ['number', 'Upper'], ['number', 'Mid'], ['number', 'Ground']]
-        def colors = ['#4E6228','#652524', '#4E81BD']
+        def columns = [['string', 'Species'], ['number', 'U1'], ['number', 'U2'], ['number', 'U3'],['number', 'M1'],['number', 'M2'],['number', 'M3'],['number', 'G1'],['number', 'G2'],['number', 'G3']]
+        // def colors = ['#4E6228','#652524', '#4E81BD']
+        def colors = VisualisationUtils.structualSummaryColors
         def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
         def data = []
         if (taxaMap) {
@@ -28,17 +29,21 @@ class VisualisationController {
                 }
             }
 
-            data = [
-                ["U1 ${structuralSummary.upper1Dominant ?:''}", taxaMap[structuralSummary.upper1Dominant] ?: 0, 0, 0],
-                ["U2 ${structuralSummary.upper2Dominant ?:''}", taxaMap[structuralSummary.upper2Dominant] ?: 0, 0, 0],
-                ["U3 ${structuralSummary.upper2Dominant ?:''}", taxaMap[structuralSummary.upper3Dominant] ?: 0, 0, 0],
-                ["M1 ${structuralSummary.mid1Dominant ?:''}", 0, taxaMap[structuralSummary.mid1Dominant] ?: 0, 0],
-                ["M2 ${structuralSummary.mid2Dominant ?:''}", 0, taxaMap[structuralSummary.mid2Dominant] ?: 0, 0],
-                ["M3 ${structuralSummary.mid3Dominant ?:''}", 0, taxaMap[structuralSummary.mid3Dominant] ?: 0, 0],
-                ["G1 ${structuralSummary.ground1Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground1Dominant] ?: 0],
-                ["G2 ${structuralSummary.ground2Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground2Dominant] ?: 0],
-                ["G3 ${structuralSummary.ground3Dominant ?:''}", 0, 0, taxaMap[structuralSummary.ground3Dominant] ?: 0],
-            ]
+
+            def colNames = ['upper1Dominant','upper2Dominant','upper3Dominant','mid1Dominant','mid2Dominant','mid3Dominant','ground1Dominant','ground2Dominant','ground3Dominant']
+            int i = 0;
+            colNames.each {
+                def row = [ "${it.substring(0,1).toUpperCase()}${(i % 3)+1} ${structuralSummary[it] ?: ''}"]
+                for (int j = 0; j < colNames.size(); ++j) {
+                    if (j == i) {
+                        row << (taxaMap[structuralSummary[it]] ?: 0)
+                    } else {
+                        row << 0
+                    }
+                }
+                i++
+                data << row
+            }
 
             // check to see that we actually have some non-zero data...
             if (isEmptyChartData(data)) {
@@ -57,7 +62,7 @@ class VisualisationController {
         ]
 
         def samplingUnitData = studyLocationService.getSoilECForStudyLocationVisit(params.studyLocationVisitId)
-        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", it.EC ]}
+        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", StringUtils.firstNumber(it.EC) ]}
 
         // is there at least one row with non-null data?
         if (isEmptyChartData(data)) {
@@ -69,7 +74,7 @@ class VisualisationController {
 
     def soilpHForVisit() {
 
-        def litmusColors = getLitmusColors()
+        def litmusColors = VisualisationUtils.getLitmusColors()
         def colors = litmusColors.collect { it.color }
         def columns = [['string',"Depth"]]
         litmusColors.each {
@@ -354,7 +359,7 @@ class VisualisationController {
 
     def soilpHForLocation() {
 
-        def litmusColors = getLitmusColors()
+        def litmusColors = VisualisationUtils.getLitmusColors()
 
         def columns = [['string',"Depth"]]
         litmusColors.each {
@@ -425,26 +430,6 @@ class VisualisationController {
         render(view:'pieChart', model:[name:'weedNonWeedBreakdownForLocation', title:'Weed / Non-Weed Species Abundance % Breakdown', columns: columns, data: data, colors: colors])
     }
 
-    private static getLitmusColors() {
-        def litmusColors = [
-            [pH:0, color:'#F61800'],
-            [pH:1, color:'#F76502'],
-            [pH:2, color:'#FCCC00'],
-            [pH:3, color:'#FFFF02'],
-            [pH:4, color:'#CCFF33'],
-            [pH:5, color:'#56FF00'],
-            [pH:6, color:'#5AB700'],
-            [pH:7, color:'#1D6632'],
-            [pH:8, color:'#2E9965'],
-            [pH:9, color:'#36B7BE'],
-            [pH:10, color:'#3398FF'],
-            [pH:11, color:'#0066FF'],
-            [pH:12, color:'#0000FF'],
-            [pH:13, color:'#000099'],
-            [pH:14, color:'#663266'],
-        ]
-        return litmusColors
-    }
 
 
 }

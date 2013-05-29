@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.WordUtils" %>
+<%@ page import="au.org.ala.soils2sat.VisualisationUtils; org.apache.commons.lang.WordUtils" %>
 <!doctype html>
 <html>
     <head>
@@ -25,6 +25,8 @@
 
             <g:set var="detail" value="${dataList[0]}" />
             <g:set var="fields" value="['upper1Dominant','upper2Dominant','upper3Dominant','mid1Dominant','mid2Dominant','mid3Dominant','ground1Dominant','ground2Dominant','ground3Dominant']" />
+            <g:set var="colors" value="${au.org.ala.soils2sat.VisualisationUtils.structualSummaryColors}" />
+            <g:set var="colorIndex" value="${-1}" />
 
             <h4>Sampling Unit - ${samplingUnitName}</h4>
             <div>
@@ -53,7 +55,7 @@
             <table class="table table-bordered table-striped">
                 <g:each in="${fields}" var="field">
                     <tr>
-                        <td>${field}</td>
+                        <td style="color: ${colors[++colorIndex]};width: 200px">${field}</td>
                         <td><sts:taxaHomePageLink name="${detail[field]}" /></td>
                     </tr>
                 </g:each>
