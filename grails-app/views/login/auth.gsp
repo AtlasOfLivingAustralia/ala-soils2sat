@@ -26,14 +26,20 @@
                 <div class="control-group">
                     <label class="control-label" for='username'>Username:</label>
                     <div class="controls">
-                        <input type='text' name='j_username' id='username' placeholder="Email" value="${username}"/>
+                        <div  class="input-prepend">
+                            <span class="add-on"><i class="icon-envelope"></i></span>
+                            <input type='text' name='j_username' id='username' placeholder="Email" value="${username}"/>
+                        </div>
                     </div>
                 </div>
 
                 <div class="control-group">
                     <label class="control-label" for='password'>Password:</label>
                     <div class="controls">
-                        <input type='password' name='j_password' id='password' placeholder="password" value="${password}" />
+                        <div  class="input-prepend">
+                            <span class="add-on"><i class="icon-lock"></i></span>
+                            <input type='password' name='j_password' id='password' placeholder="password" value="${password}" />
+                        </div>
                     </div>
                 </div>
 

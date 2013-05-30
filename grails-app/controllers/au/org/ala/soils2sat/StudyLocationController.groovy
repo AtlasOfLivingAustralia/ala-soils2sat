@@ -1,9 +1,15 @@
 package au.org.ala.soils2sat
 
+import ala.soils2sat.DrawingUtils
 import grails.converters.JSON
 import au.com.bytecode.opencsv.CSVWriter
-import org.apache.commons.lang.WordUtils
 
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.FontMetrics
+import java.awt.Graphics2D
+import java.awt.Rectangle
+import java.awt.image.BufferedImage
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 
@@ -433,12 +439,179 @@ class StudyLocationController {
 
         def view = 'samplingUnitDetail'
         switch (samplingUnitTypeId) {
+            case 0:
+                dataList = dataList.sort { it.transect }
+                view = 'pointInterceptDetail'
+                break;
             case 4:
                 view = 'structuralSummaryDetail'
                 break;
         }
 
         render(view:view, model:model)
+    }
+
+    def pointInterceptImage() {
+
+        def visitId = params.studyLocationVisitId as String
+        def data = studyLocationService.getSamplingUnitDetails(visitId, "0")
+
+        int legendWidth = 200
+        int gridSize = 600
+        int gutterSize = 40
+
+        BufferedImage image = new BufferedImage(gridSize + gutterSize * 3 + legendWidth, gridSize + gutterSize * 2, BufferedImage.TYPE_INT_RGB)
+
+        def g = image.graphics as Graphics2D
+
+        float[] dash1 = [ 10.0f ];
+        BasicStroke dashed = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 5.0f);
+
+        FontMetrics metrics = g.getFontMetrics(g.getFont());
+        int textLeadIn = 4;
+        int textPadding = 4;
+        int hgt = metrics.getHeight() + textPadding;
+
+        def computeEWLabelRectangle = { int x, int y, String label ->
+            int txtWidth = metrics.stringWidth(label) + textPadding;
+            if ( x > gridSize) {
+                return new Rectangle(x + textLeadIn, y - (int) (hgt / 2), txtWidth, hgt)
+            } else {
+                return new Rectangle(x - ( textLeadIn * 2 + txtWidth), y - (int) (hgt / 2), txtWidth, hgt)
+            }
+        }
+
+        def computeNSLabelRectangle = { int x, int y, String label ->
+            int adv = metrics.stringWidth(label) + textPadding;
+            if (y > gridSize) {
+                return new Rectangle(x - (int) (adv / 2), y + textLeadIn, adv, hgt)
+            } else {
+                return new Rectangle(x - (int) (adv / 2), y - (textLeadIn * 2 + hgt), adv, hgt)
+            }
+        }
+
+        def drawRectangle = { Rectangle rect ->
+            g.setStroke(new BasicStroke())
+            g.setColor(Color.white)
+            g.fillRect((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height)
+            g.setColor(Color.black)
+            g.drawRect((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height)
+        }
+
+        try {
+            // Clear the image buffer to white
+            g.setColor(Color.white)
+            g.fillRect(0,0,image.width,image.height);
+
+            def vTransectSpacing = gridSize / 5
+            def hTransectSpacing = gridSize / 5
+            def offsetX = (int) (vTransectSpacing / 2)
+            def offsetY = (int) (hTransectSpacing / 2)
+
+            def transects = [:]
+            for (int i = 1; i <= 5; ++i) {
+                def EWy = (int) (( image.height - (offsetY + 1 + gutterSize)) - ((i-1) * vTransectSpacing))
+                def NSx = (int) ((((i-1) * hTransectSpacing) + offsetX + gutterSize))
+                transects["W${i}-E${i}"] = [x1: gutterSize, x2: gridSize + gutterSize, y1: EWy, y2: EWy, dir: 1, dx: gridSize / 100, dy: 0 ]
+                transects["E${i}-W${i}"] = [x1: gutterSize, x2: gridSize + gutterSize, y1: EWy, y2: EWy, dir: -1, dx: gridSize / 100, dy: 0 ]
+                transects["N${i}-S${i}"] = [x1: NSx, x2: NSx, y1: gutterSize, y2: gutterSize + gridSize , dir: 1, dx: 0, dy: gridSize / 100 ]
+                transects["S${i}-N${i}"] = [x1: NSx, x2: NSx, y1: gutterSize, y2: gutterSize + gridSize, dir: -1, dx: 0, dy: gridSize / 100 ]
+            }
+
+            g.setColor(Color.black)
+
+            transects.each { kvp ->
+                def transect = kvp.value
+                def name = kvp.key
+                if (transect.dir ==  1) {
+
+                    g.setStroke(dashed);
+                    g.drawLine(transect.x1, transect.y1, transect.x2, transect.y2)
+
+                    if (name.startsWith("W")) {
+                        def label = name.substring(0,2)
+                        def rect = computeEWLabelRectangle(transect.x1, transect.y1, label)
+                        drawRectangle(rect)
+                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
+                        label = name.substring(3)
+                        rect = computeEWLabelRectangle(transect.x2, transect.y2, label)
+                        drawRectangle(rect)
+                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
+                    } else {
+                        def label = name.substring(0,2)
+                        def rect = computeNSLabelRectangle(transect.x1, transect.y1, label)
+                        drawRectangle(rect)
+                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
+                        label = name.substring(3)
+                        rect = computeNSLabelRectangle(transect.x2, transect.y2, label)
+                        drawRectangle(rect)
+                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
+                    }
+
+                }
+            }
+
+            def property = params.pointInterceptType ?: "herbariumDetermination"
+
+            def colorMap = [:]
+            def colors = DrawingUtils.generatePalette(20, Color.blue)
+            int colorIndex = 0
+
+            def pointSize = (int) (gridSize / 100)
+
+            data.samplingUnitData?.each { point ->
+                def transectLabel = point.transect?.replaceAll('_', '-')
+                def transect  = transects[transectLabel]
+                if (transect) {
+                    int offset = (int) Math.round(point.pointNumber)
+                    int x = 0, y = 0
+                    if (transect.dir == 1) {
+                        x = transect.x1 + (int) (offset * transect.dx)
+                        y = transect.y1 + (int) (offset * transect.dy)
+                    } else {
+                        x = transect.x2 - (int) (offset * transect.dx)
+                        y = transect.y2 - (int) (offset * transect.dy)
+                    }
+
+                    def value = point[property]
+                    if (value) {
+                        if (!colorMap.containsKey(value)) {
+                            def c = colors[colorIndex++];
+                            colorMap[value] = c;
+                            if (colorIndex >= colors.size()) {
+                                colorIndex = 0
+                            }
+                        }
+                        g.setColor(colorMap[value])
+                        g.fillOval(x - (int) (pointSize / 2),y - (int)(pointSize / 2), pointSize, pointSize);
+                    }
+                }
+            }
+
+            // Draw Legend.
+
+            def x = gutterSize * 2 + gridSize + 50
+            def y = gutterSize
+            colorMap.each {
+                g.setColor(it.value)
+                g.fillOval(x - (int) (pointSize / 2),y - (int)(pointSize / 2), pointSize, pointSize);
+                g.setColor(Color.black)
+                def rect = new Rectangle(x + 10, y - 12, legendWidth - 60, 25)
+                DrawingUtils.drawString(g, g.getFont(), it.key, rect, DrawingUtils.TEXT_ALIGN_LEFT)
+                y += 30
+            }
+
+        } finally {
+            g.dispose()
+        }
+
+        def outputBytes = ImageUtils.imageToBytes(image)
+
+        response.setContentType("image/jpeg")
+        response.setHeader("Content-disposition", "attachment;filename=PI${params.studyLocationVisitId}.jpg")
+        response.outputStream.write(outputBytes)
+        response.flushBuffer()
+
     }
 
     def nextSelectedStudyLocationSummary() {
