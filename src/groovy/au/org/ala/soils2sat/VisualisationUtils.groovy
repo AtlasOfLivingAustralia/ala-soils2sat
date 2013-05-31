@@ -189,7 +189,6 @@ class VisualisationUtils {
                 [it.name, it]
             }
 
-            g.setColor(Color.black)
             // Clear the image buffer to white
             g.setColor(Color.white)
             g.fillRect(0,0,image.width,image.height);
@@ -197,6 +196,7 @@ class VisualisationUtils {
             transects.values().each { transect ->
 
                 if (transect.direction ==  1) {
+                    g.setColor(Color.black)
                     g.setStroke(dashed);
                     g.drawLine(transect.x1, transect.y1, transect.x2, transect.y2)
 

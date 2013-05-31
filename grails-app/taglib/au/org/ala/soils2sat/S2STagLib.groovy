@@ -204,7 +204,6 @@ class S2STagLib {
         if (criteriaDefinition) {
             def templateName = criteriaDefinition.valueType.toString()
             def templatePath = '/criteriaControls/' + templateName[0].toLowerCase() + templateName.substring(1)
-            println templatePath
             if (groovyPageLocator) {
                 if (!groovyPageLocator.findTemplateByPath(templatePath)) {
                     throw new Exception("Could not locate template for criteria value type: " + criteriaDefinition.valueType.toString())

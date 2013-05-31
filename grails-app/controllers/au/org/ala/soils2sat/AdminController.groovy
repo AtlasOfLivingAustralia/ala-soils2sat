@@ -686,7 +686,6 @@ class AdminController {
                         samplingUnit.save()
                         importCount++
                     }
-                    println tokens
                 }
                 flash.message ="${lineCount} line(s) processed, ${importCount} new sampling units created."
             } else {
@@ -900,8 +899,6 @@ class AdminController {
                     def bits = kvp.key.split("_")
                     def questionId = questionMap[Long.parseLong(bits[0])]
                     def contextId = ecologicalContextMap[Long.parseLong(bits[1])]
-
-                    println "questionID: ${questionId} contextID: ${contextId}"
 
                     def question = Question.get(questionId)
                     if (!question) {

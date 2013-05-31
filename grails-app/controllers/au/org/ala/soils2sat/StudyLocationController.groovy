@@ -480,7 +480,7 @@ class StudyLocationController {
             // bigger points are drawn first, followed by the smaller ones (so big points don't hide small ones)
             def rows = data.samplingUnitData
             if (pointSizeMultiplierMap) {
-                rows = rows?.sort { 1 / (pointSizeMultiplierMap[it[property]] ?: 1.0) }
+                rows = rows?.sort { 1 / (pointSizeMultiplierMap[it[property]] ?: 1.0) } // invert so sorts descending
             }
 
             def pointSize = (int) (plot.gridSize / 100) // Base point size - the point size may be affected by some other modifier depending on property and value

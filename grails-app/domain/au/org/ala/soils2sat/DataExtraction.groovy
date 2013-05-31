@@ -18,9 +18,6 @@ class DataExtraction implements Serializable {
             def f = new File(localFile)
             if (f.exists()) {
                 f.delete()
-                println("Local file $localFile has been deleted.")
-            } else {
-                println("Local file for packageName $packageName does not exist!")
             }
         } catch (Exception ex) {
             println "Error occurred during 'afterDelete' event on DataExtraction (PackageName $packageName)"
