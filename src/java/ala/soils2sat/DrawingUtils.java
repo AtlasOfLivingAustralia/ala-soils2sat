@@ -431,9 +431,7 @@ public class DrawingUtils {
 
     public static List<Color> generatePalette(int size, Color baseColor) {
         float[] hsb = { 0,0,0 };
-
         Color.RGBtoHSB(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), hsb);
-
         double baseHue = hsb[0];
 
         List<Color> colors = new ArrayList<Color>();

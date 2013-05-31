@@ -9,6 +9,7 @@ import java.awt.Color
 import java.awt.FontMetrics
 import java.awt.Graphics2D
 import java.awt.Rectangle
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
@@ -456,148 +457,81 @@ class StudyLocationController {
         def visitId = params.studyLocationVisitId as String
         def data = studyLocationService.getSamplingUnitDetails(visitId, "0")
 
-        int legendWidth = 200
-        int gridSize = 600
-        int gutterSize = 40
-
-        BufferedImage image = new BufferedImage(gridSize + gutterSize * 3 + legendWidth, gridSize + gutterSize * 2, BufferedImage.TYPE_INT_RGB)
-
-        def g = image.graphics as Graphics2D
-
-        float[] dash1 = [ 10.0f ];
-        BasicStroke dashed = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 5.0f);
-
-        FontMetrics metrics = g.getFontMetrics(g.getFont());
-        int textLeadIn = 4;
-        int textPadding = 4;
-        int hgt = metrics.getHeight() + textPadding;
-
-        def computeEWLabelRectangle = { int x, int y, String label ->
-            int txtWidth = metrics.stringWidth(label) + textPadding;
-            if ( x > gridSize) {
-                return new Rectangle(x + textLeadIn, y - (int) (hgt / 2), txtWidth, hgt)
-            } else {
-                return new Rectangle(x - ( textLeadIn * 2 + txtWidth), y - (int) (hgt / 2), txtWidth, hgt)
-            }
+        if (!data) {
+            return
         }
 
-        def computeNSLabelRectangle = { int x, int y, String label ->
-            int adv = metrics.stringWidth(label) + textPadding;
-            if (y > gridSize) {
-                return new Rectangle(x - (int) (adv / 2), y + textLeadIn, adv, hgt)
-            } else {
-                return new Rectangle(x - (int) (adv / 2), y - (textLeadIn * 2 + hgt), adv, hgt)
-            }
-        }
+        TransectImageDescriptor plot = VisualisationUtils.drawPlotTransects(600, 40, 200)
 
-        def drawRectangle = { Rectangle rect ->
-            g.setStroke(new BasicStroke())
-            g.setColor(Color.white)
-            g.fillRect((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height)
-            g.setColor(Color.black)
-            g.drawRect((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height)
-        }
+        def g = plot.image.graphics as Graphics2D
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        def property = params.pointInterceptType ?: "herbariumDetermination"
 
         try {
-            // Clear the image buffer to white
-            g.setColor(Color.white)
-            g.fillRect(0,0,image.width,image.height);
 
-            def vTransectSpacing = gridSize / 5
-            def hTransectSpacing = gridSize / 5
-            def offsetX = (int) (vTransectSpacing / 2)
-            def offsetY = (int) (hTransectSpacing / 2)
-
-            def transects = [:]
-            for (int i = 1; i <= 5; ++i) {
-                def EWy = (int) (( image.height - (offsetY + 1 + gutterSize)) - ((i-1) * vTransectSpacing))
-                def NSx = (int) ((((i-1) * hTransectSpacing) + offsetX + gutterSize))
-                transects["W${i}-E${i}"] = [x1: gutterSize, x2: gridSize + gutterSize, y1: EWy, y2: EWy, dir: 1, dx: gridSize / 100, dy: 0 ]
-                transects["E${i}-W${i}"] = [x1: gutterSize, x2: gridSize + gutterSize, y1: EWy, y2: EWy, dir: -1, dx: gridSize / 100, dy: 0 ]
-                transects["N${i}-S${i}"] = [x1: NSx, x2: NSx, y1: gutterSize, y2: gutterSize + gridSize , dir: 1, dx: 0, dy: gridSize / 100 ]
-                transects["S${i}-N${i}"] = [x1: NSx, x2: NSx, y1: gutterSize, y2: gutterSize + gridSize, dir: -1, dx: 0, dy: gridSize / 100 ]
-            }
-
-            g.setColor(Color.black)
-
-            transects.each { kvp ->
-                def transect = kvp.value
-                def name = kvp.key
-                if (transect.dir ==  1) {
-
-                    g.setStroke(dashed);
-                    g.drawLine(transect.x1, transect.y1, transect.x2, transect.y2)
-
-                    if (name.startsWith("W")) {
-                        def label = name.substring(0,2)
-                        def rect = computeEWLabelRectangle(transect.x1, transect.y1, label)
-                        drawRectangle(rect)
-                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
-                        label = name.substring(3)
-                        rect = computeEWLabelRectangle(transect.x2, transect.y2, label)
-                        drawRectangle(rect)
-                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
-                    } else {
-                        def label = name.substring(0,2)
-                        def rect = computeNSLabelRectangle(transect.x1, transect.y1, label)
-                        drawRectangle(rect)
-                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
-                        label = name.substring(3)
-                        rect = computeNSLabelRectangle(transect.x2, transect.y2, label)
-                        drawRectangle(rect)
-                        DrawingUtils.drawString(g, g.font, label, rect, DrawingUtils.TEXT_ALIGN_CENTER)
-                    }
-
-                }
-            }
-
-            def property = params.pointInterceptType ?: "herbariumDetermination"
-
-            def colorMap = [:]
-            def colors = DrawingUtils.generatePalette(20, Color.blue)
+            // This pre-fills the color map with a color palette (if defined), otherwise returns an empty map to be filled by the random color generator
+            Map<String, Color> colorMap = VisualisationUtils.getColorMapForIntersectProperty(property)
+            // A list of random colors to use if no color is predefined for a particular field value
+            List<Color> colors = DrawingUtils.generatePalette(20, Color.blue)
             int colorIndex = 0
 
-            def pointSize = (int) (gridSize / 100)
+            def pointSizeMultiplierMap = VisualisationUtils.getPointSizeMultiplierMapForIntersectProperty(property)
+            // If there are entries to resize points based on value, we need to sort the point intercept rows by the size of each point so that
+            // bigger points are drawn first, followed by the smaller ones (so big points don't hide small ones)
+            def rows = data.samplingUnitData
+            if (pointSizeMultiplierMap) {
+                rows = rows?.sort { 1 / (pointSizeMultiplierMap[it[property]] ?: 1.0) }
+            }
 
-            data.samplingUnitData?.each { point ->
+            def pointSize = (int) (plot.gridSize / 100) // Base point size - the point size may be affected by some other modifier depending on property and value
+
+            rows?.each { point ->
                 def transectLabel = point.transect?.replaceAll('_', '-')
-                def transect  = transects[transectLabel]
+                def transect  = plot.transects[transectLabel]
                 if (transect) {
-                    int offset = (int) Math.round(point.pointNumber)
-                    int x = 0, y = 0
-                    if (transect.dir == 1) {
-                        x = transect.x1 + (int) (offset * transect.dx)
-                        y = transect.y1 + (int) (offset * transect.dy)
-                    } else {
-                        x = transect.x2 - (int) (offset * transect.dx)
-                        y = transect.y2 - (int) (offset * transect.dy)
-                    }
-
-                    def value = point[property]
-                    if (value) {
-                        if (!colorMap.containsKey(value)) {
-                            def c = colors[colorIndex++];
-                            colorMap[value] = c;
-                            if (colorIndex >= colors.size()) {
-                                colorIndex = 0
-                            }
+                    double offset = (double) point.pointNumber
+                    if (offset >= 0 && offset <= 100) {
+                        int x = 0, y = 0
+                        if (transect.direction == 1) {
+                            x = transect.x1 + (int) (offset * transect.dx)
+                            y = transect.y1 + (int) (offset * transect.dy)
+                        } else {
+                            x = transect.x2 - (int) (offset * transect.dx)
+                            y = transect.y2 - (int) (offset * transect.dy)
                         }
-                        g.setColor(colorMap[value])
-                        g.fillOval(x - (int) (pointSize / 2),y - (int)(pointSize / 2), pointSize, pointSize);
+
+                        def value = point[property] as String
+                        if (value) {
+                            if (!colorMap.containsKey(value)) {
+                                def c = colors[colorIndex++];
+                                colorMap[value] = c;
+                                if (colorIndex >= colors.size()) {
+                                    colorIndex = 0
+                                }
+                            }
+                            g.setColor(colorMap[value])
+                            def finalPointSize = (int) (pointSize * (pointSizeMultiplierMap[value] ?: 1.0))
+
+                            g.fillOval(x - (int) (finalPointSize / 2),y - (int)(finalPointSize / 2), finalPointSize, finalPointSize);
+                        }
                     }
                 }
             }
 
             // Draw Legend.
 
-            def x = gutterSize * 2 + gridSize + 50
-            def y = gutterSize
-            colorMap.each {
-                g.setColor(it.value)
-                g.fillOval(x - (int) (pointSize / 2),y - (int)(pointSize / 2), pointSize, pointSize);
+            def x = plot.gutterSize * 2 + plot.gridSize + 50
+            def y = plot.gutterSize
+            def keys = colorMap.keySet().sort { pointSizeMultiplierMap[it] ?: 1 }
+
+            keys.each {
+                def color = colorMap[it]
+                g.setColor(color)
+                def finalPointSize = (int) (pointSize * (pointSizeMultiplierMap[it] ?: 1.0))
+                g.fillOval(x - (int) (finalPointSize / 2),y - (int)(finalPointSize / 2), finalPointSize, finalPointSize);
                 g.setColor(Color.black)
-                def rect = new Rectangle(x + 10, y - 12, legendWidth - 60, 25)
-                DrawingUtils.drawString(g, g.getFont(), it.key, rect, DrawingUtils.TEXT_ALIGN_LEFT)
+                def rect = new Rectangle(x + 14, y - 12, plot.legendWidth - 60, 25)
+                DrawingUtils.drawString(g, g.getFont(), it, rect, DrawingUtils.TEXT_ALIGN_LEFT)
                 y += 30
             }
 
@@ -605,10 +539,10 @@ class StudyLocationController {
             g.dispose()
         }
 
-        def outputBytes = ImageUtils.imageToBytes(image)
+        def outputBytes = ImageUtils.imageToBytes(plot.image, "PNG")
 
-        response.setContentType("image/jpeg")
-        response.setHeader("Content-disposition", "attachment;filename=PI${params.studyLocationVisitId}.jpg")
+        response.setContentType("image/png")
+        response.setHeader("Content-disposition", "attachment;filename=PI${params.studyLocationVisitId}_${property}.png")
         response.outputStream.write(outputBytes)
         response.flushBuffer()
 

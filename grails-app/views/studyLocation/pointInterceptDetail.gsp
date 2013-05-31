@@ -28,8 +28,6 @@
                 $("#pointInterceptImage").html('<img src="' + imageUrl + '">')
             }
 
-
-
         </script>
 
         <div class="container-fluid">
