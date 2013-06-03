@@ -447,6 +447,23 @@ class StudyLocationController {
             case 4:
                 view = 'structuralSummaryDetail'
                 break;
+            case 7:
+                def groups = [
+                        "Miscellaneous" : ["comments", "ec", "ph", "effervescence", "collectedBy", "horizon"],
+//                        "Depth" :["layerNumber", "upperDepth", "lowerDepth"],
+                        "Texture" : ["textureGrade", "textureModifier", "textureQualifier"],
+                        "Colour" : ["colourWhenDry", "colourWhenMoist"],
+                        "Mottles" : ["mottlesColour", "mottlesAbundance"],
+                        "Coarse Fragments": ["coarseFragmentsSize", "coarseFragmentsShape", "coarseFragmentsAbundance", "coarseFragmentsLithology"],
+                        "Segregation" : ["segregationForm", "segregationNature", "segregationSize", "segregationsAbundance"],
+                        "Structure" : ["smallestSize1", "smallestSize2", "smallestSizeType1","smallestSizeType2","nextSize1","nextSize2", "nextSizeType1", "nextSizeType2"],
+                        "Pedality" : ["pedalityFabric", "pedalityGrade", "pedalityType"]
+
+                ]
+                dataList = dataList.sort { it.upperDepth }
+                model['groups'] = groups
+                view = 'soilCharacterDetail'
+                break;
         }
 
         render(view:view, model:model)
