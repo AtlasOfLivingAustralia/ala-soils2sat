@@ -25,10 +25,21 @@ class S2STagLib {
 
         mb.ul(class:'nav') {
             li(class:attrs.active == 'home' ? 'active' : '') {
-                a(href:createLink(uri: '/')) { mkp.yield(message(code:'default.home.label', default: 'Home'))}
+                    a(href:createLink(uri: '/')) {
+                        i(class:"icon-home") {
+                            mkp.yieldUnescaped("&nbsp;")
+                        }
+                        mkp.yieldUnescaped("&nbsp")
+                        mkp.yield(message(code:'default.home.label', default: 'Home'))}
             }
             li(class:attrs.active == 'about' ? 'active' : '') {
-                a(href:createLink(controller: 'about')) { mkp.yield(message(code:'default.about.label', default: 'About'))}
+                a(href:createLink(controller: 'about')) {
+                    i(class:"icon-question-sign") {
+                        mkp.yieldUnescaped("&nbsp;")
+                    }
+                    mkp.yieldUnescaped("&nbsp")
+                    mkp.yield(message(code:'default.about.label', default: 'About'))
+                }
             }
         }
 

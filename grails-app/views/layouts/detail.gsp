@@ -32,10 +32,20 @@
         </Style>
         <script type="text/javascript">
 
-            $(document).ready(function() {
+            $(document).ready(function (e) {
 
-                $("#btnAdministration").click(function(e) {
+                $.ajaxSetup({ cache: false });
+
+                $("#btnLogout").click(function (e) {
+                    window.location = "${createLink(controller: 'logout', action:'index')}";
+                });
+
+                $("#btnAdministration").click(function (e) {
                     window.location = "${createLink(controller: 'admin')}";
+                });
+
+                $("#btnProfile").click(function (e) {
+                    window.location = "${createLink(controller: 'userProfile')}";
                 });
 
             });
@@ -55,7 +65,8 @@
                         <div class="navbar-text pull-right">
                             <span id="buttonBar">
                                 <sec:ifLoggedIn>
-                                    <span><sec:username/></span>
+                                    <sec:username/>&nbsp;<button class="btn btn-small" id="btnLogout"><i class="icon-off"></i>&nbsp;Logout</button>
+                                    <button class="btn btn-small btn-info" id="btnProfile"><i class="icon-user icon-white"></i>&nbsp;My Profile</button>
                                 </sec:ifLoggedIn>
                                 <sts:ifAdmin>
                                   <button class="btn btn-warning btn-small" id="btnAdministration">Administration</button>

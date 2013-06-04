@@ -45,6 +45,11 @@
                         <td><g:formatDate date="${extraction.date}" format="${au.org.ala.soils2sat.DateUtils.S2S_DATE_TIME_FORMAT}" /></td>
                     </tr>
                     <tr>
+                        <td><b>DOI</b></td>
+                        <td>${extraction.doi}</td>
+                    </tr>
+
+                    <tr>
                         <td><b>Package File</b></td>
                         <td>
                             <g:if test="${filesize > 0}">

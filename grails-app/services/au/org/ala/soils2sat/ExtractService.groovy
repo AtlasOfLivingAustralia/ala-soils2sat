@@ -65,7 +65,7 @@ class ExtractService {
                 }
             }
 
-            writeZipEntry(user, zipStream, writer, "manifest.text", writeManifestFactory(manifestEntries))
+            writeZipEntry(user, zipStream, writer, "manifest.txt", writeManifestFactory(manifestEntries))
 
             zipStream.flush()
             zipStream.close()
@@ -148,6 +148,7 @@ class ExtractService {
             String doi = ""
             try {
                 doi = this.DOIService.mintDOI(dataExtraction, user)
+                dataExtraction.doi = doi
             } catch (DOIMintingFailedException doimex) {
                 doi = "DOI Minting Failed: " + doimex.message
             }

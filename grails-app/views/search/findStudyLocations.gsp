@@ -60,6 +60,12 @@
             doSearch();
         });
 
+        $("#btnReturnToMap").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller:'map', action:'index')}";
+        });
+
+
         $("#btnStartOver").click(function(e) {
             e.preventDefault();
             window.location = "${createLink(controller:'search', action:'clearCurrentSearch')}";
@@ -465,8 +471,8 @@
 
                     <div id="searchCriteria"></div>
 
-                    <button type="button" id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add Search Criteria</button>
-                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-remove icon-white"></i>&nbsp;Remove All Criteria</button>
+                    <button type="button" id="btnAddCriteria" class="btn btn-small btn-info"><i class="icon-plus icon-white"></i>&nbsp;Add Criteria</button>
+                    <button type="button" id="btnRemoveAllCriteria" class="btn btn-small btn-warning"><i class="icon-remove icon-white"></i>&nbsp;Clear Criteria</button>
 
                     <button type="button" id="btnSearch" class="btn btn-primary pull-right">
                         <i class="icon-search icon-white"></i>&nbsp;Search
@@ -474,6 +480,10 @@
                     <button type="button" id="btnStartOver" class="btn pull-right" style="margin-right: 5px">
                         <i class="icon-remove-circle"></i>&nbsp;Start over
                     </button>
+                    <button type="button" id="btnReturnToMap" class="btn pull-right" style="margin-right: 5px">
+                        <i class="icon-home"></i>&nbsp;Return to Map
+                    </button>
+
                 </form>
             </div>
 

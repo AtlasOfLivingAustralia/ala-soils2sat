@@ -7,9 +7,11 @@ class DataExtraction implements Serializable {
     String username
     String localFile
     Integer downloadCount = 0
+    String doi
 
     static constraints = {
         downloadCount nullable: true
+        doi nullable: true
     }
 
     def afterDelete() {

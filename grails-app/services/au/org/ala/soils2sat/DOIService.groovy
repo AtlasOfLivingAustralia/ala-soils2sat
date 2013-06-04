@@ -1,5 +1,11 @@
 package au.org.ala.soils2sat
 
+import au.edu.aekos.shared.doiclient.jaxb.DateType
+import au.edu.aekos.shared.doiclient.jaxb.Resource
+import au.edu.aekos.shared.doiclient.service.DoiClientConfig
+import au.edu.aekos.shared.doiclient.service.DoiClientService
+import au.edu.aekos.shared.doiclient.service.DoiClientServiceImpl
+import au.edu.aekos.shared.doiclient.util.ResourceBuilder
 import groovy.xml.MarkupBuilder
 import groovyx.net.http.HTTPBuilder
 
@@ -10,6 +16,21 @@ class DOIService extends ServiceBase {
     def grailsApplication
     def grailsLinkGenerator
 
+    private DoiClientService getDoiClientService() {
+        def svc = new DoiClientServiceImpl()
+        def config = new DoiClientConfig()
+        def cfg = grailsApplication.config
+
+        config.doiMintingServiceUrl = cfg.doiServiceRoot
+        config.appId = cfg.doiAppId
+        config.userId = cfg.doiUserId
+        config.topLevelUrl = cfg.doiS2SRoot
+        config.keystoreFilePath = this.getClass().getResource(cfg.doiKeystorePath).path
+        config.keystorePassword = cfg.doiKeystorePassword
+        svc.setDoiClientConfig(config)
+        return svc
+    }
+
     def mintDOI(DataExtraction extraction, User user) {
         if (!extraction) {
             throw new RuntimeException("Extraction package is null!")
@@ -17,26 +38,15 @@ class DOIService extends ServiceBase {
 
         def landingPageUrl = grailsApplication.config.doiS2SRoot + grailsLinkGenerator.link(controller: 'extract', action:'landingPage', params:[packageName: extraction.packageName], absolute: false)
 
-        def mintingUrl = makeDOIUrl('create', [:]) // [url:landingPageUrl]
-        def postBody = buildRequestXML(user.userProfile.fullName, "Data extract ${extraction.packageName}", [] )
+
         try {
-
-            def http = new HTTPBuilder(mintingUrl)
-
-            http.post(body: postBody) { resp ->
-                println resp
-            }
-
+            def doi = doiClientService.mintDoi(buildCreateXML(user.userProfile.fullName, "Data extract ${extraction.packageName}", []), landingPageUrl)
+            return doi
         } catch (Exception ex) {
-            println "Minting URL: ${mintingUrl}"
-            println "RequestPayload: ${postBody}"
-
             ex.printStackTrace()
             println ex
             throw new DOIMintingFailedException(ex.message)
         }
-
-        return 'The DOI!'
     }
 
     private String makeDOIUrl(String api, Map params) {
@@ -50,34 +60,16 @@ class DOIService extends ServiceBase {
         return serviceUrl
     }
 
-    public String buildRequestXML(String doiCreator, String doiTitle, List<String> doiSubjects) {
-        def writer = new StringWriter()
-        def xml = new MarkupBuilder(writer)
-        xml.mkp.xmlDeclaration version: '1.0', encoding: 'UTF-8'
-        xml.resource(
-            xmlns:'http://datacite.org/schema/kernel-2.1',
-            'xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance',
-            'xsi:schemaLocation':'http://datacite.org/schema/kernel-2.1 http://schema.datacite.org/meta/kernel-2.1/metadata.xsd') {
-            identifier(identifierType:'DOI') {}
-            creators() {
-                creator() {
-                    creatorName(doiCreator)
-                }
-            }
-            titles() {
-                title(doiTitle)
-            }
-            publisher('Atlas of Living Australia')
-            publicationYear('2013')
-            subjects {
-                for (String doiSubject : doiSubjects) {
-                    subject(subjectScheme:'Subject',doiSubject)
-                }
-            }
+    public Resource buildCreateXML(String doiCreator, String doiTitle, List<String> doiSubjects) {
+        ResourceBuilder builder = new ResourceBuilder();
+        builder.addCreator(doiCreator).setTitle(doiTitle).setPublisher("Atlas of Living Australia").setPublicationYear("2013")        		       
+      		       .addDate(new Date(), DateType.CREATED).addDate(new Date(), DateType.START_DATE);
+
+        doiSubjects?.each {
+            builder.addSubject(it)
         }
 
-
-        return writer.toString()
+        return builder.resource
     }
 
 

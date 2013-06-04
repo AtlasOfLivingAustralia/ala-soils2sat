@@ -39,7 +39,7 @@
                             Success: ${extractionResults.success}
                             <ul>
                                 <li>Package: <a href="${extractionResults.packageUrl}">Download zip file</a></li>
-                                <li>DOI: ${extractionResults.doi}</li>
+                                <li>DOI: ${extractionResults.DOI}</li>
                                 <li>RIF/CS Receipt info</li>
                                 <li>Creator info : ${creatorSurname}, ${creatorGivenNames}</li>
                             </ul>

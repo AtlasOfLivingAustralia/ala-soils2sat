@@ -48,6 +48,7 @@
         </Style>
 
         <script type="text/javascript">
+
             $(document).ready(function (e) {
 
                 $.ajaxSetup({ cache: false });
@@ -65,7 +66,9 @@
                 });
 
             });
+
         </script>
+
     </head>
 
     <body style="overflow: auto">
