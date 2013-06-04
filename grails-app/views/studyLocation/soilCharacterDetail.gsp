@@ -36,7 +36,7 @@
                             <tr>
                                 <th>Depth</th>
                                 <g:each in="${kvp.value}" var="property">
-                                    <th>${property}</th>
+                                    <th><sts:formatSamplingUnitColumn code="${property}" /></th>
                                 </g:each>
                             </tr>
                         </thead>
@@ -52,7 +52,7 @@
                                                     <span style="background-color: rgb(${mc.red}, ${mc.green}, ${mc.blue}); width: 50px; display: inline-block">&nbsp;</span>
                                                 </g:if>
                                             </g:if>
-                                            ${row[property]}
+                                            <sts:renderSamplingUnitValue value="${row[property]}" />
                                         </td>
                                     </g:each>
                                 </tr>

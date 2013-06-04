@@ -69,14 +69,14 @@ class VisualisationController {
             data = []
         }
 
-        return render(view:'barChart', model: [columns: columns, name:'soilECForVisit', title:'Soil EC', data: data, colors: colors])
+        return render(view:'barChart', model: [columns: columns, name:'soilECForVisit', title:'Soil EC', data: data, colors: colors, vAxisTitle:'Soil Depth (Metres)', hAxisTitle:'Electrical Conductivity'])
     }
 
     def soilpHForVisit() {
 
         def litmusColors = VisualisationUtils.getLitmusColors()
         def colors = litmusColors.collect { it.color }
-        def columns = [['string',"Depth"]]
+        def columns = [["string","Depth"]]
         litmusColors.each {
             columns << ['number', "pH ${it.pH}"]
         }
@@ -111,7 +111,7 @@ class VisualisationController {
             adjustedData << row
         }
 
-        render(view:'barChart', model:[name:'soilPhForLocation', title:'Soil pH', columns: columns, data: adjustedData, colors: colors])
+        render(view:'barChart', model:[name:'soilPhForLocation', title:'Soil pH', columns: columns, data: adjustedData, colors: colors, vAxisTitle:'Soil Depth (Metres)', hAxisTitle:'pH' ])
 
     }
 
@@ -258,7 +258,7 @@ class VisualisationController {
             data << [it, distinctMap[it]?.size()]
         }
 
-        [data: data, colors: colors, columns: columns]
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Number of Unique Species for AusPlots / TREND", name:'compareDistinctSpecies', stacked: false, hAxisTitle: 'Study Location', vAxisTitle: 'Number of Distinct Species'])
     }
 
     def plantSpeciesBreakdownBySource() {
@@ -354,7 +354,7 @@ class VisualisationController {
             data = []
         }
 
-        return render(view:'barChart', model: [columns: columns, name:'soilECForLocation', title:'Soil EC', data: data, colors: colors])
+        return render(view:'barChart', model: [columns: columns, name:'soilECForLocation', title:'Soil EC', data: data, colors: colors, vAxisTitle:'Soil Depth (Metres)', hAxisTitle:'Electrical Conductivity'])
     }
 
     def soilpHForLocation() {
@@ -398,7 +398,7 @@ class VisualisationController {
 
         def colors = litmusColors.collect { it.color }
 
-        render(view:'barChart', model:[name:'soilPhForLocation', title:'Soil pH', columns: columns, data: adjustedData, colors: colors])
+        render(view:'barChart', model:[name:'soilPhForLocation', title:'Soil pH', columns: columns, data: adjustedData, colors: colors, vAxisTitle:'Soil Depth (Metres)', hAxisTitle:'pH'])
     }
 
     public weedNonWeedBreakdownForLocation() {

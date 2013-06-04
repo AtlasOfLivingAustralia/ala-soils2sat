@@ -22,7 +22,8 @@
 
     <gvisualization:columnCoreChart dynamicLoading="true" name="${name}" elementId="${elementId}" columns="${columns}" data="${data}" title="${title}" colors="${colors}" isStacked="${stacked}"
                                     select="shimHandler${name}"
-                                    hAxis="${new Expando([slantedText: true, slantedTextAngle: 90, textStyle:new Expando([fontSize:9])])}"
+                                    hAxis="${new Expando([slantedText: true, slantedTextAngle: 90, textStyle:new Expando([fontSize:9]), title: hAxisTitle ?: ''])}"
+                                    vAxis="${new Expando([title: vAxisTitle ?: ''])}"
                                     legend="none"
     />
 </g:if>

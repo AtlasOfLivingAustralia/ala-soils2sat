@@ -59,7 +59,7 @@
                     <thead>
                         <tr>
                             <g:each in="${columnHeadings}" var="colHeading">
-                                <th>${colHeading}</th>
+                                <th><sts:formatSamplingUnitColumn code="${colHeading}" /></th>
                             </g:each>
                         </tr>
                     </thead>
@@ -67,7 +67,7 @@
                         <g:each in="${dataList}" var="row">
                             <tr>
                                 <g:each in="${columnHeadings}" var="colHeading">
-                                    <td>${row[colHeading]}</td>
+                                    <td><sts:renderSamplingUnitValue value="${row[colHeading]}" /></td>
                                 </g:each>
                             </tr>
                         </g:each>

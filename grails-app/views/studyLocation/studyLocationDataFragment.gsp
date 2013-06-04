@@ -32,7 +32,7 @@
         <td>
           <ul>
             <g:each in="${studyLocation.data.samplingUnitTypeList}" var="unit">
-              <li><sts:formatSamplingUnitName code="${unit}"/></li>
+              <li><sts:formatSamplingUnitColumn code="${unit}"/></li>
 
             </g:each>
           </ul>

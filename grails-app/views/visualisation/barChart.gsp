@@ -21,7 +21,10 @@
     </g:if>
 
 
-    <gvisualization:barCoreChart dynamicLoading="true" name="${name}" elementId="${elementId}" columns="${columns}" data="${data}" title="${title}" colors="${colors}" isStacked="${true}" select="shimHandler${name}" />
+    <gvisualization:barCoreChart dynamicLoading="true" name="${name}" elementId="${elementId}" columns="${columns}" data="${data}" title="${title}" colors="${colors}" isStacked="${true}" select="shimHandler${name}"
+                                 vAxis="${new Expando([title: vAxisTitle ?: ''])}"
+                                 hAxis="${new Expando([title: hAxisTitle ?: ''])}"
+    />
 
 </g:if>
 <g:else>

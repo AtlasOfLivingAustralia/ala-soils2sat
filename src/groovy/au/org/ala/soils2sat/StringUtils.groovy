@@ -42,4 +42,22 @@ class StringUtils {
         return sb.toString()
     }
 
+    public static String makeTitleFromCamelCase(String str) {
+        if (!str) {
+            return str
+        }
+
+        StringBuilder b = new StringBuilder(str.charAt(0).toUpperCase().toString())
+        for (int i = 1; i < str.length(); ++i) {
+            char ch = str.charAt(i);
+            if (Character.isUpperCase(ch)) {
+                // insert a word breaking space
+                b << ' '
+            }
+            b << ch
+        }
+
+        return b.toString()
+    }
+
 }

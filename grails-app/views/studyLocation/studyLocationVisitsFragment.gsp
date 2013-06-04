@@ -21,7 +21,7 @@
                 %{--<td>--}%
                     %{--<ul>--}%
                         %{--<g:each in="${visit.samplingUnitNames}" var="samplingUnitCode">--}%
-                            %{--<li><a href="#"><sts:formatSamplingUnitName code="${samplingUnitCode}"/></a></li>--}%
+                            %{--<li><a href="#"><sts:formatSamplingUnitColumn code="${samplingUnitCode}"/></a></li>--}%
                         %{--</g:each>--}%
                     %{--</ul>--}%
                 %{--</td>--}%

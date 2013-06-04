@@ -34,19 +34,19 @@
                     <tr>
                         <td>
                             <strong>Description:</strong><br/>
-                            ${detail?.description}
+                            <sts:renderSamplingUnitValue value="${detail?.description}" />
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <strong>Phenology Comment:</strong><br/>
-                            ${detail?.phenologyComment}
+                            <sts:renderSamplingUnitValue value="${detail?.phenologyComment}" />
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <strong>Mass Flowing Event:</strong><br/>
-                            ${detail?.massFloweringEvent}
+                            <sts:renderSamplingUnitValue value="${detail?.massFloweringEvent}" />
                         </td>
                     </tr>
                 </table>
@@ -56,7 +56,7 @@
                 <g:each in="${fields}" var="field">
                     <tr>
                         <td style="color: ${colors[++colorIndex]};width: 200px">${field}</td>
-                        <td><sts:taxaHomePageLink name="${detail[field]}" /></td>
+                        <td><sts:taxaHomePageLink name="${detail[field]}" ifEmpty="N/A"/></td>
                     </tr>
                 </g:each>
             </table>
