@@ -401,7 +401,9 @@
         <table style="width:100%">
             <tr>
                 <td>
-                    <a href="${createLink(controller: 'map', action: 'index')}">Map</a><sts:navSeperator/>Find Study Location Visits
+                    <sts:homeBreadCrumb/>
+                    <sts:navSeperator/>
+                    <span class="sts-breadcrumb">Find Study Location Visits</span>
                 </td>
             </tr>
         </table>

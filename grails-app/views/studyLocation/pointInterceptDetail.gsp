@@ -35,10 +35,14 @@
                 <table style="width:100%">
                     <tr>
                         <td>
-                            <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationDetail.studyLocationName])}">${studyLocationDetail.studyLocationName}</a><sts:navSeperator/>
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}">Visit ${visitDetail.studyLocationVisitId}</a><sts:navSeperator/>
-                            ${samplingUnitName}</td>
+                            <sts:homeBreadCrumb />
+                            <sts:navSeperator/>
+                            <sts:studyLocationBreadCrumb studyLocationName="${studyLocationDetail.studyLocationName}" />
+                            <sts:navSeperator/>
+                            <sts:studyLocationVisitBreadCrumb studyLocationVisitId="${visitDetail.studyLocationVisitId}" />
+                            <sts:navSeperator/>
+                            <span class="s2s-breadcrumb">${samplingUnitName}</span>
+                        </td>
                         <td></td>
                     </tr>
                 </table>

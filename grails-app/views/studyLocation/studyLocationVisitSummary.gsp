@@ -28,7 +28,7 @@
                     });
                 });
 
-                $.ajax("${createLink(controller: 'visualisation', action:'studyLocationVisitVisualisations', params:[studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function(html) {
+                $.ajax("${createLink(controller: 'visualisation', action:'studyLocationVisitVisualisations', params:[studyLocationVisitId: visitDetail?.studyLocationVisitId])}").done(function(html) {
                     $("#studyLocationVisitVisualisations").html(html);
                 });
 
@@ -41,9 +41,12 @@
                 <table style="width:100%">
                     <tr>
                         <td>
-                            <a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>
-                            <a href="${createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])}">${studyLocationName}</a><sts:navSeperator/>
-                        Visit ${visitDetail?.studyLocationVisitId}</td>
+                            <sts:homeBreadCrumb />
+                            <sts:navSeperator/>
+                            <sts:studyLocationBreadCrumb studyLocationName="${studyLocationName}" />
+                            <sts:navSeperator/>
+                            <sts:studyLocationVisitBreadCrumb studyLocationVisitId="${visitDetail.studyLocationVisitId}" nolink="${true}"/>
+                        </td>
                         <td></td>
                     </tr>
                 </table>

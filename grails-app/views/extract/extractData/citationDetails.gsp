@@ -24,9 +24,12 @@
             <legend>
                 <table style="width:100%">
                     <tr>
-                        <td><a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>Extract Data from selected Study Location Visits</td>
                         <td>
+                            <sts:homeBreadCrumb />
+                            <sts:navSeperator/>
+                            Extract Data from selected Study Location Visits
                         </td>
+                        <td></td>
                     </tr>
                 </table>
             </legend>

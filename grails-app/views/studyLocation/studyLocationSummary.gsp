@@ -91,7 +91,11 @@
             <legend>
                 <table style="width:100%">
                     <tr>
-                        <td><a href="${createLink(controller:'map', action:'index')}">Map</a><sts:navSeperator/>${studyLocationName}</td>
+                        <td>
+                            <sts:homeBreadCrumb />
+                            <sts:navSeperator/>
+                            <sts:studyLocationBreadCrumb studyLocationName="${studyLocationName}" nolink="${true}" />
+                        </td>
                         <td>
                             %{--<button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})--}%
                             <g:if test="${isSelected}">

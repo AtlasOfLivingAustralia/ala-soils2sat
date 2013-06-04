@@ -67,8 +67,9 @@
                 <table style="width:100%">
                     <tr>
                         <td>
-                            <a href="${createLink(controller: 'map', action: 'index')}">Map</a><sts:navSeperator/>
-                            <span>Compare study locations (${appState?.selectedPlotNames?.size()})</span>
+                            <sts:homeBreadCrumb/>
+                            <sts:navSeperator/>
+                            <span class="sts-breadcrumb">Compare study locations (${appState?.selectedPlotNames?.size()})</span>
                         </td>
                         <td>
                             <button id="btnCompareExport" class="btn btn-small">Export data</button>

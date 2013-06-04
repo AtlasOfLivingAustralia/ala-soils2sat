@@ -293,4 +293,58 @@ class S2STagLib {
         }
     }
 
+    def homeBreadCrumb = { attrs, body ->
+        // <a href="${createLink(controller: 'map', action: 'index')}">Map</a>
+        def mb = new MarkupBuilder(out)
+        mb.span(class:'sts-breadcrumb') {
+            a(href:createLink(controller: 'map', action: 'index')) {
+                mkp.yield("Main Map")
+            }
+        }
+    }
+
+    /**
+     * @attr studyLocationName
+     * @attr nolink
+     */
+    def studyLocationBreadCrumb = { attrs, body ->
+
+        def studyLocationName = attrs.studyLocationName
+
+        def mb = new MarkupBuilder(out)
+        if (!attrs.nolink) {
+            mb.span(class:'sts-breadcrumb') {
+                a(href:createLink(controller: 'studyLocation', action: 'studyLocationSummary', params: [studyLocationName: studyLocationName])) {
+                    mkp.yield("Study Location (${studyLocationName})")
+                }
+            }
+        } else {
+            mb.span(class:'sts-breadcrumb') {
+                mkp.yield("Study Location (${studyLocationName})")
+            }
+        }
+
+    }
+
+    /**
+     * @attr studyLocationVisitId
+     * @attr nolink
+     */
+    def studyLocationVisitBreadCrumb = { attrs, body ->
+        def visitDetail = studyLocationService.getVisitDetails(attrs.studyLocationVisitId)
+        def mb = new MarkupBuilder(out)
+        if (!attrs.nolink) {
+            mb.span(class:'sts-breadcrumb') {
+                a(href:createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationVisitId: attrs.studyLocationVisitId])) {
+                    mkp.yield("Visit (${visitDetail?.visitStartDate})")
+                }
+            }
+        } else {
+            mb.span(class:'sts-breadcrumb') {
+                mkp.yield("Visit (${visitDetail?.visitStartDate})")
+            }
+        }
+
+    }
+
 }

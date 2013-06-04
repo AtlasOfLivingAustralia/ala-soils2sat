@@ -41,7 +41,13 @@
         <legend>
             <table style="width: 100%">
                 <tr>
-                    <td><a href="${createLink(controller: 'map')}">Map</a><sts:navSeperator/>User Profile<sts:navSeperator/><g:pageProperty name="page.pageTitle"/></td>
+                    <td>
+                        <sts:homeBreadCrumb />
+                        <sts:navSeperator/>
+                        User Profile
+                        <sts:navSeperator/>
+                        <span class="sts-breadcrumb"><g:pageProperty name="page.pageTitle"/></span>
+                    </td>
                     <td style="text-align: right"><span><g:pageProperty name="page.adminButtonBar"/></span></td>
                 </tr>
             </table>
