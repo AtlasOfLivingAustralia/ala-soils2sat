@@ -101,7 +101,8 @@ class StudyLocationController {
 
         appState.selectedPlotNames.each { studyLocation ->
             def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocation)
-            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+//            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+            def studyLocationTaxaList = studyLocationService.getVoucheredTaxaForStudyLocation(studyLocationDetails.studyLocationName)
             results[studyLocation] = studyLocationTaxaList
         }
 
@@ -154,7 +155,7 @@ class StudyLocationController {
             results = newResults
         }
 
-        [results:results, appState: appState, userInstance: userInstance]
+        [results:results, appState: appState, userInstance: userInstance, diffMode: params.diffMode]
     }
 
     def exportComparePlots = {
