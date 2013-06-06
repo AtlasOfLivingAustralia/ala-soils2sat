@@ -81,7 +81,27 @@ class MapController {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
+        validateSelectedVisits(appState)
+
         [userInstance: userInstance, appState: appState ]
+    }
+
+    private void validateSelectedVisits(UserApplicationState appState) {
+        def purgeList = []
+        appState.selectedVisits?.each { visit ->
+            def details = studyLocationService.getVisitDetails(visit.studyLocationVisitId)
+            if (!details) {
+                purgeList.add visit
+            }
+        }
+
+        if (purgeList) {
+            purgeList.each {
+                appState.removeFromSelectedVisits(it)
+            }
+            appState.save(failOnError: true)
+        }
+
     }
 
     def ajaxSetLayerVisibility() {

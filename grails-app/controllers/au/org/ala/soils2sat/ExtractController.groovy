@@ -158,19 +158,23 @@ class ExtractController {
 
         def filesize = 0
         def filename = ""
+        def manifestText = ""
+        User author = null
 
         if (!extraction) {
-            flash.errorMessage = "No package name specified, or package does not exists: ${packageName}"
+            flash.errorMessage = "No package name specified, or package does not exist: ${packageName}"
         } else {
             def file = new File(extraction.localFile)
             if (file.exists()) {
                 filesize = file.length()
                 filename = file.name
+                manifestText = extractService.extractManifest(file)
             }
+            author = User.findByUsername(extraction.username)
         }
 
 
-        [extraction: extraction, filesize: filesize, filename: filename]
+        [extraction: extraction, filesize: filesize, filename: filename, manifestText: manifestText, author: author]
     }
 
 }

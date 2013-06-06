@@ -4,7 +4,12 @@
     <head>
         <r:require module='jqueryui'/>
         <r:require module='bootstrap_responsive'/>
-        <meta name="layout" content="detail"/>
+        <sec:ifLoggedIn>
+            <meta name="layout" content="profilePage"/>
+        </sec:ifLoggedIn>
+        <sec:ifNotLoggedIn>
+            <meta name="layout" content="detail"/>
+        </sec:ifNotLoggedIn>
         <title>Data Extract Landing Page</title>
     </head>
 
@@ -20,25 +25,36 @@
 
         </script>
 
-        <div class="container">
-            <legend>
-                <table style="width:100%">
-                    <tr>
-                        <td>Data Extract Landing Page</td>
-                        <td></td>
-                    </tr>
-                </table>
-            </legend>
+        <sec:ifLoggedIn>
+            <content tag="pageTitle">Extract ${extraction.packageName}</content>
+        </sec:ifLoggedIn>
+
+        <g:set var="containerClass" value=""/>
+        <sec:ifNotLoggedIn>
+            <g:set var="containerClass" value="container"/>
+        </sec:ifNotLoggedIn>
+
+        <div class="${containerClass}">
+            <sec:ifNotLoggedIn>
+                <legend>
+                    <table style="width:100%">
+                        <tr>
+                            <td>Data Extract Landing Page - ${extraction.packageName}</td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </legend>
+            </sec:ifNotLoggedIn>
 
             <g:if test="${extraction}">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                     <tr>
                         <td><b>Package Name</b></td>
                         <td>${extraction.packageName}</td>
                     </tr>
                     <tr>
                         <td><b>Created By</b></td>
-                        <td>${extraction.username}</td>
+                        <td>${author?.userProfile?.fullName ?: extraction?.username}</td>
                     </tr>
                     <tr>
                         <td><b>Created On</b></td>
@@ -61,13 +77,43 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">
+                        <td></td>
+                        <td>
                             <a class="btn btn-small" href="${createLink(controller: 'extract', action:'downloadPackage', params:[packageName: extraction.packageName])}">
                                 <i class="icon-download"></i>&nbsp;Download package
                             </a>
                         </td>
                     </tr>
+                    <tr>
+                        <td><strong>Package&nbsp;Manifest</strong></td>
+                        <td>
+                            <g:set var="lines" value="${manifestText?.split("\n")}" />
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Filename</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <g:each var="line" in="${lines}">
+                                    <g:set var="bits" value="${line.split('\t')}"/>
+                                    <tr>
+                                        <td>
+                                            ${bits[0]}
+                                        </td>
+                                        <td>
+                                            ${bits[1]}
+                                        </td>
+                                    </tr>
+                                </g:each>
+                            </table>
+                            <code>
+
+                            </code>
+                        </td>
+                    </tr>
                 </table>
+
             </g:if>
             <g:else>
             </g:else>

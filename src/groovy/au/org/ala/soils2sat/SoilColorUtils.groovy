@@ -1,6 +1,7 @@
 package au.org.ala.soils2sat
 
 import java.awt.Color
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 /**
@@ -14,12 +15,93 @@ class SoilColorUtils {
 
     private static Map<String, SoilColor> _colorMap = null
 
+    private static Pattern MUNSELL_PATTERN = Pattern.compile("^((?:\\d\\d[.]\\d|\\d[.]\\d|\\d\\d|\\d)[A-Z]{1,2})(\\d[.]\\d|\\d)(\\d[.]\\d|\\d).*\$")
+
     public static synchronized Color parseMunsell(String code) {
         if (!_colorMap) {
             initMunsellColorMap()
         }
 
-        return _colorMap[code]?.color
+        def munsellColor = _colorMap[code]
+        if (munsellColor) {
+            return munsellColor.color
+        }
+
+        // That exact color code does not exist in the map - can be interpolate it?
+        def munsellCode = parseMunsellCode(code)
+        if (munsellCode) {
+            return interpolateMunsellColor(munsellCode)?.color
+        }
+
+        return null
+    }
+
+    public static SoilColor interpolateMunsellColor(MunsellCode munsellCode) {
+
+        def candidates= _colorMap.values().findAll {
+            it.hue == munsellCode.hue && it.value == munsellCode.value
+        }
+        //
+        if (candidates) {
+            SoilColor min = null
+            SoilColor max = null
+            candidates.each {
+                if (min == null) {
+                    if (it.chroma < munsellCode.chroma) {
+                        min = it
+                    }
+                } else {
+                    if (it.chroma < munsellCode.chroma && it.chroma > min.chroma) {
+                        min = it
+                    }
+                }
+
+                if (max == null) {
+                    if (it.chroma > munsellCode.chroma) {
+                        max = it
+                    }
+                } else {
+                    if (it.chroma > munsellCode.chroma && it.chroma < max.chroma) {
+                        max = it
+                    }
+                }
+            }
+            if (min && max) {
+                def ratio = (munsellCode.chroma - min.chroma) / (max.chroma - min.chroma)
+
+                def newred = splitRatio(min.color.red, max.color.red, ratio)
+                def newgreen = splitRatio(min.color.green, max.color.green, ratio)
+                def newblue = splitRatio(min.color.blue, max.color.blue, ratio)
+
+                Color c = new Color(newred, newgreen, newblue)
+
+                println "${min} ${max} ${c}"
+
+                return new SoilColor(chroma: munsellCode.chroma, hue: munsellCode.hue, value: munsellCode.value, color: c, description: "Interpolated")
+            }
+
+        }
+
+        return null
+    }
+
+    private static int splitRatio(int n1, int n2, double ratio) {
+        def small = Math.min(n1, n2)
+        def large = Math.max(n1, n2)
+        def delta = (large - small) * ratio
+        return (int) Math.round((double) small + delta)
+    }
+
+    public static MunsellCode parseMunsellCode(String code) {
+        if (!code) {
+            return null
+        }
+
+        def m = MUNSELL_PATTERN.matcher(code?.toUpperCase())
+        if (m.matches()) {
+            return new MunsellCode(hue: m.group(1), value: Double.parseDouble(m.group(2)), chroma: Double.parseDouble(m.group(3)))
+        }
+        return null
     }
 
     private static void initMunsellColorMap() {
@@ -34,8 +116,8 @@ class SoilColorUtils {
                 if (!skipFirst) {
                     def bits = line.split(",")
                     def hue = bits[1]
-                    def value = bits[2]
-                    def chroma = bits[3]
+                    def value = Double.parseDouble(bits[2])
+                    def chroma = Double.parseDouble(bits[3])
                     def r = Integer.parseInt(bits[16])
                     def g = Integer.parseInt(bits[17])
                     def b = Integer.parseInt(bits[18])
@@ -99,10 +181,22 @@ class SoilColorUtils {
 
 }
 
+class MunsellCode {
+    String hue
+    Double value
+    Double chroma
+}
+
 class SoilColor {
     String hue
-    String value
-    String chroma
+    Double value
+    Double chroma
     String description
     Color color
+
+    public String toString() {
+        DecimalFormat dmf = new DecimalFormat("0.#")
+
+        return "${hue}${dmf.format(value)}${dmf.format(chroma)} color:${color}"
+    }
 }

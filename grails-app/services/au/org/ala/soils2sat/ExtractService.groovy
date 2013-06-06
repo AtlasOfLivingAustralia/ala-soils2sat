@@ -8,6 +8,7 @@ import org.h2.store.fs.FileUtils
 
 import java.text.SimpleDateFormat
 import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 class ExtractService {
@@ -310,6 +311,27 @@ class ExtractService {
         }
 
         return [data: data, fieldNames: fieldNames, fieldUnits: fieldUnits]
+    }
+
+    public def extractManifest(File file) {
+        String manifestText = ""
+        if (file?.exists()) {
+            def zipFile = new ZipFile(file)
+                try {
+                zipFile.entries().each { zipEntry ->
+                    if (zipEntry.name == 'manifest.txt') {
+                        def is = zipFile.getInputStream(zipEntry)
+                        manifestText = is.text
+                        is.close()
+                    }
+                }
+            } finally {
+                if (zipFile) {
+                    zipFile.close()
+                }
+            }
+        }
+        return manifestText
     }
 
 }
