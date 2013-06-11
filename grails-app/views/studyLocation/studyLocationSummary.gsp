@@ -15,14 +15,6 @@
 
         <style type="text/css">
 
-        .tab-content {
-            border-left: 1px solid #d3d3d3;
-            border-right: 1px solid #d3d3d3;
-            border-bottom: 1px solid #d3d3d3;
-            padding: 10px;
-            background-color: white;
-        }
-
         .fieldColumn {
             width: 300px;
         }
@@ -57,7 +49,7 @@
                     var tabHref = $(this).attr('href');
                     if (tabHref == "#taxaTab") {
                         $("#taxaTab").html("Retrieving taxa data for study location... <sts:spinner/>");
-                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName, radius: 0.5, rank:'species'])}").done(function (html) {
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
                             $("#taxaTab").html(html);
                         });
                     } else if (tabHref == "#visitsTab") {

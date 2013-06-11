@@ -1,14 +1,3 @@
-<style type="text/css">
-
-  .tab-content {
-    border-left: 1px solid #d3d3d3;
-    border-right: 1px solid #d3d3d3;
-    border-bottom: 1px solid #d3d3d3;
-    padding: 5px;
-    background-color: white;
-  }
-</style>
-
 <legend style="margin-bottom: 3px;">
 <table style="width: 100%">
   <tr>

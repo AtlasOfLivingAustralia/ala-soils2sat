@@ -55,7 +55,7 @@ class ExtractService {
             manifestEntries << writeZipEntry(user, zipStream, writer, "studyLocationVisitDetails.txt", writeStudyLocationVisits(visitIds))
 
             visitIds.each { visitId ->
-                def visitDetails = studyLocationService.getVisitDetails(visitId)
+                def visitDetails = studyLocationService.getStudyLocationVisitDetails(visitId)
                 if (visitDetails) {
                     visitDetails.samplingUnits.each { samplingUnit ->
                         String samplingUnitId = samplingUnit.id?.toString()
@@ -208,7 +208,7 @@ class ExtractService {
             })
 
             visitIds.each { visitId ->
-                def visitDetails = studyLocationService.getVisitDetails(visitId)
+                def visitDetails = studyLocationService.getStudyLocationVisitDetails(visitId)
                 csvWriter.write(visitDetails)
 
             }

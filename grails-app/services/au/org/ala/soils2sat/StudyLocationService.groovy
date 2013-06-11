@@ -133,6 +133,18 @@ class StudyLocationService extends ServiceBase {
         return taxa?.sort { it }
     }
 
+    public getVoucheredTaxaForStudyLocationVisit(String studyLocationVisitId) {
+        def vouchers = proxyServiceCall(grailsApplication, "getStudyLocationVisitVouchers/${studyLocationVisitId}")
+        def taxa = []
+        vouchers.each { voucher ->
+            if (voucher.herbariumDetermination && !voucher.herbariumDetermination.toString().equalsIgnoreCase('NO ID')) {
+                taxa << voucher.herbariumDetermination
+            }
+        }
+
+        return taxa?.sort { it }
+    }
+
     public getPointInterceptTaxaForVisit(String studyLocationVisitId) {
         def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "0")
         def taxaMap = [:]
@@ -157,7 +169,7 @@ class StudyLocationService extends ServiceBase {
     }
 
     // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
-    def getVisitDetails(String visitId) {
+    def getStudyLocationVisitDetails(String visitId) {
         def details = proxyServiceCall(grailsApplication, "getStudyLocationVisitDetails/${visitId}")
         if (details) {
             return new StudyLocationVisitDetailsTO(cleanMap(details))
@@ -202,7 +214,7 @@ class StudyLocationService extends ServiceBase {
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
     public String getStudyLocationNameForVisitId(String visitId) {
-        def visitDetails = getVisitDetails(visitId)
+        def visitDetails = getStudyLocationVisitDetails(visitId)
         return visitDetails?.studyLocationName
     }
 

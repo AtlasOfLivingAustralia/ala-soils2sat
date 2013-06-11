@@ -4,13 +4,10 @@ import ala.soils2sat.DrawingUtils
 import grails.converters.JSON
 import au.com.bytecode.opencsv.CSVWriter
 
-import java.awt.BasicStroke
 import java.awt.Color
-import java.awt.FontMetrics
 import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.RenderingHints
-import java.awt.image.BufferedImage
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 
@@ -321,7 +318,7 @@ class StudyLocationController {
                     it.studyLocationVisitId == visitId
                 }
                 if (!existing) {
-                    def visitDetails = studyLocationService.getVisitDetails(visitId as String)
+                    def visitDetails = studyLocationService.getStudyLocationVisitDetails(visitId as String)
                     def selection = new StudyLocationVisit(studyLocationName: visitDetails.studyLocationName, studyLocationVisitId: visitId)
                     selection.save(failOnError: true)
                     appState.addToSelectedVisits(selection)
@@ -400,13 +397,25 @@ class StudyLocationController {
         [studyLocationDetails: studyLocationDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames, weeds: weeds]
     }
 
+    def studyLocationVisitTaxaFragment() {
+        def studyLocationVisitId = params.studyLocationVisitId
+        if (studyLocationVisitId) {
+            def studyLocationVisitDetails = studyLocationService.getStudyLocationVisitDetails(studyLocationVisitId)
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationVisitDetails?.studyLocationName)
+            def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocationVisit(studyLocationVisitId)
+            def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+            def weeds = biocacheService.getWeedsOfNationalSignificance()
+            return [studyLocationDetails: studyLocationDetails, studyLocationVisitDetails: studyLocationVisitDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames, weeds: weeds]
+        }
+    }
+
     def studyLocationVisitSummary() {
         def userInstance = springSecurityService.currentUser as User
         def appState = userInstance?.applicationState
 
         def studyLocationVisitId = params.studyLocationVisitId
 
-        def visitDetail = studyLocationService.getVisitDetails(studyLocationVisitId)
+        def visitDetail = studyLocationService.getStudyLocationVisitDetails(studyLocationVisitId)
         def studyLocationName = visitDetail?.studyLocationName
         def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
 
@@ -424,7 +433,7 @@ class StudyLocationController {
 
         def visitId = params.studyLocationVisitId
         def samplingUnitTypeId = params.int("samplingUnitTypeId")
-        def visitDetail = studyLocationService.getVisitDetails(visitId as String)
+        def visitDetail = studyLocationService.getStudyLocationVisitDetails(visitId as String)
         def studyLocationDetail = studyLocationService.getStudyLocationDetails(visitDetail?.studyLocationName)
         def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId?.toString());
         def dataList = data?.samplingUnitData

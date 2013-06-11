@@ -1,7 +1,7 @@
 package au.org.ala.soils2sat
 
 import groovy.xml.MarkupBuilder
-import org.apache.commons.lang.WordUtils
+
 import java.text.SimpleDateFormat
 
 /**
@@ -237,7 +237,7 @@ class S2STagLib {
 
         def studyLocationVisitId = attrs.studyLocationVisitId
         if (studyLocationVisitId) {
-            def visitDetails = studyLocationService.getVisitDetails(studyLocationVisitId)
+            def visitDetails = studyLocationService.getStudyLocationVisitDetails(studyLocationVisitId)
             if (visitDetails) {
                 def mb = new MarkupBuilder(out)
                 mb.span() {
@@ -331,7 +331,7 @@ class S2STagLib {
      * @attr nolink
      */
     def studyLocationVisitBreadCrumb = { attrs, body ->
-        def visitDetail = studyLocationService.getVisitDetails(attrs.studyLocationVisitId)
+        def visitDetail = studyLocationService.getStudyLocationVisitDetails(attrs.studyLocationVisitId)
         def mb = new MarkupBuilder(out)
         if (!attrs.nolink) {
             mb.span(class:'sts-breadcrumb') {

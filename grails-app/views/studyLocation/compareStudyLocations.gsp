@@ -10,18 +10,6 @@
 
     <body>
 
-        <style type="text/css">
-
-        .tab-content {
-            border-left: 1px solid #d3d3d3;
-            border-right: 1px solid #d3d3d3;
-            border-bottom: 1px solid #d3d3d3;
-            padding: 5px;
-            background-color: white;
-        }
-
-        </style>
-
         <script type="text/javascript">
 
             $(document).ready(function() {

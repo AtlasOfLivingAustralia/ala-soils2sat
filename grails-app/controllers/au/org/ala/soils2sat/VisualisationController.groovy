@@ -8,7 +8,7 @@ class VisualisationController {
     def layerService
 
     def studyLocationVisitVisualisations() {
-        def studyLocationVisitDetails = studyLocationService.getVisitDetails(params.studyLocationVisitId)
+        def studyLocationVisitDetails = studyLocationService.getStudyLocationVisitDetails(params.studyLocationVisitId)
         [studyLocationVisitDetails: studyLocationVisitDetails]
     }
 

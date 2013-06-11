@@ -89,7 +89,7 @@ class MapController {
     private void validateSelectedVisits(UserApplicationState appState) {
         def purgeList = []
         appState.selectedVisits?.each { visit ->
-            def details = studyLocationService.getVisitDetails(visit.studyLocationVisitId)
+            def details = studyLocationService.getStudyLocationVisitDetails(visit.studyLocationVisitId)
             if (!details) {
                 purgeList.add visit
             }

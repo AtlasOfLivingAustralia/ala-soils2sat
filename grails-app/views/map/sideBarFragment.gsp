@@ -5,15 +5,6 @@
         padding: 4px 2px;
     }
 
-    .tab-content {
-        border-left: 1px solid #d3d3d3;
-        border-right: 1px solid #d3d3d3;
-        border-bottom: 1px solid #d3d3d3;
-        padding: 10px;
-        background-color: white;
-    }
-
-
 </style>
 
 <div class="well well-small">

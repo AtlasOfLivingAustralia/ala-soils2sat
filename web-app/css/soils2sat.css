@@ -21,3 +21,10 @@ h1, h2, h3, h4, h5, h6 {
     font-style: italic;
 }
 
+.tab-content {
+    border-left: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+    border-bottom: 1px solid #d3d3d3;
+    padding: 10px;
+    background-color: white;
+}
