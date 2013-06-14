@@ -92,18 +92,6 @@
                 }
             });
 
-            function displayLayerInfo(layerName) {
-
-                showModal({
-                   title:'Layer details - ' + layerName,
-                   height: 500,
-                   width: 800,
-                   url: "${createLink(controller:'map', action:'layerInfoFragment')}?layerName=" + layerName
-                });
-
-                return true;
-            }
-
             $(".btnRemoveLayerFromSet").click(function (e) {
                 e.preventDefault();
                 var layerName = $(this).parents("tr[layerName]").attr("layerName");

@@ -47,10 +47,15 @@
 
                 $('a[data-toggle="tab"]').on('shown', function (e) {
                     var tabHref = $(this).attr('href');
-                    if (tabHref == "#taxaTab") {
-                        $("#taxaTab").html("Retrieving taxa data for study location... <sts:spinner/>");
-                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
-                            $("#taxaTab").html(html);
+                    if (tabHref == "#voucheredTaxaTab") {
+                        $("#voucheredTaxaTab").html("Retrieving taxa data for study location visit... <sts:spinner/>");
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVoucheredTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                            $("#voucheredTaxaTab").html(html);
+                        });
+                    } else if (tabHref == "#occurrenceTaxaTab") {
+                        $("#occurrenceTaxaTab").html("Retrieving taxa data for study location visit... <sts:spinner/>");
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationOccurrenceTaxaFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                            $("#occurrenceTaxaTab").html(html);
                         });
                     } else if (tabHref == "#visitsTab") {
                         refreshVisitsTab();
@@ -89,7 +94,6 @@
                             <sts:studyLocationBreadCrumb studyLocationName="${studyLocationName}" nolink="${true}" />
                         </td>
                         <td>
-                            %{--<button id="btnViewVisitSummaries" class="btn btn-small pull-right">View Visit Summaries (${studyLocationSummary.data.numVisits})--}%
                             <g:if test="${isSelected}">
                                 <button id="btnMoveNext" style="margin-right:5px" class="btn btn-small pull-right">Show next selected&nbsp;<i class="icon icon-arrow-right"></i></button>
                                 <button id="btnMovePrevious" style="margin-right:5px" class="btn btn-small pull-right"><i class="icon icon-arrow-left"></i>&nbsp;Show previous selected</button>
@@ -106,7 +110,8 @@
 
                     <ul class="nav nav-tabs" style="margin-bottom: 0px">
                         <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
-                        <li><a href="#taxaTab" data-toggle="tab">Taxa data</a></li>
+                        <li><a href="#voucheredTaxaTab" data-toggle="tab">Taxa (Vouchered)</a></li>
+                        <li><a href="#occurrenceTaxaTab" data-toggle="tab">Taxa (Occurrence)</a></li>
                         <li><a href="#visitsTab" id="visitsTabLink" data-toggle="tab">Study Location Visits</a></li>
                     </ul>
 
@@ -185,7 +190,9 @@
 
                         </div>
 
-                        <div class="tab-pane" id="taxaTab">
+                        <div class="tab-pane active" id="voucheredTaxaTab">
+                        </div>
+                        <div class="tab-pane active" id="occurrenceTaxaTab">
                         </div>
 
                         <div class="tab-pane" id="visitsTab">

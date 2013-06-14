@@ -34,12 +34,16 @@
 
                 $('a[data-toggle="tab"]').on('shown', function (e) {
                     var tabHref = $(this).attr('href');
-                    if (tabHref == "#taxaTab") {
-                        $("#taxaTab").html("Retrieving taxa data for study location visit... <sts:spinner/>");
-                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitTaxaFragment', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function (html) {                            $("#taxaTab").html(html);
+                    if (tabHref == "#voucheredTaxaTab") {
+                        $("#voucheredTaxaTab").html("Retrieving taxa data for study location visit... <sts:spinner/>");
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitVoucheredTaxaFragment', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function (html) {
+                            $("#voucheredTaxaTab").html(html);
                         });
-                    } else if (tabHref == "#visitsTab") {
-                        refreshVisitsTab();
+                    } else if (tabHref == "#occurrenceTaxaTab") {
+                        $("#occurrenceTaxaTab").html("Retrieving taxa data for study location visit... <sts:spinner/>");
+                        $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitOccurrenceTaxaFragment', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function (html) {
+                            $("#occurrenceTaxaTab").html(html);
+                        });
                     }
 
                 });
@@ -78,7 +82,8 @@
 
                     <ul class="nav nav-tabs" style="margin-bottom: 0px">
                         <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
-                        <li><a href="#taxaTab" data-toggle="tab">Taxa data</a></li>
+                        <li><a href="#voucheredTaxaTab" data-toggle="tab">Taxa (Vouchered)</a></li>
+                        <li><a href="#occurrenceTaxaTab" data-toggle="tab">Taxa (Occurrence)</a></li>
                     </ul>
 
                     <div class="tab-content">
@@ -131,8 +136,9 @@
                                 <sts:spinner />
                             </div>
                         </div>
-                        <div class="tab-pane active" id="taxaTab">
-                            Foo
+                        <div class="tab-pane active" id="voucheredTaxaTab">
+                        </div>
+                        <div class="tab-pane active" id="occurrenceTaxaTab">
                         </div>
                     </div>
                 </div>

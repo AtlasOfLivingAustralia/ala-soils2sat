@@ -45,3 +45,4 @@ function showModal(options) {
 function hideModal() {
     $("#modal_element_id").modal('hide');
 }
+

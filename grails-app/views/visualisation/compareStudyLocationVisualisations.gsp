@@ -20,6 +20,17 @@
         </td>
     </tr>
     <tr>
+        <td colspan="2">
+            <div class="visualisation" visLink="${createLink(action:'compareScalarLayer', params:[layerName:'bioclim_bio1', color:'#880000'])}"></div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="visualisation" visLink="${createLink(action:'compareScalarLayer', params:[layerName:'elevation', color: 'orange'])}"></div>
+        </td>
+    </tr>
+
+    <tr>
         <td width="50%">
             <div class="visualisation" visLink="${createLink(action:'compareLandformElement')}"></div>
         </td>

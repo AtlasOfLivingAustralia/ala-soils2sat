@@ -387,25 +387,53 @@ class StudyLocationController {
         [layerData: layerData, studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails]
     }
 
-    def studyLocationTaxaFragment() {
+    def studyLocationVoucheredTaxaFragment() {
         def studyLocationName = params.studyLocationName
-        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
-        def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(studyLocationName)
-        def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
-        def weeds = biocacheService.getWeedsOfNationalSignificance()
-
-        [studyLocationDetails: studyLocationDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames, weeds: weeds]
+        if (studyLocationName) {
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
+            def taxaList = studyLocationService.getVoucheredTaxaForStudyLocation(studyLocationName)
+            def weeds = biocacheService.getWeedsOfNationalSignificance()
+            def description = "Vouchered specimens recorded at ${studyLocationDetails.studyLocationName}"
+            def model = [taxaList: taxaList, weeds: weeds, taxaListDescription: description]
+            render(view: 'taxaListFragment', model: model)
+        }
     }
 
-    def studyLocationVisitTaxaFragment() {
+    def studyLocationOccurrenceTaxaFragment() {
+        def studyLocationName = params.studyLocationName
+        if (studyLocationName) {
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
+            def taxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+            def weeds = biocacheService.getWeedsOfNationalSignificance()
+            def description = "Taxa list derived from specimen data collected within ${settingService.observationRadius} kilometers of ${studyLocationDetails.studyLocationName}"
+            def model = [taxaList: taxaList, weeds: weeds, taxaListDescription: description]
+            render(view: 'taxaListFragment', model: model)
+        }
+    }
+
+    def studyLocationVisitVoucheredTaxaFragment() {
         def studyLocationVisitId = params.studyLocationVisitId
         if (studyLocationVisitId) {
             def studyLocationVisitDetails = studyLocationService.getStudyLocationVisitDetails(studyLocationVisitId)
             def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationVisitDetails?.studyLocationName)
-            def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocationVisit(studyLocationVisitId)
-            def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+            def taxaList = studyLocationService.getVoucheredTaxaForStudyLocationVisit(studyLocationVisitId)
             def weeds = biocacheService.getWeedsOfNationalSignificance()
-            return [studyLocationDetails: studyLocationDetails, studyLocationVisitDetails: studyLocationVisitDetails, rank: settingService.observationsRank, radius: settingService.observationRadius, alaNames: alaNames, ausplotsNames: ausplotsNames, weeds: weeds]
+            def description = "Vouchered specimens recorded at ${studyLocationDetails.studyLocationName} during visit starting ${studyLocationVisitDetails.visitStartDate}"
+            def model = [taxaList: taxaList, weeds: weeds, taxaListDescription: description]
+            render(view: 'taxaListFragment', model: model)
+        }
+    }
+
+    def studyLocationVisitOccurrenceTaxaFragment() {
+        def studyLocationVisitId = params.studyLocationVisitId
+        if (studyLocationVisitId) {
+            def studyLocationVisitDetails = studyLocationService.getStudyLocationVisitDetails(studyLocationVisitId)
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationVisitDetails?.studyLocationName)
+            def taxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+            def weeds = biocacheService.getWeedsOfNationalSignificance()
+            def description = "Taxa list derived from specimen data collected within ${settingService.observationRadius} kilometers of ${studyLocationDetails.studyLocationName} during visit starting ${studyLocationVisitDetails.visitStartDate}"
+            def model = [taxaList: taxaList, weeds: weeds, taxaListDescription: description]
+            render(view: 'taxaListFragment', model: model)
         }
     }
 

@@ -266,9 +266,15 @@ class S2STagLib {
         def name = attrs.name
         def mb = new MarkupBuilder(out)
         if (name) {
-            mb.a(href:"http://bie.ala.org.au/species/${name}", target:'ala-window') {
-                span(class:'taxanomicName') { mkp.yield(name) }
-                mb.img(src:resource(dir:'images', file:'external-link.png'))
+            mb.span {
+                a(href:"http://bie.ala.org.au/species/${name}", target:'ala-window') {
+                    span(class:'taxanomicName') { mkp.yield(name) }
+                    mb.img(src:resource(dir:'images', file:'external-link.png'))
+                }
+                mb.mkp.yieldUnescaped("&nbsp;")
+                a(href:createLink(controller: 'visualisation', action:'speciesAnalysis', params:[speciesName: name])) {
+                    mb.mkp.yield("Analysis...")
+                }
             }
         } else {
             if (attrs.ifEmpty) {
@@ -345,6 +351,19 @@ class S2STagLib {
             }
         }
 
+    }
+
+    def renderEnvironmentLayerName = { attrs, body ->
+
+        if (attrs.layerName) {
+            def layerInfo = layerService.getLayerInfo(attrs.layerName)
+            if (layerInfo) {
+                def mb = new MarkupBuilder(out)
+                mb.span(class:'environmentalLayerName') {
+                    mb.mkp.yield(layerInfo.displayname ?: layerInfo.description ?: attrs.layerName)
+                }
+            }
+        }
     }
 
 }

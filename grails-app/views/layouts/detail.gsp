@@ -50,6 +50,17 @@
 
             });
 
+            function displayLayerInfo(layerName) {
+
+                showModal({
+                    url: "${createLink(controller: 'map', action:'layerInfoFragment', params:[dummy:1])}&layerName=" + layerName,
+                    title: "Layer details - " + layerName,
+                    height: 520,
+                    width: 800
+                });
+                return true;
+            }
+
         </script>
 
     </head>

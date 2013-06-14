@@ -110,17 +110,6 @@
                 });
             }
 
-            function displayLayerInfo(layerName) {
-
-                showModal({
-                    url: "${createLink(controller: 'map', action:'layerInfoFragment')}?layerName=" + layerName,
-                    title: "Layer details - " + layerName,
-                    height: 520,
-                    width: 700
-                });
-                return true;
-            }
-
             function findStudyLocations() {
                 window.location = "${createLink(controller:'search', action:'findStudyLocations')}";
                 return true;

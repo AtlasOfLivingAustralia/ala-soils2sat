@@ -5,7 +5,8 @@
     </div>
 
     <gvisualization:columnCoreChart dynamicLoading="true" name="chartCompareLayer${layerInfo.name}" elementId="${elementId}" columns="${columns}" data="${data}" title="${title}" colors="${colors}" isStacked="${true}"
-                                    hAxis="${new Expando([slantedText: true, slantedTextAngle: 90, textStyle:new Expando([fontSize:9])])}"
+                                    hAxis="${new Expando([slantedText: true, slantedTextAngle: 90, textStyle:new Expando([fontSize:9]), title:'Study Location'])}"
+                                    vAxis="${new Expando([title:layerInfo.environmentalvalueunits ?: ''])}"
                                     legend="none"
     />
 </g:if>

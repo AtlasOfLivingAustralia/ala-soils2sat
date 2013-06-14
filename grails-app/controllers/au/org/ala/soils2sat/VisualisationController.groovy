@@ -51,7 +51,7 @@ class VisualisationController {
             }
         }
 
-        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Structural Summary", name:'structuralSummary', stacked: true])
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Structural Summary", name:'structuralSummary', stacked: true, vAxisTitle:'Count of Species', hAxisTitle:'Stratum Type'])
     }
 
     def soilECForVisit() {
@@ -135,19 +135,15 @@ class VisualisationController {
 
         def weedList = biocacheService.getWeedsOfNationalSignificance()?.sort { it }
 
-        def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
-
         def data = []
         def colors = ['#99B958', '#BD4E4C']
         def columns = [
             ['string', 'Label'], ['number', 'abundance']
         ]
 
-        if (taxaMap) {
-            def ausplotsNames = taxaMap.keySet().collect()
+        def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocationVisit(params.studyLocationVisitId)
 
-            // def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationVisitId)
-
+        if (ausplotsNames) {
             def weedCount = 0
             weedList.each { weedName ->
                 def weed = ausplotsNames.find { it.trim()?.equalsIgnoreCase(weedName.trim()) }
@@ -158,9 +154,7 @@ class VisualisationController {
 
             data <<  ['Non-Weed species', ausplotsNames.size() - weedCount]
             data << ['Weed species', weedCount]
-
-
-        }
+      }
 
         render(view:'pieChart', model:[name:'weedNonWeedBreakdownForLocation', title:'Weed / Non-Weed Species Abundance % Breakdown', columns: columns, data: data, colors: colors])
     }
@@ -219,6 +213,10 @@ class VisualisationController {
         }
 
         def colors = [ '#4E81BD' ]
+
+        if (params.color) {
+            colors = [params.color]
+        }
 
         return [columns: columns, data: data, colors: colors, layerInfo: layerInfo, title: title]
     }
@@ -430,6 +428,60 @@ class VisualisationController {
         render(view:'pieChart', model:[name:'weedNonWeedBreakdownForLocation', title:'Weed / Non-Weed Species Abundance % Breakdown', columns: columns, data: data, colors: colors])
     }
 
+    def speciesAnalysisFlow = {
 
+        initialize {
+
+            action {
+                def user = springSecurityService.currentUser as User
+                def appState = user.applicationState
+                def selectedVisitIds = []
+
+                appState?.selectedVisits?.each {
+                    selectedVisitIds << it.studyLocationVisitId
+                }
+
+                def selectedLayers = []
+                appState?.layers?.each {
+                    selectedLayers << it.name
+                }
+
+                flow.selectedVisitIds = selectedVisitIds
+                flow.selectedLayers = selectedLayers
+                flow.speciesName = params.speciesName
+                flow.flowTitle = "Species Analysis <i>${params.speciesName}</i>"
+
+                [appState: appState, user: user]
+            }
+
+            on("success").to "showVisits"
+        }
+
+        showVisits {
+            on("continue").to "showLayers"
+            on("cancel").to "cancel"
+        }
+
+        showLayers {
+            on("continue").to "showVisualisations"
+            on("cancel").to "cancel"
+            on("back").to "showVisits"
+        }
+
+        showVisualisations {
+            on("back").to "showLayers"
+            on("finish").to "finish"
+        }
+
+        cancel {
+            redirect(controller:'map', action:"index")
+        }
+
+        finish {
+            redirect(controller:'map', action:"index")
+        }
+
+    }
 
 }
+
