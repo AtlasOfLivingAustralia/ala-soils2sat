@@ -70,8 +70,9 @@
             <div class="navbar-inner">
 
                 <div class="container-fluid">
-                    <a class="brand">Soils2Satellite</a>
-
+                    <a class="brand" href="${createLink(controller: 'map', action: 'index')}" style="padding-bottom: 0; padding-top: 0">
+                        <img src="${resource(dir:'/images', file:'Soils-to-Satellites_40px.png')}" />
+                    </a>
                     <div class="nav-collapse collapse">
                         <div class="navbar-text pull-right">
                             <span id="buttonBar">

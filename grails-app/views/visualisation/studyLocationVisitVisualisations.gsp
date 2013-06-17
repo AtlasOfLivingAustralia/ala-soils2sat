@@ -17,6 +17,13 @@
             <div class="visualisation" visLink="${createLink(action:'soilpHForVisit', params:[studyLocationVisitId: studyLocationVisitDetails.studyLocationVisitId])}"></div>
         </td>
     </tr>
+    <tr>
+        <td colspan="2">
+            <div class="visualisation" visLink="${createLink(action:'pointInterceptTaxaForVisit', params:[studyLocationVisitId: studyLocationVisitDetails.studyLocationVisitId])}"></div>
+        </td>
+    </tr>
+
+
 
 </table>
 

@@ -14,7 +14,7 @@
         <input id="layer" placeholder="Search..." class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="width:400px; margin-bottom: 10px">
         %{--<span style="vertical-align: top">Add layer to map&nbsp;<g:checkBox style="vertical-align: top" id="chkAddToMap" name="chkAddToMap" checked=""/></span>--}%
         <br />
-        <div id="layerInfoPanel" class="well well-small" style="margin-top:10px; height: 130px">
+        <div id="layerInfoPanel" class="well well-small" style="margin-top:10px; height: 140px">
         </div>
 
       </div>

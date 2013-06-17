@@ -58,6 +58,19 @@
                 </div>
             </div>
 
+            %{--<div>--}%
+                %{--<table class="table table-bordered" style="background-color: rgb(249, 249, 249)">--}%
+                    %{--<tr>--}%
+                        %{--<td width="50%">--}%
+                            %{--<div class="visualisation" visLink="${createLink(action:'weedNonWeedBreakdownForVisit', params:[studyLocationVisitId: studyLocationVisitDetails.studyLocationVisitId])}"></div>--}%
+                        %{--</td>--}%
+                        %{--<td width="50%">--}%
+                            %{--<div class="visualisation" visLink="${createLink(action:'structuralSummaryForVisit', params:[studyLocationVisitId: studyLocationVisitDetails.studyLocationVisitId])}"></div>--}%
+                        %{--</td>--}%
+                    %{--</tr>--}%
+                %{--</table>--}%
+            %{--</div>--}%
+
             <small>
                 <table class="table table-bordered table-striped table-condensed">
                     <thead>

@@ -15,6 +15,10 @@
 <div>
     <table class="table table-condensed table-striped">
         <tr>
+            <td>Name</td>
+            <td>${layerDefinition.name}</td>
+        </tr>
+        <tr>
             <td>Description</td>
             <td>${layerDefinition.description}</td>
         </tr>

@@ -20,7 +20,7 @@
 
         </script>
 
-        <div class="container">
+        <div class="container-fluid">
             <legend>
                 <table style="width:100%">
                     <tr>
@@ -34,7 +34,7 @@
                 </table>
             </legend>
 
-            <div class="row">
+            <div class="row-fluid">
                 <div class="span12">
                     <g:form>
                         <div class="well well-small">

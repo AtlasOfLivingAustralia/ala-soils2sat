@@ -31,7 +31,7 @@
     </ul>
 </div>
 
-<div class="well well-small" style="margin-top: 10px; margin-bottom: 0px; height:130px;">
+<div class="well well-small" style="margin-top: 10px; margin-bottom: 0px; height:140px;">
   <div id="browseLayerInfo">
   </div>
 </div>

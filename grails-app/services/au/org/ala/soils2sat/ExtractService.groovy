@@ -265,7 +265,7 @@ class ExtractService {
                 columnHeaders << it
             }
 
-            def results = getLayerDataForLocations(appState.selectedPlotNames, appState.layers)
+            def results = getLayerDataForLocations(appState.selectedPlotNames, appState.layers?.collect({ it.name }))
 
             def csvWriter = new au.com.bytecode.opencsv.CSVWriter(writer)
             csvWriter.writeNext(columnHeaders as String[])
@@ -279,20 +279,20 @@ class ExtractService {
                 csvWriter.writeNext(lineItems as String[])
             }
 
-            manifestEntry.comment = "Values of selected environment layers at selected study locations"
+            manifestEntry.comment = "Values of selected environment layerNames at selected study locations"
         }
     }
 
-    public Map getLayerDataForLocations(List<String> locationNames, List<EnvironmentalLayer> layers) {
+    public Map getLayerDataForLocations(List<String> locationNames, List<String> layerNames) {
 
         def data =[:]
         def fieldNames = ['latitude', 'longitude']
         def fieldUnits = [:]
-        if (locationNames && layers) {
-            def layerNames = layers.collect({ it.name }).join(",")
+        if (locationNames && layerNames) {
+            def layerNamesStr = layerNames.join(",")
             for (String studyLocationName : locationNames) {
                 def studyLocationSummary = studyLocationService.getStudyLocationDetails(studyLocationName)
-                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
+                def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNamesStr}/${studyLocationSummary.latitude}/${studyLocationSummary.longitude}")
                 def studyLocationResults = JSON.parse(url.text)
                 def temp = [:]
                 temp.latitude = studyLocationSummary.latitude

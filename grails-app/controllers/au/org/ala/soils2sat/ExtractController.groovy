@@ -48,7 +48,7 @@ class ExtractController {
                 def selectedVisitIds = []
                 if (!selected) {
                     flow.selectedVisitIds = selectedVisitIds
-                    flash.errorMessage = "You must select at least on visit to extract data for"
+                    flash.errorMessage = "You must select at least one visit to extract data for"
                     return error()
                 }
 

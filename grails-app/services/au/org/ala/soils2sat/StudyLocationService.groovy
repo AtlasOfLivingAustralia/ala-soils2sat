@@ -87,12 +87,20 @@ class StudyLocationService extends ServiceBase {
         rows = rows?.sort { it.upperDepth }
     }
 
+    public String getLastVisitIdForStudyLocation(String studyLocationName) {
+        return getLastVisitForStudyLocation(studyLocationName)?.studyLocationVisitId
+    }
+
+    public StudyLocationVisitTO getLastVisitForStudyLocation(String studyLocationName) {
+        List<StudyLocationVisitTO> visits = getStudyLocationVisits(studyLocationName)
+        def visit = visits.max { it.visitStartDate }
+        return visit
+    }
+
 
     public getSoilPhForStudyLocation(String studyLocationName) {
-        // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
-        List<StudyLocationVisitTO> visits = getStudyLocationVisits(studyLocationName)
+        def visit = getLastVisitForStudyLocation(studyLocationName)
         def rows = []
-        def visit = visits.max { it.visitStartDate }
         if (visit) {
             rows = getSoilPhForStudyLocationVisit(visit.studyLocationVisitId)
         }
@@ -112,9 +120,8 @@ class StudyLocationService extends ServiceBase {
 
     public getSoilECForStudyLocation(String studyLocationName) {
         // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
-        List<StudyLocationVisitTO> visits = getStudyLocationVisits(studyLocationName)
         def rows = []
-        def visit = visits.max { it.visitStartDate }
+        def visit = getLastVisitForStudyLocation(studyLocationName)
         if (visit) {
             rows = getSoilECForStudyLocationVisit(visit.studyLocationVisitId)
         }
@@ -122,6 +129,9 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getVoucheredTaxaForStudyLocation(String studyLocationName) {
+        if (!studyLocationName) {
+            return []
+        }
         def vouchers = proxyServiceCall(grailsApplication, "getStudyLocationVouchers/${studyLocationName}")
         def taxa = []
         vouchers.each { voucher ->

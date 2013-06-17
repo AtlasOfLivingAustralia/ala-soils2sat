@@ -6,6 +6,7 @@ class VisualisationController {
     def biocacheService
     def springSecurityService
     def layerService
+    def extractService
 
     def studyLocationVisitVisualisations() {
         def studyLocationVisitDetails = studyLocationService.getStudyLocationVisitDetails(params.studyLocationVisitId)
@@ -52,6 +53,25 @@ class VisualisationController {
         }
 
         render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Structural Summary", name:'structuralSummary', stacked: true, vAxisTitle:'Count of Species', hAxisTitle:'Stratum Type'])
+    }
+
+    def pointInterceptTaxaForVisit() {
+        def columns = [['string', 'Species'], ['number', 'Count']]
+        def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
+        def data = []
+        if (taxaMap) {
+            // sort by inverted value so order is descending
+            def names = taxaMap.sort { (it.value ? (1 / it.value) : 0) }.keySet()
+            names.each {
+                data << [it, taxaMap[it] ?: 0]
+            }
+            // check to see that we actually have some non-zero data...
+            if (isEmptyChartData(data)) {
+                data = []
+            }
+        }
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: ['goldenrod'], title: "Point Intercept Taxa", name:'PITaxa', stacked: false, vAxisTitle:'Count of Species', hAxisTitle:'Species'])
     }
 
     def soilECForVisit() {
@@ -206,7 +226,13 @@ class VisualisationController {
         def columns = [['string', 'Study Location'], ['number', layerInfo.displayname]]
         def data = []
 
-        appState.selectedPlotNames.each { studyLocationName ->
+        def selectedPlotNames = appState.selectedPlotNames
+
+        if (params.studyLocationNames) {
+            selectedPlotNames = params.studyLocationNames?.split(",")
+        }
+
+        selectedPlotNames?.each { studyLocationName ->
             def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
             def values = layerService.getIntersectValues(studyLocationDetails.latitude, studyLocationDetails.longitude, [layerName])
             data << [studyLocationName, values[layerName] ?: 0]
@@ -265,7 +291,11 @@ class VisualisationController {
 
         def ausplotsNames = studyLocationService.getVoucheredTaxaForStudyLocation(params.studyLocationName)
         def studyLocationDetails = studyLocationService.getStudyLocationDetails(params.studyLocationName)
-        def alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
+        def alaNames = []
+        if (studyLocationDetails) {
+            alaNames = biocacheService.getTaxaNamesForLocation(studyLocationDetails?.latitude, studyLocationDetails?.longitude)
+        }
+
         def both = []
         alaNames.each {
             if (ausplotsNames.contains(it)) {
@@ -458,17 +488,70 @@ class VisualisationController {
         }
 
         showVisits {
-            on("continue").to "showLayers"
+
+            on("continue") {
+                def selected = params.get("visitId")
+                def selectedVisitIds = []
+                if (!selected) {
+                    flow.selectedVisitIds = selectedVisitIds
+                    flash.errorMessage = "You must select at least one visit!"
+                    return error()
+                }
+
+                if (selected instanceof String) {
+                    selectedVisitIds << selected
+                } else if (isCollection(selected)) {
+                    selected.each {
+                        selectedVisitIds << it
+                    }
+                }
+                flow.selectedVisitIds = selectedVisitIds
+            }.to "showLayers"
+
             on("cancel").to "cancel"
         }
 
         showLayers {
-            on("continue").to "showVisualisations"
+            on("continue") {
+                def selected = params.get("layerName")
+                def selectedLayers = []
+                if (!selected) {
+                    flow.selectedLayers = selectedLayers
+                    flash.errorMessage = "You must select at least one layer"
+                    return error()
+                }
+
+                if (selected instanceof String) {
+                    selectedLayers << selected
+                } else if (isCollection(selected)) {
+                    selected.each {
+                        selectedLayers << it
+                    }
+                }
+                flow.selectedLayers = selectedLayers
+
+            }.to "showVisualisations"
             on("cancel").to "cancel"
             on("back").to "showVisits"
         }
 
         showVisualisations {
+
+            onEntry {
+                // Sort study locations by latitude (as a surrogate for climate)
+                def locations = []
+                flow.selectedVisitIds?.each {
+                    def studyLocationName = studyLocationService.getStudyLocationNameForVisitId(it)
+                    locations << studyLocationService.getStudyLocationDetails(studyLocationName)
+                }
+                locations = locations.sort { it.latitude }
+                flow.studyLocationNames = locations.collect { it.studyLocationName }
+
+                def layerData = extractService.getLayerDataForLocations(flow.studyLocationNames, flow.selectedLayers)
+                flow.layerData = layerData
+
+            }
+
             on("back").to "showLayers"
             on("finish").to "finish"
         }
@@ -481,6 +564,81 @@ class VisualisationController {
             redirect(controller:'map', action:"index")
         }
 
+    }
+
+    def speciesAnalysisPointInterceptCounts() {
+        def columns = [['string', 'StudyLocation'], ['number', 'Count']]
+        def colors = ['#9ABB59']
+        def data = []
+        def speciesName = params.speciesName
+        params.studyLocationNames?.split(",")?.each {
+            def value = 0
+            def visit = studyLocationService.getLastVisitForStudyLocation(it)
+            if (visit) {
+                def piData = studyLocationService.getPointInterceptTaxaForVisit(visit.studyLocationVisitId)
+                value = piData[speciesName]
+            }
+            data << [it, value]
+        }
+
+        // check to see that we actually have some non-zero data...
+        if (isEmptyChartData(data)) {
+            data = []
+        }
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Point Intercept Counts at last visit", name:'specAnPIC', stacked: false, vAxisTitle:'Count', hAxisTitle:'Study Location'])
+    }
+
+    def speciesAnalysisSoilPh() {
+        def columns = [['string', 'StudyLocation'], ['number', 'Count']]
+        def colors = ['#616161']
+        def data = []
+        def speciesName = params.speciesName
+        params.studyLocationNames?.split(",")?.each {
+            def value = 0
+            def visit = studyLocationService.getLastVisitForStudyLocation(it)
+            if (visit) {
+                def phData = studyLocationService.getSoilPhForStudyLocationVisit(visit.studyLocationVisitId)
+
+                double total = 0
+                if (phData) {
+                    phData.each {
+                        total += (double) it.pH
+                    }
+                    value = total / phData.size()
+                }
+            }
+            data << [it, value]
+        }
+
+        // check to see that we actually have some non-zero data...
+        if (isEmptyChartData(data)) {
+            data = []
+        }
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Avg Soil pH (AusPlots data)", name:'specAnPH', stacked: false, vAxisTitle:'pH', hAxisTitle:'Study Location'])
+    }
+
+    def speciesAnalysisLatitude() {
+        def columns = [['string', 'StudyLocation'], ['number', 'Latitude']]
+        def colors = ['blue']
+        def data = []
+
+        params.studyLocationNames?.split(",")?.each {
+            def value = 0
+            def location = studyLocationService.getStudyLocationDetails(it)
+            if (location) {
+                value = location.latitude
+            }
+            data << [it, value]
+        }
+
+        // check to see that we actually have some non-zero data...
+        if (isEmptyChartData(data)) {
+            data = []
+        }
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Study Location Latitude", name:'specAnLatitude', stacked: false, vAxisTitle:'Latitude', hAxisTitle:'Study Location'])
     }
 
 }

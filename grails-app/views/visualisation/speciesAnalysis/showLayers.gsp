@@ -28,7 +28,7 @@
 
         </script>
 
-        <div class="container">
+        <div class="container-fluid">
             <legend>
                 <table style="width:100%">
                     <tr>
@@ -42,7 +42,7 @@
                 </table>
             </legend>
 
-            <div class="row">
+            <div class="row-fluid">
                 <div class="span12">
                     <g:form>
                         <div class="well well-small">
@@ -51,7 +51,7 @@
                                 <g:each in="${appState.layers}" var="layer">
                                     <tr layerName="${layer.name}">
                                         <g:set var="isChecked" value="${selectedLayers?.contains(layer.name)}" />
-                                        <td style="width:30px; vertical-align: middle"><g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0" name="visitId" checked="${isChecked}" value="${layer.name}" /></td>
+                                        <td style="width:30px; vertical-align: middle"><g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0" name="layerName" checked="${isChecked}" value="${layer.name}" /></td>
                                         <td><a href="#" class="layerInfoLink"><sts:renderEnvironmentLayerName layerName="${layer.name}" /></a></td>
                                     </tr>
                                 </g:each>

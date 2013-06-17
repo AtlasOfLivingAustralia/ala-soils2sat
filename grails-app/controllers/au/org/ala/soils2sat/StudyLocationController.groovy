@@ -79,7 +79,7 @@ class StudyLocationController {
 
     private Map getCompareData(User userInstance) {
         def appState = userInstance?.applicationState
-        return extractService.getLayerDataForLocations(appState.selectedPlotNames, appState.layers)
+        return extractService.getLayerDataForLocations(appState.selectedPlotNames, appState.layers?.collect({ it.name }))
     }
 
     def compareStudyLocations = {
