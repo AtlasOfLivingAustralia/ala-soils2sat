@@ -71,7 +71,7 @@ class VisualisationController {
             }
         }
 
-        render(view:'columnChart', model: [columns: columns, data: data, colors: ['goldenrod'], title: "Point Intercept Taxa", name:'PITaxa', stacked: false, vAxisTitle:'Count of Species', hAxisTitle:'Species'])
+        render(view:'columnChart', model: [columns: columns, data: data, colors: ['goldenrod'], title: "Point Intercept Taxa", name:'PITaxa', stacked: false, vAxisTitle:'Number of Specimens', hAxisTitle:'Species'])
     }
 
     def soilECForVisit() {

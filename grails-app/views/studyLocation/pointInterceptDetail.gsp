@@ -13,6 +13,11 @@
 
             $(document).ready(function(e) {
 
+                $("#btnExportData").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'studyLocation', action:'downloadSamplingUnit', params:[studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnitTypeId:samplingUnitTypeId])}";
+                });
+
                 var pit = $("#pointInterceptType");
 
                 pit.change(function() {
@@ -43,7 +48,9 @@
                             <sts:navSeperator/>
                             <span class="s2s-breadcrumb">${samplingUnitName}</span>
                         </td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-small pull-right" id="btnExportData"><i class="icon-download"></i>&nbsp;Export</button>
+                        </td>
                     </tr>
                 </table>
             </legend>
@@ -57,19 +64,6 @@
                 <div id="pointInterceptImage">
                 </div>
             </div>
-
-            %{--<div>--}%
-                %{--<table class="table table-bordered" style="background-color: rgb(249, 249, 249)">--}%
-                    %{--<tr>--}%
-                        %{--<td width="50%">--}%
-                            %{--<div class="visualisation" visLink="${createLink(action:'weedNonWeedBreakdownForVisit', params:[studyLocationVisitId: studyLocationVisitDetails.studyLocationVisitId])}"></div>--}%
-                        %{--</td>--}%
-                        %{--<td width="50%">--}%
-                            %{--<div class="visualisation" visLink="${createLink(action:'structuralSummaryForVisit', params:[studyLocationVisitId: studyLocationVisitDetails.studyLocationVisitId])}"></div>--}%
-                        %{--</td>--}%
-                    %{--</tr>--}%
-                %{--</table>--}%
-            %{--</div>--}%
 
             <small>
                 <table class="table table-bordered table-striped table-condensed">

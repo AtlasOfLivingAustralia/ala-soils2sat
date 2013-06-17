@@ -9,6 +9,18 @@
     </head>
 
     <body>
+
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+                $("#btnExportData").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'studyLocation', action:'downloadSamplingUnit', params:[studyLocationVisitId: visitDetail.studyLocationVisitId, samplingUnitTypeId:samplingUnitTypeId])}";
+                });
+            });
+
+        </script>
+
         <div class="container-fluid">
             <legend>
                 <table style="width:100%">
@@ -22,7 +34,9 @@
                             <sts:navSeperator/>
                             <span class="s2s-breadcrumb">${samplingUnitName}</span>
                         </td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-small pull-right" id="btnExportData"><i class="icon-download"></i>&nbsp;Export</button>
+                        </td>
                     </tr>
                 </table>
             </legend>

@@ -3,6 +3,7 @@ package au.org.ala.soils2sat
 import ala.soils2sat.DrawingUtils
 import grails.converters.JSON
 import au.com.bytecode.opencsv.CSVWriter
+import net.sf.json.JSONNull
 
 import java.awt.Color
 import java.awt.Graphics2D
@@ -455,6 +456,59 @@ class StudyLocationController {
     def ajaxSelectedStudyLocationsFragment() {
         def userInstance = springSecurityService.currentUser as User
         [userInstance: userInstance, appState: userInstance?.applicationState]
+    }
+
+    def downloadSamplingUnit() {
+        def visitId = params.studyLocationVisitId
+        def samplingUnitTypeId = params.int("samplingUnitTypeId")
+        def visitDetail = studyLocationService.getStudyLocationVisitDetails(visitId as String)
+        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId?.toString());
+
+        def dataList = data?.samplingUnitData
+        def samplingUnitName = data?.samplingUnit?.description
+
+        response.setHeader("Content-Disposition", "attachment;filename=${visitDetail.studyLocationName}_${visitDetail.visitStartDate}_${samplingUnitName}.zip")
+        response.setContentType("application/zip")
+
+        def zipStream = new ZipOutputStream(response.getOutputStream())
+        try {
+            OutputStream bos = new BufferedOutputStream(zipStream);
+            OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+            BufferedWriter writer = new BufferedWriter(outputwriter);
+            zipStream.putNextEntry(new ZipEntry("${samplingUnitName}.csv"));
+
+            Map first = dataList.first()
+
+            def sb = new StringBuilder()
+            def keySet = first.keySet().sort { it } // always get them entries in the same order
+            // print header row first...
+            keySet.each {
+                sb.append('"').append(it).append('",')
+            }
+            // trim off last comma
+            sb.deleteCharAt(sb.length() - 1);
+            writer << sb.toString() << "\n"
+            // now dump all the data...
+            dataList.each { row ->
+                sb = new StringBuilder()
+                keySet.each { String fieldName ->
+                    def element = row[fieldName]
+                    if (element == null || element == JSONNull) {
+                        element = ""
+                    }
+                    sb.append('"').append(element).append('",')
+                }
+                // trim off last comma
+                sb.deleteCharAt(sb.length() - 1);
+                writer << sb << "\n"
+            }
+
+            writer.flush()
+            zipStream.closeEntry();
+        } finally {
+            // clean up
+            zipStream.close();
+        }
     }
 
     def samplingUnitDetail() {
