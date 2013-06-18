@@ -62,6 +62,7 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId,#samplingUnitTypeId}")
     public getSamplingUnitDetails(String visitId, String samplingUnitTypeId) {
         def details = proxyServiceCall(grailsApplication, "getSamplingUnits/${visitId}/getDetails/${samplingUnitTypeId}")
         if (details) {
@@ -79,7 +80,7 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getSoilPhForStudyLocationVisit(String studyLocationVisitId) {
-        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "7")
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.SOIL_CHARACTER)
         def rows = []
         if (samplingUnit?.samplingUnitData) {
             rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, pH: it.ph ] }
@@ -109,7 +110,7 @@ class StudyLocationService extends ServiceBase {
 
     public getSoilECForStudyLocationVisit(String studyLocationVisitId) {
         // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
-        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "7")
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.SOIL_CHARACTER)
         def rows = []
         if (samplingUnit?.samplingUnitData) {
             rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, EC: it.ec ] }
@@ -156,7 +157,7 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getPointInterceptTaxaForVisit(String studyLocationVisitId) {
-        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, "0")
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.POINT_INTERCEPT)
         def taxaMap = [:]
         samplingUnit?.samplingUnitData?.each {
             def name = StringUtils.collapseSpaces(it.herbariumDetermination)

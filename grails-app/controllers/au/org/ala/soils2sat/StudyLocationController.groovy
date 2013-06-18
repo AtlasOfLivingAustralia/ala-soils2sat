@@ -534,6 +534,8 @@ class StudyLocationController {
         switch (samplingUnitTypeId) {
             case 0:
                 dataList = dataList.sort { it.transect }
+                def interceptTypesList = ['substrate', 'herbariumDetermination', 'growthForm']
+                model.interceptTypes = interceptTypesList.collectEntries { [it, StringUtils.makeTitleFromCamelCase(it)]}
                 view = 'pointInterceptDetail'
                 break;
             case 4:
@@ -561,10 +563,21 @@ class StudyLocationController {
         render(view:view, model:model)
     }
 
+    def pointInterceptVisualisations() {
+        def visitId = params.studyLocationVisitId as String
+        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.POINT_INTERCEPT)
+        def pointInterceptType = params.pointInterceptType ?: "herbariumDetermination"
+
+        if (!data) {
+            return
+        }
+        [studyLocationVisitId: visitId, data: data?.samplingUnitData, pointInterceptType: pointInterceptType]
+    }
+
     def pointInterceptImage() {
 
         def visitId = params.studyLocationVisitId as String
-        def data = studyLocationService.getSamplingUnitDetails(visitId, "0")
+        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.POINT_INTERCEPT)
 
         if (!data) {
             return
@@ -577,7 +590,6 @@ class StudyLocationController {
         def property = params.pointInterceptType ?: "herbariumDetermination"
 
         try {
-
             // This pre-fills the color map with a color palette (if defined), otherwise returns an empty map to be filled by the random color generator
             Map<String, Color> colorMap = VisualisationUtils.getColorMapForIntersectProperty(property)
             // A list of random colors to use if no color is predefined for a particular field value

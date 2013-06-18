@@ -1,5 +1,9 @@
 package au.org.ala.soils2sat
 
+import ala.soils2sat.DrawingUtils
+
+import java.awt.Color
+
 class VisualisationController {
 
     def studyLocationService
@@ -21,7 +25,7 @@ class VisualisationController {
         def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
         def data = []
         if (taxaMap) {
-            def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, "4")?.samplingUnitData[0]
+            def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.STRUCTURAL_SUMMARY)?.samplingUnitData[0]
 
             // Cleanse duplicate spaces out of taxa names
             structuralSummary.each {
@@ -640,6 +644,110 @@ class VisualisationController {
 
         render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "Study Location Latitude", name:'specAnLatitude', stacked: false, vAxisTitle:'Latitude', hAxisTitle:'Study Location'])
     }
+
+    def PICountComparison() {
+        def pointInterceptType = params.pointInterceptType as String
+        def colorMap = VisualisationUtils.getColorMapForIntersectProperty(pointInterceptType)
+
+        def samplingUnit = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.POINT_INTERCEPT)
+        if (!samplingUnit) {
+            return
+        }
+
+        List<Color> palette = DrawingUtils.generatePalette(20, Color.blue)
+        int colorIdx = 0
+
+        def dataList = samplingUnit.samplingUnitData
+        // now split out into a map of property value to count...
+        def counts = dataList.countBy { it[pointInterceptType] }
+        def data = []
+        def colors = []
+
+        // columns first...
+        def title = StringUtils.makeTitleFromCamelCase(pointInterceptType)
+        def columns = [['string', title]]
+
+        counts.keySet().each {
+            if (it) {
+                columns << ['number', it]
+            }
+        }
+
+        counts.keySet().each { property ->
+            if (property) {
+                def row = [property]
+                counts.keySet().each {
+                    if (it) {
+                        if (property == it) {
+                            row << counts[property]
+                        } else {
+                            row << 0
+                        }
+                    }
+                }
+
+                data << row
+
+                if (colorMap) {
+                    colors << "#" + Integer.toHexString(colorMap[property]?.getRGB()).substring(2)
+                } else {
+                    colors << "#" + Integer.toHexString(palette[colorIdx++]?.getRGB()).substring(2)
+                }
+            }
+        }
+
+        // check to see that we actually have some non-zero data...
+        if (isEmptyChartData(data)) {
+            data = []
+        }
+
+        def chartTitle = "PI Counts Comparison for " + title
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: chartTitle , name:'PICountsComparison', stacked: true, vAxisTitle:'Count', hAxisTitle:title])
+    }
+
+    public PICountPercentBreakdown() {
+
+        def pointInterceptType = params.pointInterceptType as String
+        def colorMap = VisualisationUtils.getColorMapForIntersectProperty(pointInterceptType)
+
+        def samplingUnit = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.POINT_INTERCEPT)
+        if (!samplingUnit) {
+            return
+        }
+
+        def title = StringUtils.makeTitleFromCamelCase(pointInterceptType)
+        def columns = [['string', title], ['number', 'Count']]
+
+
+        List<Color> palette = DrawingUtils.generatePalette(20, Color.blue)
+        int colorIdx = 0
+
+        def dataList = samplingUnit.samplingUnitData
+        // now split out into a map of property value to count...
+        def counts = dataList.countBy { it[pointInterceptType] }
+        def data = []
+        def colors = []
+
+        counts.keySet().each { property ->
+            if (property) {
+                data << [property, counts[property]]
+                if (colorMap) {
+                    colors << "#" + Integer.toHexString(colorMap[property]?.getRGB()).substring(2)
+                } else {
+                    colors << "#" + Integer.toHexString(palette[colorIdx++]?.getRGB()).substring(2)
+                }
+            }
+        }
+
+        // check to see that we actually have some non-zero data...
+        if (isEmptyChartData(data)) {
+            data = []
+        }
+
+        render(view:'pieChart', model:[name:'PICountBreakDown', title:'% Breakdown for ' + title, columns: columns, data: data, colors: colors])
+    }
+
 
 }
 

@@ -21,16 +21,19 @@
                 var pit = $("#pointInterceptType");
 
                 pit.change(function() {
-                    plotValues($(this).val());
+                    updateVisualisations($(this).val());
                 });
 
-                plotValues(pit.val());
+                updateVisualisations(pit.val());
 
             });
 
-            function plotValues(pointInterceptType) {
-                var imageUrl = "${createLink(controller:'studyLocation', action:'pointInterceptImage', params:[studyLocationVisitId: visitDetail.studyLocationVisitId])}&pointInterceptType=" + pointInterceptType;
-                $("#pointInterceptImage").html('<img src="' + imageUrl + '">')
+            function updateVisualisations(pointInterceptType) {
+                var visUrl = "${createLink(controller:'studyLocation', action:'pointInterceptVisualisations', params:[studyLocationVisitId: visitDetail.studyLocationVisitId])}&pointInterceptType=" + pointInterceptType;
+                $("#pointInterceptVisualisations").html('<img src="../images/spinner.gif" />&nbsp;Loading...');
+                $.ajax(visUrl).done(function(html) {
+                    $("#pointInterceptVisualisations").html(html);
+                });
             }
 
         </script>
@@ -59,9 +62,9 @@
 
             <div class="well">
                 Plot Point Intercept values for:
-                <g:select id="pointInterceptType" from="${['substrate', 'herbariumDetermination', 'growthForm']}" name="pointInterceptType" />
+                <g:select id="pointInterceptType" from="${interceptTypes}" optionKey="key" optionValue="value" name="pointInterceptType" />
                 <br />
-                <div id="pointInterceptImage">
+                <div id="pointInterceptVisualisations">
                 </div>
             </div>
 
