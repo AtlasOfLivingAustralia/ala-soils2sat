@@ -544,7 +544,6 @@ class StudyLocationController {
             case 7:
                 def groups = [
                         "Miscellaneous" : ["comments", "ec", "ph", "effervescence", "collectedBy", "horizon"],
-//                        "Depth" :["layerNumber", "upperDepth", "lowerDepth"],
                         "Texture" : ["textureGrade", "textureModifier", "textureQualifier"],
                         "Colour" : ["colourWhenDry", "colourWhenMoist"],
                         "Mottles" : ["mottlesColour", "mottlesAbundance"],
@@ -554,7 +553,7 @@ class StudyLocationController {
                         "Pedality" : ["pedalityFabric", "pedalityGrade", "pedalityType"]
 
                 ]
-                dataList = dataList.sort { it.upperDepth }
+                dataList = dataList?.sort { it?.upperDepth }
                 model['groups'] = groups
                 view = 'soilCharacterDetail'
                 break;
