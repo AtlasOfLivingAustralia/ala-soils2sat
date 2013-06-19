@@ -949,4 +949,14 @@ class AdminController {
         redirect(action:'dataExtractions')
     }
 
+    def attachments() {
+        params.max = params.max ?: 10
+        params.sort= params.sort ?: "dateUploaded"
+        params.order= params.order ?: "desc"
+
+        def attachments = Attachment.list(params)
+
+        [attachments: attachments]
+    }
+
 }

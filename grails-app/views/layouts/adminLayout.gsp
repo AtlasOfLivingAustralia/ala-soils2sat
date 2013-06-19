@@ -57,6 +57,7 @@
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'ecologicalContexts')}" title="Ecological Contexts" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'matrix')}" active="Matrix" title="Questions Matrix" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'dataExtractions')}" title="Data Extractions" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'attachments')}" title="Attachments" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'tools')}" title="Tools" />
                     <sts:breadcrumbItem href="${createLink(controller: 'admin', action: 'settings')}" title="Settings" />
                 </ul>
