@@ -172,14 +172,14 @@ class StudyLocationService extends ServiceBase {
         return taxaMap
     }
 
-    // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
     def getStudyLocationDetailsOld(String studyLocationName) {
         def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName, serviceUrl:'http://s2s-dev.ecoinformatics.org.au:8080/s2s-services/getSiteLocationDetails'])
         def results = new StudyLocationDetails(details)
         return results
     }
 
-    // @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
+    @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId}")
     def getStudyLocationVisitDetails(String visitId) {
         def details = proxyServiceCall(grailsApplication, "getStudyLocationVisitDetails/${visitId}")
         if (details) {
@@ -188,9 +188,21 @@ class StudyLocationService extends ServiceBase {
         return null
     }
 
+    public List<StudyLocationVisitSearchResult> fiqlSearch(String fiql) {
+
+        def json = proxyServiceCall(grailsApplication, "search", ['_s': fiql])
+        def results = []
+        json.each {
+            def result = new StudyLocationVisitSearchResult(cleanMap(it))
+            results << result
+        }
+
+        return results
+    }
+
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName}")
     def getSearchTraits() {
-        def traits = proxyServiceCall(grailsApplication, "getSearchTraits", [])
+        def traits = proxyServiceCall(grailsApplication, "getSearchTraits", [:])
         return traits
     }
 

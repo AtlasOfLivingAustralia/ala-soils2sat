@@ -75,8 +75,6 @@ class SoilColorUtils {
 
                 Color c = new Color(newred, newgreen, newblue)
 
-                println "${min} ${max} ${c}"
-
                 return new SoilColor(chroma: munsellCode.chroma, hue: munsellCode.hue, value: munsellCode.value, color: c, description: "Interpolated")
             }
 

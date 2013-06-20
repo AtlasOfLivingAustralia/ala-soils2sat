@@ -222,7 +222,7 @@ class S2STagLib {
             }
 
             def allowedValues = []
-            if (criteriaDefinition.valueType == CriteriaValueType.StringMultiSelect && (criteriaDefinition.type == CriteriaType.StudyLocationVisit || criteriaDefinition.type == CriteriaType.StudyLocation)) {
+            if (criteriaDefinition.valueType == CriteriaValueType.StringMultiSelect && criteriaDefinition.type == CriteriaType.AusplotsSearchTrait) {
                 allowedValues = []
             }
 

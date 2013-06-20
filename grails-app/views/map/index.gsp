@@ -268,11 +268,24 @@
 
             function loadWMSLayer(name, opacity) {
 
-                var wmsLayer = new OpenLayers.Layer.WMS(name, "${grailsApplication.config.spatialPortalRoot}/geoserver/gwc/service/wms/reflect", {
+                var styles = '';
+
+                if (name == 'ibra7_regions') {
+                    styles = 'ibra7_labels_style';
+                }
+
+                var url = "${grailsApplication.config.spatialPortalRoot}/geoserver/gwc/service/wms/reflect";
+                if (styles) {
+                    // bypass the tile cache when styles are in effect
+                    url = "${grailsApplication.config.spatialPortalRoot}/geoserver/wms/reflect"
+                }
+
+                var wmsLayer = new OpenLayers.Layer.WMS(name, url, {
                     layers: 'ALA:' + name,
                     srs: 'EPSG:900913',
                     format: 'image/png',
-                    transparent: true
+                    transparent: true,
+                    styles: styles
                 });
 
                 if (opacity) {

@@ -41,6 +41,10 @@ grails.project.dependency.resolution = {
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
 
         compile 'org.apache.httpcomponents:httpclient:4.2.4'
+        compile 'org.imgscalr:imgscalr-lib:4.2'
+        compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:2.7.5'
+        compile 'org.apache.cxf:cxf-rt-rs-extension-search:2.7.5'
+
     }
 
     plugins {

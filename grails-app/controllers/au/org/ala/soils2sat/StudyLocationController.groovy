@@ -352,7 +352,13 @@ class StudyLocationController {
             it == studyLocationName
         } != null
 
-        [studyLocationDetails:studyLocationDetails, studyLocationName: studyLocationName, isSelected: isSelected != null]
+        def attachmentMap = [:]
+        def attachments = Attachment.findAllByOwnerId(studyLocationName)
+        if (attachments) {
+            attachmentMap = attachments.collectEntries { [ it.category, it ]}
+        }
+
+        [studyLocationDetails:studyLocationDetails, studyLocationName: studyLocationName, isSelected: isSelected != null, attachmentMap: attachmentMap]
     }
 
     def studyLocationVisitsFragment() {
@@ -450,7 +456,13 @@ class StudyLocationController {
 
         def isSelected = appState.selectedVisits.find { it.studyLocationVisitId == studyLocationVisitId }
 
-        [studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails, visitDetail: visitDetail, isSelected: isSelected]
+        def attachmentMap = [:]
+        def attachments = Attachment.findAllByOwnerId("${studyLocationName}_${visitDetail.visitStartDate}")
+        if (attachments) {
+            attachmentMap = attachments.collectEntries { [ it.category, it ]}
+        }
+
+        [studyLocationName: studyLocationName, studyLocationDetails: studyLocationDetails, visitDetail: visitDetail, isSelected: isSelected, attachmentMap: attachmentMap]
     }
 
     def ajaxSelectedStudyLocationsFragment() {
@@ -715,6 +727,57 @@ class StudyLocationController {
             return
         }
         redirect(action:'studyLocationSummary', params:[studyLocationName: params.studyLocationName])
+    }
+
+    def ajaxStudyLocationAutocomplete() {
+        def term = (params.term as String)?.toLowerCase()
+        def results = []
+        if (term) {
+            def locations = studyLocationService.getStudyLocations()
+            locations?.each {
+                if (it.studyLocationName?.toLowerCase().contains(term)) {
+                    results << it.studyLocationName
+                }
+            }
+        }
+
+        render(results as JSON)
+    }
+
+    def ajaxVisitStartDateAutocomplete() {
+        def term = (params.term as String)?.toLowerCase()
+        def studyLocationName = params.studyLocationName as String
+        def results = []
+
+        if (term && studyLocationName) {
+            def visits = studyLocationService.getStudyLocationVisits(studyLocationName)
+            visits?.each {
+                if (it.visitStartDate?.contains(term)) {
+                    results << it.visitStartDate
+                }
+            }
+        }
+        render(results as JSON)
+    }
+
+    def studyLocationPhotoThumbnailsFragment() {
+        def studyLocationName = params.studyLocationName
+        def attachments = []
+        if (studyLocationName) {
+            attachments = Attachment.findAllByOwnerIdAndCategory(studyLocationName, AttachmentCategory.Photo)
+        }
+
+        render(view: 'photoThumbnailsFragment', model:[attachments: attachments])
+    }
+
+    def studyLocationVisitPhotoThumbnailsFragment() {
+        def visitDetails = studyLocationService.getStudyLocationVisitDetails(params.studyLocationVisitId)
+        def attachments = []
+
+        if (visitDetails) {
+            attachments = Attachment.findAllByOwnerIdAndCategory("${visitDetails.studyLocationName}_${visitDetails.visitStartDate}", AttachmentCategory.Photo)
+        }
+        render(view: 'photoThumbnailsFragment', model:[attachments: attachments])
     }
 
 }

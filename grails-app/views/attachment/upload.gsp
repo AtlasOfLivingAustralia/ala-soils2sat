@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.soils2sat.AttachmentCategory" %>
 <!doctype html>
 <html>
     <head>
@@ -15,6 +16,28 @@
                 $("[name='attachTo']").change(function(e) {
                    showHideAttachTo();
                 });
+
+                $("#studyLocationName").autocomplete({
+                    source: "${createLink(controller: 'studyLocation', action:'ajaxStudyLocationAutocomplete')}"
+                });
+
+                $("#studyLocationVisitStartDate").autocomplete({
+                    source: function(request, callback) {
+                        var studyLocationName = $("#studyLocationName").val();
+                        if (studyLocationName) {
+                            $.ajax("${createLink(controller:'studyLocation', action:'ajaxVisitStartDateAutocomplete')}?studyLocationName=" + studyLocationName + "&term=" + request.term).done(function(data) {
+                                callback(data);
+                            });
+                        } else {
+                            callback();
+                        }
+
+                    }
+                });
+
+                <g:if test="${params.attachTo}">
+                $('[name="attachTo"][value="${params.attachTo}"]').prop("checked", true);
+                </g:if>
 
                 showHideAttachTo();
 
@@ -40,13 +63,13 @@
 
             <h3>Upload Attachment</h3>
 
-            <g:form class="form-horizontal" controller="attachment" action="saveAttachment">
+            <g:form class="form-horizontal" controller="attachment" action="saveAttachment" enctype="multipart/form-data">
 
                 <div class="control-group">
                     <label class="control-label" for='file'>File:</label>
 
                     <div class="controls">
-                        <input type="file" name="file" id="file">
+                        <input type="file" name="file" id="file" multiple="">
                     </div>
                 </div>
 
@@ -60,25 +83,40 @@
                 </div>
 
                 <div class="control-group">
-                    <label class="control-label" for='studyLocation'>Study Location Name:</label>
+                    <label class="control-label" for='studyLocationName'>Study Location Name:</label>
 
                     <div class="controls">
-                        <g:textField name="studyLocation" id="studyLocationName" />
+                        <g:textField name="studyLocationName" id="studyLocationName" value="${params.studyLocationName}" />
                     </div>
                 </div>
 
                 <div id="visitDiv" class="control-group">
-                    <label class="control-label" for='studyLocationVisit'>Visit Start Date:</label>
+                    <label class="control-label" for='studyLocationVisitStartDate'>Visit Start Date:</label>
                     <div class="controls">
-                        <g:textField name="studyLocationVisit" id="studyLocationVisitStartDate" />
+                        <g:textField name="studyLocationVisitStartDate" id="studyLocationVisitStartDate" value="${params.studyLocationVisitStartDate}" />
                     </div>
                 </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="category">Category:</label>
+                    <div class="controls">
+                        <g:select name="category" id="category" from="${AttachmentCategory.values()}" value="${params.category}" />
+                    </div>
+                </div>
+
+
 
                 <div class="control-group">
                     <label class="control-label" for='comment'>Comment:</label>
 
                     <div class="controls">
-                        <g:textArea name="comment" id="comment" value="${params.comment}"  rows="4" cols="40" />
+                        <g:textArea class="input-xxlarge" name="comment" id="comment" value="${params.comment}"  rows="4" cols="80" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-small btn-primary"><i class="icon-upload icon-white"></i>&nbsp;Upload</button>
                     </div>
                 </div>
 

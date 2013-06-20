@@ -379,7 +379,7 @@ class VisualisationController {
         ]
 
         def samplingUnitData = studyLocationService.getSoilECForStudyLocation(params.studyLocationName)
-        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", StringUtils.firstNumber(it.EC) ]}
+        def data = samplingUnitData?.collect { ["${it.upperDepth} - ${it.lowerDepth}", StringUtils.firstNumber(it.EC?.toString()) ]}
 
         // is there at least one row with non-null data?
         if (isEmptyChartData(data)) {
@@ -691,7 +691,10 @@ class VisualisationController {
                 if (colorMap) {
                     colors << "#" + Integer.toHexString(colorMap[property]?.getRGB()).substring(2)
                 } else {
-                    colors << "#" + Integer.toHexString(palette[colorIdx++]?.getRGB()).substring(2)
+                    colors << "#" + Integer.toHexString(palette[colorIdx]?.getRGB()).substring(2)
+                    if (++colorIdx >= palette.size()) {
+                        colorIdx = 0
+                    }
                 }
             }
         }
@@ -735,7 +738,10 @@ class VisualisationController {
                 if (colorMap) {
                     colors << "#" + Integer.toHexString(colorMap[property]?.getRGB()).substring(2)
                 } else {
-                    colors << "#" + Integer.toHexString(palette[colorIdx++]?.getRGB()).substring(2)
+                    colors << "#" + Integer.toHexString(palette[colorIdx]?.getRGB()).substring(2)
+                    if (++colorIdx >= palette.size()) {
+                        colorIdx = 0
+                    }
                 }
             }
         }

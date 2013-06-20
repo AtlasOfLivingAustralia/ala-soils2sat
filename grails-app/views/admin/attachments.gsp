@@ -13,10 +13,28 @@
         <script type="text/javascript">
 
             $(document).ready(function() {
+
                 $(".btnDelete").click(function(e) {
                     e.preventDefault();
+                    var attachmentId = $(this).parents("[attachmentId]").attr("attachmentId");
+                    if (attachmentId) {
+                        window.location = "${createLink(controller:'attachment', action:'delete')}?id=" + attachmentId;
+                    }
+                });
+
+                $(".btnPreview").click(function(e) {
+                    var attachmentId = $(this).parents("[attachmentId]").attr("attachmentId");
+                    if (attachmentId) {
+                        showModal({
+                            url: "${createLink(controller: 'attachment', action:'imagePreviewFragment')}/" + attachmentId,
+                            title: "Image Preview",
+                            height: 500,
+                            width: 800
+                        });
+                    }
 
                 });
+
             });
 
         </script>
@@ -53,6 +71,9 @@
                                 <i class="icon-download-alt"></i>
                             </a>
                             <button class="btn btn-mini btn-danger btnDelete" title="Delete attachment"><i class="icon-remove icon-white"></i></button>
+                            <g:if test="${attachment.mimeType.startsWith("image/")}">
+                                <button class="btn btn-mini btnPreview" title="Preview"><i class="icon-picture"></i></button>
+                            </g:if>
                         </td>
                     </tr>
                 </g:each>

@@ -1,7 +1,13 @@
 package au.org.ala.soils2sat
 
-class StudyLocationVisitSearchResult extends StudyLocationSearchResult {
+class StudyLocationVisitSearchResult {
 
-    def studyLocationVisitId
-
+    String studyLocationId
+    String studyLocationName
+    String studyLocationVisitId
+    String visitStartDate
+    String visitEndDate
+    List<VisitObserverTO> observers
+    double latitude
+    double longitude
 }

@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
 enum AttachmentCategory {
-    Image,
+    Photo,
     MetagenomicAnalysis
 }

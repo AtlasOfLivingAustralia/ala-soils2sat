@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.soils2sat.AttachmentCategory" %>
 <!doctype html>
 <html>
     <head>
@@ -44,12 +45,21 @@
                         $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitOccurrenceTaxaFragment', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function (html) {
                             $("#occurrenceTaxaTab").html(html);
                         });
+                    } else if (tabHref == "#photoTab") {
+                        loadPhotographThumbnails();
                     }
 
                 });
 
 
             });
+
+            function loadPhotographThumbnails() {
+                $("#photoTab").html("Retrieving thumbnails... <sts:spinner/>");
+                $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationVisitPhotoThumbnailsFragment', params: [studyLocationVisitId: visitDetail.studyLocationVisitId])}").done(function (html) {
+                    $("#photoTab").html(html);
+                });
+            }
 
         </script>
 
@@ -84,6 +94,10 @@
                         <li class="active"><a href="#detailsTab" data-toggle="tab">Details</a></li>
                         <li><a href="#voucheredTaxaTab" data-toggle="tab">Taxa (Vouchered)</a></li>
                         <li><a href="#occurrenceTaxaTab" data-toggle="tab">Taxa (Occurrence)</a></li>
+                        <g:if test="${attachmentMap[AttachmentCategory.Photo]}">
+                            <li><a href="#photoTab" id="photoTabLink" data-toggle="tab">Photographs</a></li>
+                        </g:if>
+
                     </ul>
 
                     <div class="tab-content">
@@ -140,6 +154,10 @@
                         </div>
                         <div class="tab-pane active" id="occurrenceTaxaTab">
                         </div>
+                        <g:if test="${attachmentMap[AttachmentCategory.Photo]}">
+                            <div class="tab-pane" id="photoTab">
+                            </div>
+                        </g:if>
                     </div>
                 </div>
             </div>

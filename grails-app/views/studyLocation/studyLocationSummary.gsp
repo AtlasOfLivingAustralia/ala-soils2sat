@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="au.org.ala.soils2sat.AttachmentCategory; org.apache.commons.lang.StringEscapeUtils" %>
 <!doctype html>
 <html>
     <head>
@@ -34,6 +34,13 @@
                 });
             }
 
+            function loadPhotographThumbnails() {
+                $("#photoTab").html("Retrieving thumbnails... <sts:spinner/>");
+                $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationPhotoThumbnailsFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
+                    $("#photoTab").html(html);
+                });
+            }
+
             $(document).ready(function () {
 
                 //load the environmental data (async)
@@ -59,6 +66,8 @@
                         });
                     } else if (tabHref == "#visitsTab") {
                         refreshVisitsTab();
+                    } else if (tabHref == "#photoTab") {
+                        loadPhotographThumbnails();
                     }
 
                 });
@@ -113,6 +122,9 @@
                         <li><a href="#voucheredTaxaTab" data-toggle="tab">Taxa (Vouchered)</a></li>
                         <li><a href="#occurrenceTaxaTab" data-toggle="tab">Taxa (Occurrence)</a></li>
                         <li><a href="#visitsTab" id="visitsTabLink" data-toggle="tab">Study Location Visits</a></li>
+                        <g:if test="${attachmentMap[AttachmentCategory.Photo]}">
+                            <li><a href="#photoTab" id="photoTabLink" data-toggle="tab">Photographs</a></li>
+                        </g:if>
                     </ul>
 
                     <div class="tab-content">
@@ -197,6 +209,11 @@
 
                         <div class="tab-pane" id="visitsTab">
                         </div>
+
+                        <g:if test="${attachmentMap[AttachmentCategory.Photo]}">
+                            <div class="tab-pane" id="photoTab">
+                            </div>
+                        </g:if>
 
                     </div>
                 </div>

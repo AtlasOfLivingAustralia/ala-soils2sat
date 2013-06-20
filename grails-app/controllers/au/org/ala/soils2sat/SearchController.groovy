@@ -140,8 +140,7 @@ class SearchController {
                     case CriteriaType.SpatialPortalLayer:
                         redirect(action: 'ajaxSpatialLayerCriteriaFragment', params: params)
                         break
-                    case CriteriaType.StudyLocation:
-                    case CriteriaType.StudyLocationVisit:
+                    case CriteriaType.AusplotsSearchTrait:
                         redirect(action: 'ajaxAusPlotsCriteriaFragment', params: params)
                         break
                     default:
@@ -273,8 +272,7 @@ class SearchController {
             switch (criteriaDefinition.type) {
                 case CriteriaType.SpatialPortalField:
                 case CriteriaType.SpatialPortalLayer:
-                case CriteriaType.StudyLocation:
-                case CriteriaType.StudyLocationVisit:
+                case CriteriaType.AusplotsSearchTrait:
 
                     def extractResults = extractFieldValue(criteriaDefinition, params)
 

@@ -1,5 +1,7 @@
 package au.org.ala.soils2sat
 
+import org.apache.cxf.jaxrs.ext.search.client.CompleteCondition
+
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
@@ -32,7 +34,7 @@ class SearchCriteriaUtils {
         return criteria.value
     }
 
-    private static CriteriaEvaluator factory(SearchCriteria criteria) {
+    public static CriteriaEvaluator factory(SearchCriteria criteria) {
         switch (criteria.criteriaDefinition.valueType) {
             case CriteriaValueType.NumberRangeDouble:
                 return new DoubleCriteriaEvaluator(criteria.value)
@@ -124,6 +126,10 @@ class SearchCriteriaUtils {
                     break
             }
         }
+
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
+            return condition
+        }
     }
 
     public static class MultiStringPatternEvaluator implements CriteriaEvaluator {
@@ -158,6 +164,11 @@ class SearchCriteriaUtils {
             }
             return "[Empty list!]"
         }
+
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
+            return condition
+        }
+
     }
 
     public static class StringPatternEvaluator implements CriteriaEvaluator {
@@ -174,6 +185,10 @@ class SearchCriteriaUtils {
 
         public String displayString(Closure<String> formatValue) {
             return "matches ${formatValue(valueToMatch)}"
+        }
+
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
+            return condition
         }
 
     }
@@ -205,6 +220,22 @@ class SearchCriteriaUtils {
                 }
             }
 
+        }
+
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
+            def partial = condition.and().is(criteria.criteriaDefinition.fieldName)
+            switch (operator) {
+                case "lt":
+                    return partial.lessOrEqualTo(value1)
+                    break
+                case "gt":
+                    return partial.greaterOrEqualTo(value1)
+                    break
+                case "bt":
+                    return partial.greaterOrEqualTo(value1).and(criteria.criteriaDefinition.fieldName).lessOrEqualTo(value2)
+                    break
+            }
+            return condition
         }
 
         public boolean evaluate(String testValue) {
@@ -269,6 +300,22 @@ class SearchCriteriaUtils {
 
         }
 
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
+            def partial = condition.and().is(criteria.criteriaDefinition.fieldName)
+            switch (operator) {
+                case "lt":
+                    return partial.lessOrEqualTo(value1)
+                    break
+                case "gt":
+                    return partial.greaterOrEqualTo(value1)
+                    break
+                case "bt":
+                    return partial.greaterOrEqualTo(value1).and(criteria.criteriaDefinition.fieldName).lessOrEqualTo(value2)
+                    break
+            }
+            return condition
+        }
+
         public boolean evaluate(String testValue) {
             Integer val = Integer.parseInt(testValue)
             switch (operator) {
@@ -322,6 +369,10 @@ class SearchCriteriaUtils {
             return formatValue("No")
         }
 
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
+            return condition
+        }
+
     }
 
 
@@ -331,6 +382,7 @@ public interface CriteriaEvaluator {
 
     public boolean evaluate(String value)
     public String displayString(Closure<String> valueFormatter)
+    public CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition)
 
 }
 
