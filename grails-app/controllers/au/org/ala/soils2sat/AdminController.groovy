@@ -152,6 +152,11 @@ class AdminController {
         [layerSets: layerSets]
     }
 
+    def layerStyles() {
+        def styles = LayerStyle.list()
+        [layerStyles : styles]
+    }
+
     def newGlobalLayerSet() {
         def layerSet = new LayerSet(user: null, name:'<new layer set>')
         layerSet.save(flush: true, failOnError: true)
@@ -957,6 +962,35 @@ class AdminController {
         def attachments = Attachment.list(params)
 
         [attachments: attachments]
+    }
+
+    def editLayerStyleFragment() {
+        def layerStyle = LayerStyle.get(params.int("id"))
+        // it's ok if the layerStyle doesn't exist, as it means 'add new'
+        [layerStyle: layerStyle]
+    }
+
+    def saveLayerStyleAjax() {
+        def layerStyle = LayerStyle.get(params.int("layerStyleId"))
+        if (!layerStyle) {
+            layerStyle = new LayerStyle(params)
+        } else {
+            layerStyle.setProperties(params)
+        }
+
+        if (layerStyle) {
+            layerStyle.save(failOnError: true)
+        }
+
+        render(['status':'ok'] as JSON)
+    }
+
+    def deleteLayerStyle() {
+        def layerStyle = LayerStyle.get(params.int("id"))
+        if (layerStyle) {
+            layerStyle.delete()
+        }
+        redirect(action:'layerStyles')
     }
 
 }

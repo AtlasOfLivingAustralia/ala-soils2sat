@@ -44,8 +44,12 @@ class MapController {
                 appState.save(flush: true, failOnError: true)
                 success = true
             }
+
         }
-        render([status: success ? 'ok' : 'failed'] as JSON)
+
+        def style = LayerStyle.findByLayerName(layerName)?.style ?: ''
+
+        render([status: success ? 'ok' : 'failed', style: style] as JSON)
     }
 
     def removeLayer() {
@@ -117,7 +121,8 @@ class MapController {
                 opacity = layer.opacity
             }
         }
-        render([status:'ok', opacity: opacity] as JSON)
+        def style = LayerStyle.findByLayerName(layerName)?.style ?: ''
+        render([status:'ok', opacity: opacity, style: style] as JSON)
     }
 
     def ajaxPlotHover() {

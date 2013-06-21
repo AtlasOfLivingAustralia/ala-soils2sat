@@ -5,6 +5,7 @@ class SettingService {
     public static String OBSERVATION_RADIUS_KEY = "ala.observation.radius"
     public static String OBSERVATION_RANK_KEY = "ala.observation.rank"
     public static String OBSERVATION_FILTER_KEY = "ala.observation.taxonFilter"
+    public static String LAYER_STYLES = "ala.layer.styles"
 
     public float getObservationRadius() {
         def setting = Setting.findByKey(OBSERVATION_RADIUS_KEY)
@@ -32,5 +33,16 @@ class SettingService {
         }
         return setting.value
     }
+
+    public String getLayerStyles() {
+        def setting = Setting.findByKey(LAYER_STYLES)
+        if (!setting) {
+            def defaultValues = ['ibra7_regions':'ibra7_labels_style', 'ibra7_subregions':'ibra7_subregion_labels_style']
+            setting = new Setting(key: LAYER_STYLES, value: "[]", comment:"The filter expression to apply to ALA queries (Default 'kingdom:Plantae'")
+            setting.save()
+        }
+        return setting.value
+    }
+
 
 }

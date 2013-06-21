@@ -204,7 +204,7 @@
                 });
             } else {
                 $.ajax("${createLink(controller: 'map', action: 'ajaxSetLayerVisibility')}?layerName=" + layerName + '&visibility=true').done(function (e) {
-                    loadWMSLayer(layerName, e.opacity);
+                    loadWMSLayer(layerName, e.opacity, e.style);
                     element.addClass("btn-info");
                 });
             }

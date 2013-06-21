@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.soils2sat.LayerStyle" %>
 <!doctype html>
 <html>
     <head>
@@ -175,8 +176,6 @@
 
                     var result = results[resultKey];
 
-                    console.log(result);
-
                     var location = new OpenLayers.LonLat(parseFloat(result.longitude), parseFloat(result.latitude));
 
                     location.transform(latLongProj, map.getProjectionObject());
@@ -234,9 +233,10 @@
                 });
 
                 <g:each in="${appState?.layers}" var="layer">
-                <g:if test="${layer.visible}">
-                loadWMSLayer("${layer.name}", ${layer.opacity ?: 1.0});
-                </g:if>
+                    <g:if test="${layer.visible}">
+                        <g:set var="style" value="${LayerStyle.findByLayerName(layer.name)?.style ?: ''}"/>
+                        loadWMSLayer("${layer.name}", ${layer.opacity ?: 1.0}, '${style}');
+                    </g:if>
                 </g:each>
             });
 
@@ -248,7 +248,7 @@
                 $.ajax("${createLink(controller: 'map', action: 'addLayer')}?layerName=" + name + "&addToMap=" + showInMap).done(function (data) {
                     refreshSidebar();
                     if (showInMap) {
-                        loadWMSLayer(name, 1.0);
+                        loadWMSLayer(name, 1.0, data.style);
                     }
                 });
 
@@ -266,16 +266,15 @@
                 });
             }
 
-            function loadWMSLayer(name, opacity) {
+            function loadWMSLayer(name, opacity, styles) {
 
-                var styles = '';
-
-                if (name == 'ibra7_regions') {
-                    styles = 'ibra7_labels_style';
+                if (!styles) {
+                    styles = '';
                 }
 
                 var url = "${grailsApplication.config.spatialPortalRoot}/geoserver/gwc/service/wms/reflect";
-                if (styles) {
+
+                if (styles.length > 0) {
                     // bypass the tile cache when styles are in effect
                     url = "${grailsApplication.config.spatialPortalRoot}/geoserver/wms/reflect"
                 }
