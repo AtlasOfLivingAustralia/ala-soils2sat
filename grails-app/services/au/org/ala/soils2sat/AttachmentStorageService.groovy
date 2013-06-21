@@ -9,10 +9,7 @@ class AttachmentStorageService {
     }
 
     public void deleteAttachmentFile(String attachmentId) {
-        def attachmentFile = AttachmentFile.findByAttachmentId(attachmentId)
-        if (attachmentFile) {
-            attachmentFile.delete(failOnError: true)
-        }
+        AttachmentFile.executeUpdate("delete AttachmentFile af where af.attachmentId = :attachmentId", [attachmentId: attachmentId])
     }
 
     public byte[] retrieveAttachmentFile(String attachmentId) {

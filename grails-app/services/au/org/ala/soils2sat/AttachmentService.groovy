@@ -42,10 +42,12 @@ class AttachmentService {
 
     public void deleteAttachment(Attachment attachment) {
         if (attachment) {
-            // First delete any thumbnail
-            attachment.thumbnail?.delete()
             // delete the stored bytes
             attachmentStorageService.deleteAttachmentFile(attachment.attachmentId)
+            // First delete any thumbnail
+            attachment.thumbnail?.delete()
+            attachment.thumbnail = null
+
             // and finally, delete the meta data
             attachment.delete()
         }
