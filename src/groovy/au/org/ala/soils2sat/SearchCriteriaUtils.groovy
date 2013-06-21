@@ -1,26 +1,20 @@
 package au.org.ala.soils2sat
 
 import org.apache.cxf.jaxrs.ext.search.client.CompleteCondition
+import org.apache.cxf.jaxrs.ext.search.client.PartialCondition
+import org.apache.cxf.jaxrs.ext.search.client.SearchConditionBuilder
 
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 class SearchCriteriaUtils {
 
-    public static CriteriaEvaluator newDoubleEvaluator(String pattern) {
-        return new DoubleCriteriaEvaluator(pattern)
-    }
-
-    public static boolean eval(SearchCriteria criteria, String value) {
-        CriteriaEvaluator evaluator = factory(criteria)
-        if (evaluator) {
-            return evaluator.evaluate(value)
-        }
-        return false
+    public static CriteriaTranslator newDoubleEvaluator(String pattern) {
+        return new DoubleCriteriaTranslator(pattern)
     }
 
     public static String format(SearchCriteria criteria, Closure<String> valueFormatter = null) {
-        CriteriaEvaluator evaluator = factory(criteria)
+        CriteriaTranslator evaluator = factory(criteria)
         if (evaluator) {
             if (!valueFormatter) {
                 valueFormatter = { it }
@@ -34,33 +28,33 @@ class SearchCriteriaUtils {
         return criteria.value
     }
 
-    public static CriteriaEvaluator factory(SearchCriteria criteria) {
+    public static CriteriaTranslator factory(SearchCriteria criteria) {
         switch (criteria.criteriaDefinition.valueType) {
             case CriteriaValueType.NumberRangeDouble:
-                return new DoubleCriteriaEvaluator(criteria.value)
+                return new DoubleCriteriaTranslator(criteria.value)
                 break
             case CriteriaValueType.NumberRangeInteger:
-                return new IntegerCriteriaEvaluator(criteria.value)
+                return new IntegerCriteriaTranslator(criteria.value)
                 break
             case CriteriaValueType.StringDirectEntry:
             case CriteriaValueType.StringMultiSelect:
-                return new MultiStringPatternEvaluator(criteria.value)
+                return new MultiStringPatternTranslator(criteria.value)
                 break
             case CriteriaValueType.StringSingleSelect:
-                return new StringPatternEvaluator(criteria.value)
+                return new StringPatternTranslator(criteria.value)
                 break
             case CriteriaValueType.DateRange:
-                return new DateRangeCriteriaEvaluator(criteria.value)
+                return new DateRangeCriteriaTranslator(criteria.value)
                 break
             case CriteriaValueType.Boolean:
-                return new BooleanCriteriaEvaluator(criteria.value)
+                return new BooleanCriteriaTranslator(criteria.value)
                 break
             default:
                 throw new RuntimeException("Unhandled value type: " + criteria.criteriaDefinition.valueType)
         }
     }
 
-    public static class DateRangeCriteriaEvaluator implements CriteriaEvaluator {
+    public static class DateRangeCriteriaTranslator implements CriteriaTranslator {
 
         public static Pattern DatePattern = Pattern.compile("^(gt|lt)\\s(\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)\$")
         public static Pattern DateRangePattern = Pattern.compile("^(bt)\\s(\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)[:](\\d{1,2}/\\d{1,2}/\\d\\d\\d\\d)\$")
@@ -72,7 +66,7 @@ class SearchCriteriaUtils {
         Date endDate
         String operator
 
-        public DateRangeCriteriaEvaluator(String pattern) {
+        public DateRangeCriteriaTranslator(String pattern) {
             def m = DatePattern.matcher(pattern)
             if (m.matches()) {
                 operator = m.group(1)
@@ -92,34 +86,13 @@ class SearchCriteriaUtils {
 
         }
 
-        boolean evaluate(String value) {
-            Date date = null
-            try {
-                date = _sdf.parse(value)
-            } catch (Exception ex) {
-                date = _sdf2.parse(value)
-            }
-
-            switch (operator) {
-                case "lt":
-                    return date <= startDate
-                    break
-                case "gt":
-                    return date >= startDate
-                    break
-                case "bt":
-                    return date >= startDate && date <= endDate
-                    break
-            }
-        }
-
         String displayString(Closure<String> valueFormatter) {
             switch (operator) {
                 case "lt":
-                    return "is on or before " + valueFormatter(_sdf.format(startDate))
+                    return "is before " + valueFormatter(_sdf.format(startDate))
                     break
                 case "gt":
-                    return "is on or after " + valueFormatter(_sdf.format(startDate))
+                    return "is after " + valueFormatter(_sdf.format(startDate))
                     break
                 case "bt":
                     return "is between " + valueFormatter(_sdf.format(startDate)) + " and " + valueFormatter(_sdf.format(endDate))
@@ -127,25 +100,28 @@ class SearchCriteriaUtils {
             }
         }
 
-        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
-            return condition
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
+            def field = criteria.criteriaDefinition.fieldName
+            switch (operator) {
+                case "lt":
+                    return partial.is(field).before(startDate)
+                    break
+                case "gt":
+                    return partial.is(field).after(startDate)
+                    break
+                case "bt":
+                    return partial.is(field).after(startDate).and(field).before(endDate)
+                    break
+            }
+            return null
         }
     }
 
-    public static class MultiStringPatternEvaluator implements CriteriaEvaluator {
+    public static class MultiStringPatternTranslator implements CriteriaTranslator {
         String[] values
 
-        public MultiStringPatternEvaluator(String value) {
+        public MultiStringPatternTranslator(String value) {
             this.values = value?.split("\\|")
-        }
-
-        boolean evaluate(String value) {
-            for (String candidate : values) {
-                if (candidate.equalsIgnoreCase(value)) {
-                    return true
-                }
-            }
-            return false
         }
 
         String displayString(Closure<String> formatValue) {
@@ -165,35 +141,38 @@ class SearchCriteriaUtils {
             return "[Empty list!]"
         }
 
-        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
-            return condition
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
+            SearchConditionBuilder b = SearchConditionBuilder.instance()
+            def list = []
+            def field = criteria.criteriaDefinition.fieldName
+            values.each {
+                list <<  b.is(field).equalTo(it)
+            }
+            return partial.or(list)
         }
 
     }
 
-    public static class StringPatternEvaluator implements CriteriaEvaluator {
+    public static class StringPatternTranslator implements CriteriaTranslator {
 
         private String valueToMatch
 
-        public StringPatternEvaluator(String valueToMatch) {
+        public StringPatternTranslator(String valueToMatch) {
             this.valueToMatch = valueToMatch
-        }
-
-        public boolean evaluate(String testValue) {
-            return valueToMatch.equalsIgnoreCase(testValue)
         }
 
         public String displayString(Closure<String> formatValue) {
             return "matches ${formatValue(valueToMatch)}"
         }
 
-        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
-            return condition
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
+            def field = criteria.criteriaDefinition.fieldName
+            return partial.is(field).equalTo(valueToMatch)
         }
 
     }
 
-    public static class DoubleCriteriaEvaluator implements CriteriaEvaluator {
+    public static class DoubleCriteriaTranslator implements CriteriaTranslator {
 
         public static Pattern DoublePattern = Pattern.compile("^(gt|lt)\\s([-]{0,1}\\d+[\\.]{0,1}\\d*)\$")
         public static Pattern DoubleRangePattern = Pattern.compile("^(bt)\\s([-]{0,1}\\d+[\\.]{0,1}\\d*)[:]([-]{0,1}\\d+[\\.]{0,1}\\d*)\$")
@@ -202,7 +181,7 @@ class SearchCriteriaUtils {
         Double value1
         Double value2
 
-        public DoubleCriteriaEvaluator(String pattern) {
+        public DoubleCriteriaTranslator(String pattern) {
             def m = DoublePattern.matcher(pattern)
             if (m.matches()) {
                 operator = m.group(1)
@@ -222,36 +201,20 @@ class SearchCriteriaUtils {
 
         }
 
-        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
-            def partial = condition.and().is(criteria.criteriaDefinition.fieldName)
-            switch (operator) {
-                case "lt":
-                    return partial.lessOrEqualTo(value1)
-                    break
-                case "gt":
-                    return partial.greaterOrEqualTo(value1)
-                    break
-                case "bt":
-                    return partial.greaterOrEqualTo(value1).and(criteria.criteriaDefinition.fieldName).lessOrEqualTo(value2)
-                    break
-            }
-            return condition
-        }
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
+            def field = criteria.criteriaDefinition.fieldName
 
-        public boolean evaluate(String testValue) {
-            Double val = Double.parseDouble(testValue)
             switch (operator) {
                 case "lt":
-                    return val <= value1
+                    return partial.is(field).lessOrEqualTo(value1)
                     break
                 case "gt":
-                    return val >= value1
+                    return partial.is(field).greaterOrEqualTo(value1)
                     break
                 case "bt":
-                    return val >= value1 && val <= value2
+                    return partial.is(field).greaterOrEqualTo(value1).and(field).lessOrEqualTo(value2)
                     break
             }
-            return false
         }
 
         public String displayString(Closure<String> formatValue) {
@@ -271,7 +234,7 @@ class SearchCriteriaUtils {
 
     }
 
-    public static class IntegerCriteriaEvaluator implements CriteriaEvaluator {
+    public static class IntegerCriteriaTranslator implements CriteriaTranslator {
 
         public static Pattern IntegerPattern = Pattern.compile("^(gt|lt)\\s([-]{0,1}\\d+)\$")
         public static Pattern IntegerRangePattern = Pattern.compile("^(bt)\\s([-]{0,1}\\d+)[:]([-]{0,1}\\d+)\$")
@@ -280,7 +243,7 @@ class SearchCriteriaUtils {
         Integer value1
         Integer value2
 
-        public IntegerCriteriaEvaluator(String pattern) {
+        public IntegerCriteriaTranslator(String pattern) {
             def m = IntegerPattern.matcher(pattern)
             if (m.matches()) {
                 operator = m.group(1)
@@ -300,36 +263,19 @@ class SearchCriteriaUtils {
 
         }
 
-        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
-            def partial = condition.and().is(criteria.criteriaDefinition.fieldName)
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
+            def field = criteria.criteriaDefinition.fieldName
             switch (operator) {
                 case "lt":
-                    return partial.lessOrEqualTo(value1)
+                    return partial.is(field).lessOrEqualTo(value1)
                     break
                 case "gt":
-                    return partial.greaterOrEqualTo(value1)
+                    return partial.is(field).greaterOrEqualTo(value1)
                     break
                 case "bt":
-                    return partial.greaterOrEqualTo(value1).and(criteria.criteriaDefinition.fieldName).lessOrEqualTo(value2)
+                    return partial.is(field).greaterOrEqualTo(value1).and(field).lessOrEqualTo(value2)
                     break
             }
-            return condition
-        }
-
-        public boolean evaluate(String testValue) {
-            Integer val = Integer.parseInt(testValue)
-            switch (operator) {
-                case "lt":
-                    return val <= value1
-                    break
-                case "gt":
-                    return val >= value1
-                    break
-                case "bt":
-                    return val >= value1 && val <= value2
-                    break
-            }
-            return false
         }
 
         public String displayString(Closure<String> formatValue) {
@@ -349,17 +295,12 @@ class SearchCriteriaUtils {
 
     }
 
-    public static class BooleanCriteriaEvaluator implements CriteriaEvaluator {
+    public static class BooleanCriteriaTranslator implements CriteriaTranslator {
 
         Boolean value
 
-        public BooleanCriteriaEvaluator(String pattern) {
+        public BooleanCriteriaTranslator(String pattern) {
             value = Boolean.parseBoolean(pattern)
-        }
-
-        public boolean evaluate(String testValue) {
-            def other = Boolean.parseBoolean(testValue)
-            return other == value
         }
 
         public String displayString(Closure<String> formatValue) {
@@ -369,8 +310,9 @@ class SearchCriteriaUtils {
             return formatValue("No")
         }
 
-        CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition) {
-            return condition
+        CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
+            def field = criteria.criteriaDefinition.fieldName
+            return partial.is(field).equalTo(value?.toString())
         }
 
     }
@@ -378,12 +320,12 @@ class SearchCriteriaUtils {
 
 }
 
-public interface CriteriaEvaluator {
+public interface CriteriaTranslator {
 
-    public boolean evaluate(String value)
     public String displayString(Closure<String> valueFormatter)
-    public CompleteCondition createFIQLCondition(SearchCriteria criteria, CompleteCondition condition)
+    public CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition condition)
 
 }
+
 
 

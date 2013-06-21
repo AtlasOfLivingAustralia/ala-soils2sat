@@ -241,5 +241,29 @@ class StudyLocationService extends ServiceBase {
         return visitDetails?.studyLocationName
     }
 
+    def getSearchTraitData(int searchTraitId) {
+        def results = proxyServiceCall(grailsApplication, "getSearchTraitData/${searchTraitId}", [:])
+    }
+
+    def getAllowedValuesForTrait(String searchTrait) {
+        // first have to find the id for the searchTrait
+
+        def traits = getSearchTraits()
+        int id = -1
+        def results = []
+        traits.each {
+            if (it.criteria == searchTrait) {
+                id = it.id
+            }
+        }
+        if (id >= 0) {
+            // now get the search trait data...
+            results = getSearchTraitData(id)
+
+        }
+
+        return results
+    }
+
 }
 

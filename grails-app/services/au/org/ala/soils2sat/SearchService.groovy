@@ -1,5 +1,6 @@
 package au.org.ala.soils2sat
 
+import org.apache.cxf.jaxrs.ext.search.client.CompleteCondition
 import org.apache.cxf.jaxrs.ext.search.client.SearchConditionBuilder
 
 class SearchService extends ServiceBase {
@@ -21,8 +22,14 @@ class SearchService extends ServiceBase {
         }
 
         def b = SearchConditionBuilder.instance()
+        CompleteCondition condition
 
-        def condition = b.is("studyLocationName").equalTo("*${q}*")
+        if (q) {
+            condition = b.is("studyLocationName").equalTo("*${q}*")
+        } else {
+            condition = b.is("studyLocationName").equalTo("*")
+        }
+
         if (boundingBox) {
             condition = condition.and().and(
                 b.is("latitude").lessOrEqualTo(Math.max(boundingBox.top, boundingBox.bottom)),
@@ -37,7 +44,7 @@ class SearchService extends ServiceBase {
         ausplotsCriteria?.each { c ->
             def e = SearchCriteriaUtils.factory(c)
             if (e) {
-                condition = e.createFIQLCondition(c, condition)
+                condition = e.createFIQLCondition(c, condition.and()) ?: condition
             }
         }
 

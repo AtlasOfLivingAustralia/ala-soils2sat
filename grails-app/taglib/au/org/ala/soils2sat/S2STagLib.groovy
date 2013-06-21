@@ -223,7 +223,8 @@ class S2STagLib {
 
             def allowedValues = []
             if (criteriaDefinition.valueType == CriteriaValueType.StringMultiSelect && criteriaDefinition.type == CriteriaType.AusplotsSearchTrait) {
-                allowedValues = []
+                allowedValues = studyLocationService.getAllowedValuesForTrait(criteriaDefinition.fieldName)
+                println allowedValues
             }
 
             out << render(template: templatePath, model: [criteriaDefinition: criteriaDefinition, units: attrs.units, value: attrs.value, allowedValues: allowedValues])

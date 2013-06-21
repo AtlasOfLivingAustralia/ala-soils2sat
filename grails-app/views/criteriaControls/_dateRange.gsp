@@ -1,17 +1,18 @@
+<%@ page import="au.org.ala.soils2sat.SearchCriteriaUtils" %>
 <div>
     <div>
 
         <g:if test="${value}">
-            <g:set var="evaluator" value="${new au.org.ala.soils2sat.SearchCriteriaUtils.DateRangeCriteriaEvaluator(value as String)}" />
+            <g:set var="evaluator" value="${new SearchCriteriaUtils.DateRangeCriteriaTranslator(value as String)}" />
         </g:if>
 
         <label class="radio inline" style="white-space: nowrap">
             <g:radio class="radioButton" name="operator" value="lt" checked="${evaluator == null || evaluator?.operator == 'lt' ? 'checked' : ''}"/>
-            On or Before
+            Before
         </label>
         <label class="radio inline" style="white-space: nowrap">
             <g:radio class="radioButton" name="operator" value="gt" checked="${evaluator?.operator == 'gt' ? 'checked' : ''}" />
-            On or After
+            After
         </label>
         <label class="radio inline" style="white-space: nowrap">
             <g:radio class="radioButton" name="operator" value="bt" checked="${evaluator?.operator == 'bt' ? 'checked' : ''}" />

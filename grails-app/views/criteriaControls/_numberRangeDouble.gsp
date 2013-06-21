@@ -1,7 +1,8 @@
+<%@ page import="au.org.ala.soils2sat.SearchCriteriaUtils" %>
 <div>
     <div>
         <g:if test="${value}">
-            <g:set var="evaluator" value="${new au.org.ala.soils2sat.SearchCriteriaUtils.DoubleCriteriaEvaluator(value as String)}" />
+            <g:set var="evaluator" value="${new SearchCriteriaUtils.DoubleCriteriaTranslator(value as String)}" />
         </g:if>
         <label class="radio inline" style="white-space: nowrap">
             <g:radio class="radioButton" name="operator" value="gt" checked="${evaluator == null || evaluator?.operator == 'gt' ? 'checked' : ''}"/>

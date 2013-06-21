@@ -41,7 +41,7 @@ class SearchCriteriaTests {
     }
 
     void testFoo() {
-        println new SearchCriteriaUtils.MultiStringPatternEvaluator("A|B|C").displayString()
+        println new SearchCriteriaUtils.MultiStringPatternTranslator("A|B|C").displayString()
     }
 
 }
