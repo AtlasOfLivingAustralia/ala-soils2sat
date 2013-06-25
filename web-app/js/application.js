@@ -24,7 +24,7 @@ function showModal(options) {
     if (!opts.hideHeader) {
         html += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button><h3 id='modal_label_" + opts.id + "'>" + opts.title + "</h3></div>";
     }
-    html += "<div class='modal-body' style='max-height: " + opts.height + "px'>loading</div></div>";
+    html += "<div class='modal-body' style='max-height: " + opts.height + "px'>Loading...</div></div>";
 
     $("body").append(html);
 

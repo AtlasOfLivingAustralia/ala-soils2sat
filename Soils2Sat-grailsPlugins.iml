@@ -95,6 +95,20 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-codec/commons-codec/jars/commons-codec-1.6.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.2.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.2.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-rs-extension-search/jars/cxf-rt-rs-extension-search-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-transports-http/jars/cxf-rt-transports-http-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-bindings-xml/jars/cxf-rt-bindings-xml-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.ws.rs/javax.ws.rs-api/jars/javax.ws.rs-api-2.0-m10.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.sun.xml.bind/jaxb-impl/jars/jaxb-impl-2.1.13.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-core/jars/cxf-rt-core-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/wsdl4j/wsdl4j/jars/wsdl4j-1.6.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.geronimo.specs/geronimo-javamail_1.4_spec/bundles/geronimo-javamail_1.4_spec-1.7.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.ws.xmlschema/xmlschema-core/bundles/xmlschema-core-2.0.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.woodstox/stax2-api/jars/stax2-api-3.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-api/jars/cxf-api-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-frontend-jaxrs/jars/cxf-rt-frontend-jaxrs-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.imgscalr/imgscalr-lib/jars/imgscalr-lib-4.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

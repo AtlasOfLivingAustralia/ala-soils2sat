@@ -13,6 +13,16 @@ modules = {
         resource url: 'css/smoothness/jquery-ui-1.8.23.custom.css'
     }
 
+    mouseWheel {
+        dependsOn 'jquery'
+        resource url:'js/jquery.mousewheel.min.js'
+    }
+
+    panZoom {
+        dependsOn 'jquery,mouseWheel'
+        resource url:'js/jquery-panZoom.js'
+    }
+
     openlayers {
         defaultBundle false
         resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.11/OpenLayers.js'

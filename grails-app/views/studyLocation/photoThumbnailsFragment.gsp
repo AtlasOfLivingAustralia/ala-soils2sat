@@ -6,7 +6,7 @@
                     <sts:spinner />
                 </a>
                 <div style="float: right; background-color: transparent; margin-top: -20px; padding-right: 5px;">
-                    <i style="background-color: #808080; border-radius: 2px" class="icon-info-sign icon-white infoButton" title="${attachment.name}"></i>
+                    <i class="icon-info-sign infoButton" title="${attachment.name} (${attachment.mimeType})"></i>
                     <span style="clear: both" />
                 </div>
             </div>

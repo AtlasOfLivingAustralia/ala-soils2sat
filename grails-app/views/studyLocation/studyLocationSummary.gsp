@@ -2,9 +2,9 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <r:require module='bootstrap_responsive'/>
         <r:require module="visualisationHandlers" />
+        <r:require module="panZoom" />
         <meta name="layout" content="detail"/>
         <title>Study Location Summary - ${studyLocationName}</title>
     </head>
@@ -187,6 +187,19 @@
                                         </ul>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="fieldColumn">Metagenomic analysis available?</td>
+                                    <td>
+                                        <g:set var="pdfList" value="${attachmentMap[AttachmentCategory.MetagenomicAnalysis]}"/>
+                                        <g:if test="${pdfList}">
+                                            <span>Yes, click <a href="${createLink(controller:'attachment', action:'download', id:pdfList[0].id )}">here</a> to download.</span>
+                                        </g:if>
+                                        <g:else>
+                                            <span>No</span>
+                                        </g:else>
+                                    </td>
+                                </tr>
+
                             </table>
 
                             <div id="studyLocationVisualisations">

@@ -355,7 +355,12 @@ class StudyLocationController {
         def attachmentMap = [:]
         def attachments = Attachment.findAllByOwnerId(studyLocationName)
         if (attachments) {
-            attachmentMap = attachments.collectEntries { [ it.category, it ]}
+            attachments.each {
+                if (!attachmentMap[it.category]) {
+                    attachmentMap[it.category] = []
+                }
+                attachmentMap[it.category] << it
+            }
         }
 
         [studyLocationDetails:studyLocationDetails, studyLocationName: studyLocationName, isSelected: isSelected != null, attachmentMap: attachmentMap]
@@ -777,7 +782,8 @@ class StudyLocationController {
         if (visitDetails) {
             attachments = Attachment.findAllByOwnerIdAndCategory("${visitDetails.studyLocationName}_${visitDetails.visitStartDate}", AttachmentCategory.Photo)
         }
-        render(view: 'photoThumbnailsFragment', model:[attachments: attachments])
+
+        render(view: 'photoThumbnailsFragment', model:[attachments: attachments.sort { it.id }])
     }
 
 }

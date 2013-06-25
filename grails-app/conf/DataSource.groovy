@@ -14,8 +14,8 @@ hibernate {
 environments {
     development {
         dataSource {
-            // url = "jdbc:postgresql://syn-db/soils2sat-dev"
-            url = "jdbc:postgresql://localhost/soils2sat-dev"
+            url = "jdbc:postgresql://syn-db/soils2sat-dev"
+//            url = "jdbc:postgresql://localhost/soils2sat-dev"
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
         }
     }

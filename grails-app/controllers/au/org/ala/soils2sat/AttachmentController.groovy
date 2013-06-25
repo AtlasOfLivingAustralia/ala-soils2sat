@@ -92,7 +92,17 @@ class AttachmentController {
 
     def imagePreviewFragment() {
         def attachment = Attachment.get(params.int("id"))
-        [attachment: attachment]
+
+        // calculate the images size
+        def height = 0
+        def width = 0
+        if (attachment) {
+            def bufferedImage = ImageUtils.bytesToImage(attachmentService.getAttachmentBytes(attachment))
+            height = bufferedImage.height
+            width = bufferedImage.width
+        }
+
+        [attachment: attachment, imageHeight: height, imageWidth: width]
     }
 
     def thumbnailFragment() {
@@ -115,6 +125,11 @@ class AttachmentController {
                 response.flushBuffer()
             }
         }
+    }
+
+    def imageViewerToolbarFragment() {
+        def attachment = Attachment.get(params.int("id"))
+        [attachment: attachment]
     }
 
 }

@@ -1,1 +1,1 @@
-<img src="${createLink(controller: 'attachment', action:'downloadThumbnail', id: attachment.id)}" height="100" class="img-polaroid"/>
+<img src="${createLink(controller: 'attachment', action:'downloadThumbnail', id: attachment.id)}" height="100" class="img-polaroid" />
