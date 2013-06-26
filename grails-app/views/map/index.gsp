@@ -8,15 +8,16 @@
         <meta name="layout" content="soils2sat"/>
         <title>Soils to Satellites</title>
         <style type="text/css" media="screen">
+
         #content {
             top: 62px;
-            bottom: 80px;
+            bottom: 60px;
             position: absolute;
             width: 100%;
         }
 
         #mapContent {
-            height: 600px;
+            height: 630px;
         }
 
         #layersContent {
@@ -66,7 +67,7 @@
             });
 
             function resizeMap() {
-                var height = $(window).height() - (63 + 90);
+                var height = $(window).height() - (63 + 70);
                 $("#mapContent").height(height);
                 if (map) {
                     setTimeout(function () {

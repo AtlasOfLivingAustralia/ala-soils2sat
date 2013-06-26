@@ -26,11 +26,11 @@
 
         body {
             padding-top: 60px;
-            padding-bottom: 90px;
+            padding-bottom: 70px;
         }
 
         .footer {
-            height: 80px;
+            height: 59px;
             bottom: 0px;
             position: fixed;
             width: 100%;
@@ -110,7 +110,18 @@
         </div>
         <g:layoutBody/>
         <div class="footer" role="contentinfo">
-            <img src="${resource(dir: '/images', file: 'S2S-banner.png')}" style="height: 80px"/>
+            <table style="width: 100%">
+                <tr>
+                    <td>
+                        <img src="${resource(dir: '/images', file: 'S2S-banner.png')}" style="height: 59px"/>
+                    </td>
+                    <td style="">
+                        <small style="font-size: 0.8em">
+                        This project is supported by the <a href="http://www.ands.org.au/" target="_blank">Australian National Data Service (ANDS)</a>. ANDS is supported by the Australian Government through the National Collaborative Research Infrastructure Strategy Program and the Education Investment Fund (EIF) Super Science Initiative
+                        </small>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
