@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta name='layout' content='main'/>
-        <title><g:message code="springSecurity.login.title"/></title>
+        <title>User Registration</title>
         <meta name="layout" content="soils2sat"/>
 
         <style type='text/css' media='screen'>
@@ -10,10 +10,11 @@
     </head>
 
     <body>
+        <content tag="topLevelNav">home</content>
         <div id='login' class="container-fluid">
 
             <div class="hero-unit">
-                <h3>User registration</h3>
+                <h3>User Registration</h3>
 
                 <g:if test='${flash.message}'>
                     <div class="alert alert-error">
