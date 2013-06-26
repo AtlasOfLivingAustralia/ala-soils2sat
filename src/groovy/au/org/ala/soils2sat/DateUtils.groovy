@@ -12,8 +12,10 @@ import java.text.SimpleDateFormat
  */
 class DateUtils {
 
-    public static String S2S_DATE_FORMAT = "yyyy-MM-dd"
-    public static String S2S_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    public static final String S2S_DATE_FORMAT = "yyyy-MM-dd"
+    public static final String S2S_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    public static final String W3CDTF_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+
 
     public static Date tryParse(dateStr) {
         if (dateStr) {
@@ -30,6 +32,15 @@ class DateUtils {
 
     public static boolean isSameDay(Date date1, Date date2) {
         return (date1..date2).size() == 1
+    }
+
+    public static String getW3CDTFDate(Date date) {
+        if (!date) {
+            return ''
+        }
+
+        String str = new SimpleDateFormat( W3CDTF_FORMAT ).format(date);
+        return "${str.substring(0, str.length() - 2)}:${str.substring(str.length() - 2)}";
     }
 
 }

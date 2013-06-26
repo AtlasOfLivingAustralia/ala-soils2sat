@@ -47,6 +47,8 @@
 
     $(document).ready(function () {
 
+        $("#searchText").focus();
+
         $("#btnSearch").click(function (e) {
             e.preventDefault();
             doSearch();

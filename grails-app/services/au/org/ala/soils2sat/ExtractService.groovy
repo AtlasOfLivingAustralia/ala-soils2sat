@@ -143,6 +143,30 @@ class ExtractService {
 
             // Create a record for this extract
             def dataExtraction = new DataExtraction(packageName: packageName, username: user.username, date: new Date(), localFile: localPath)
+            // get each visits details...
+            Date firstDate = null
+            Date lastDate = null
+
+            visitIds?.each {
+                def details = studyLocationService.getStudyLocationVisitDetails(it)
+                if (details) {
+                    dataExtraction.addToStudyLocationVisits("${details.studyLocationName}_${details.getVisitStartDate()}")
+                    def candidateStartDate = DateUtils.tryParse(details.visitStartDate)
+                    if (!firstDate || (candidateStartDate && firstDate.after(candidateStartDate))) {
+                        firstDate = candidateStartDate
+                    }
+                    def candidateEndDate = DateUtils.tryParse(details.visitEndDate) ?: candidateStartDate
+                    if (!lastDate || (candidateEndDate && lastDate.before(candidateEndDate))) {
+                        lastDate = candidateEndDate
+                    }
+                }
+            }
+            dataExtraction.firstVisitDate = firstDate
+            dataExtraction.lastVisitDate = lastDate ?: firstDate
+
+            // Store the version of the app used to create the extract
+            dataExtraction.appVersion = "${grailsApplication.metadata['app.version']}.${grailsApplication.metadata['app.buildNumber']} (built ${grailsApplication.metadata['app.buildDate']} ${grailsApplication.metadata['app.buildProfile']})"
+
             dataExtraction.save(failOnError: true)
 
             // Mint a DOI for this extract

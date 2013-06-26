@@ -67,6 +67,7 @@ biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
 doiServiceRoot = "https://doi.tern.uq.edu.au/test/"
 doiAppId = "223cbd7ba9c5ad519636ad0cb6b1b74d"
+ANDSApiKey =  "8b086ccb841f"
 doiUserId = "David.Baird@csiro.au"
 doiS2SRoot = "http://soils2sat-dev.ala.org.au"
 doiKeystorePath = "/resources/ternkeystore.bks"
@@ -128,6 +129,8 @@ grails.plugins.springsecurity.interceptUrlMap = [
         '/about/**':                                        ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/extract/landingPage**':                           ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/extract/downloadPackage**':                       ['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/attachment/download':                             ['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/ws/**':                                           ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/admin/**':                                        ['ROLE_ADMIN'],
         '/**':                                              ['ROLE_USER']
 ]

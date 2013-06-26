@@ -8,10 +8,19 @@ class DataExtraction implements Serializable {
     String localFile
     Integer downloadCount = 0
     String doi
+    List studyLocationVisits
+    Date firstVisitDate
+    Date lastVisitDate
+    String appVersion
+
+    static hasMany = [studyLocationVisits: String]
 
     static constraints = {
         downloadCount nullable: true
         doi nullable: true
+        firstVisitDate nullable: true
+        lastVisitDate nullable: true
+        appVersion nullable: true
     }
 
     def afterDelete() {
