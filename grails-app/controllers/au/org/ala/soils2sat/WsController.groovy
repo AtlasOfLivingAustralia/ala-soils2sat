@@ -1,8 +1,8 @@
 package au.org.ala.soils2sat
 
-import grails.converters.JSON
-
 class WsController {
+
+    def studyLocationService
 
     def index() {
         redirect(action:'rifcs')
@@ -13,18 +13,17 @@ class WsController {
         response.contentType = "text/xml"
         def locationMap = [:]
         extracts.each { extract ->
-            def locations = []
+            def locations = [:]
             extract.studyLocationVisits?.each {
-                println it
                 def bits = it.split("_")
                 if (bits && bits.length > 0) {
-                    locations << bits[0]
+                    def studyLocationName = bits[0]
+                    def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
+                    locations[studyLocationName] = [latitude:studyLocationDetails.latitude, longitude: studyLocationDetails.longitude]
                 }
             }
             locationMap[extract] = locations
         }
-
-        println locationMap
 
         render(template: 'RIFCS', model:[extracts: extracts, locationMap: locationMap])
     }

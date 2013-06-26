@@ -7,7 +7,7 @@
             <originatingSource type="">http://researchdata.ands.org.au/registry//orca/register_my_data</originatingSource>
             <collection type="dataset">
                 <name type="primary">
-                    <namePart>Ecological Data for TREND Site(s) ${locationMap[extract]?.join(", ")}</namePart>
+                    <namePart>Ecological Data for TREND Site(s) ${locationMap[extract].keySet()?.join(", ")}</namePart>
                 </name>
                 <description type="brief">&lt;p&gt;S2S brings together data from a broad range of custodians. Open remote sensing products are available from the Bureau of Meteorology and TERN AusCover. These have been leveraged by CSIRO and the ALA, making available valuable spatial layers representing different types of climate and environmental data. These data can then be further overlaid with soil maps that are created by CSIRO and TERN’s Soils and Landscape Grid of Australia facility on demand by the user. Biodiversity data (initially plant species data only, to be extended to animal species in the future) is also integrated into this system and these data have been contributed to the ALA by its partners − Commonwealth and State Herbariums and Museums, government agencies and the public. The raw ecological plot data available in ÆKOS presently has databases and datasets contributed by government agencies and TERN’s Multi Scaled Plot Network (AusPlot Rangelands and the Australian Transect Network –TREND) and will also house a number of additional researcher datasets in the near future. The genetics data are contributed by the Barcode of Life, GenBank and BioPlatforms Australia to the ÆKOS.&lt;/p&gt;</description>
                 <description type="note">&lt;p id="docs-internal-guid-7221c1e4-7995-9c58-c875-17fbd30ca370" dir="ltr"&gt;AusPlots Rangelands is a facility of the Terrestrial Ecosystems Research Network (TERN). The Australian Rangelands cover approximately 81% of the continent, including 52 bioregions represented by low rainfall and low nutrient soils. AusPlots is establishing a network of permanent monitoring plots throughout Australia’s Rangelands bioregions and is undertaking baseline surveys of vegetation and soils.&lt;/p&gt;
@@ -37,7 +37,10 @@
                         <date type="dateFrom" dateFormat="W3CDTF">${DateUtils.getW3CDTFDate(extract.firstVisitDate)}</date>
                         <date type="dateTo" dateFormat="W3CDTF">${DateUtils.getW3CDTFDate(extract.lastVisitDate)}</date>
                     </temporal>
-                    <spatial type="kmlPolyCoords"></spatial>
+                    <g:each in="${locationMap[extract].keySet()}" var="studyLocationName">
+                        <g:set var="coord" value="${locationMap[extract][studyLocationName]}" />
+                        <spatial type="kmlPolyCoords">${coord.longitude}, ${coord.latitude}</spatial>
+                    </g:each>
                 </coverage>
                 <relatedObject>
                     <key>aekos.org.au/service-10</key>
