@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class EcologicalContext {
+class EcologicalContext implements Serializable {
 
     String name
     String description

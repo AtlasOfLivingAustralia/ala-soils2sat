@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class MatrixValue {
+class MatrixValue implements Serializable {
 
     EcologicalContext ecologicalContext
     Question question

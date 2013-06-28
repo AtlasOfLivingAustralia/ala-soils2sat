@@ -50,15 +50,16 @@ class SearchService extends ServiceBase {
 
         def fiql = condition.query()
 
-        // TODO, ultimately the search results will contain lat/long, so no need to do this step...
-        def tempResults = studyLocationService.fiqlSearch(fiql)
-        tempResults?.each { result ->
-            def location = studyLocationService.getStudyLocationDetails(result.studyLocationName)
-            if (location) {
-                result.latitude = location.latitude
-                result.longitude = location.longitude
-            }
-        }
+
+            def tempResults = studyLocationService.fiqlSearch(fiql)
+//        // TODO, ultimately the search results will contain lat/long, so no need to do this step...
+//        tempResults?.each { result ->
+//            def location = studyLocationService.getStudyLocationDetails(result.studyLocationName)
+//            if (location) {
+//                result.latitude = location.latitude
+//                result.longitude = location.longitude
+//            }
+//        }
 
 
         // Now we need to post process the search results and filter out that do not match any specified 'ALA' criteria

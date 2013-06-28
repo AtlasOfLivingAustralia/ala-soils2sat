@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class StudyLocationDetailsTO {
+class StudyLocationDetailsTO implements Serializable {
     String bioregionName
     String easting
     String firstVisitDate
@@ -19,7 +19,7 @@ class StudyLocationDetailsTO {
     String studyLocationName
 }
 
-class SamplingUnitTO {
+class SamplingUnitTO implements Serializable {
     String description
     String id
 }

@@ -16,6 +16,19 @@
         <script type="text/javascript">
 
             $(document).ready(function () {
+
+                $("input:radio").change(function(e) {
+                    var option = $(this).val();
+                    if (option == 'selected') {
+                        $("#availableSamplingUnits").css("display", "block");
+                    } else {
+                        $("#availableSamplingUnits").css("display", "none");
+                    }
+                });
+
+                <g:if test="${samplingUnits == 'selected'}">
+                    $("#availableSamplingUnits").css("display", "block");
+                </g:if>
             });
 
         </script>
@@ -42,26 +55,37 @@
                             <table>
                                 <tr>
                                     <td style="width: 30px">
-                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="all" checked="true"/>
+                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="all" checked="${!samplingUnits || samplingUnits == 'all' }"/>
                                     </td>
                                     <td>
                                         <span>All available sampling units</span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" disabled="true" name="samplingUnits" value="selected"/>
+                                    <td style="vertical-align: top">
+                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="selected" checked="${samplingUnits == 'selected'}" />
                                     </td>
-                                    <td>
-                                        <span class="muted">Selected sampling units</span>
+                                    <td style="vertical-align: top">
+                                        <span>Selected sampling units</span>
+                                        <div id="availableSamplingUnits" style="display: none">
+                                            <table>
+                                                <g:each in="${availableSamplingUnits}" var="unit">
+                                                    <tr>
+                                                        <g:set var="isChecked" value="${selectedSamplingUnits?.contains(unit.id)}" />
+                                                        <td style="width:30px; vertical-align: middle"><g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0" name="samplingUnitId" checked="${isChecked}" value="${unit.id}" /></td>
+                                                        <td>${unit.description}</td>
+                                                    </tr>
+                                                </g:each>
+                                            </table>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" disabled="true" name="samplingUnits" value="matrix"/>
+                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="matrix" checked="${samplingUnits == 'matrix'}"/>
                                     </td>
                                     <td>
-                                        <span class="muted">Answer specific question...</span>
+                                        <span>Answer a specific theme question...</span>
                                     </td>
                                 </tr>
                             </table>
@@ -69,7 +93,7 @@
 
                         <g:link class="btn btn-small" event="cancel">Cancel</g:link>
                         <g:link class="btn btn-small" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
-                        <g:link class="btn btn-small btn-primary" event="continue">Next&nbsp;<i class="icon-chevron-right icon-white"></i></g:link>
+                        <g:submitButton name="continue" class="btn btn-small btn-primary" value="Next" />
 
                     </g:form>
                 </div>

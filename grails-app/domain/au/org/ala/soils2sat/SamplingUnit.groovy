@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class SamplingUnit {
+class SamplingUnit implements Serializable {
 
     String name
 

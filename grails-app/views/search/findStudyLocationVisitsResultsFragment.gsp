@@ -24,7 +24,7 @@
             <table class="table table-striped table-hover">
                 <g:each in="${results}" var="result">
                     <tr class="studyLocationSearchResultRow" studyLocationName="${result.studyLocationName}" studyLocationVisitId="${result.studyLocationVisitId}">
-                        <td><span class="label label-info">${result.studyLocationName}</span> ${result.visitStartDate} <span class="label">${result.observers.collect({ it.observerName })?.join(", ")}</span> <small>(${result.latitude}, ${result.longitude})</small> </td>
+                        <td><span class="label label-info">${result.studyLocationName}</span> ${result.visitStartDate} <span class="label">${result.observers.collect({ it.observerName })?.join(", ")}</span> <small>(${result.point.latitude}, ${result.point.longitude})</small> </td>
                         <td>[ <a href="${createLink(controller: 'studyLocation', action: 'studyLocationVisitSummary', params: [studyLocationName: result.studyLocationName, studyLocationVisitId: result.studyLocationVisitId])}">View Visit Summary</a> ]
                         </td>
                         <td>

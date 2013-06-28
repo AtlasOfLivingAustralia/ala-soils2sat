@@ -265,5 +265,18 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
+    def getAvailableSamplingUnits(List visitIds) {
+        def samplingUnits = []
+        visitIds?.each { visitId ->
+            def tmp = getStudyLocationVisitDetails(visitId)
+            tmp?.samplingUnits?.each { unit ->
+                if (!samplingUnits.find{it.id?.equalsIgnoreCase(unit.id?.toString()) }) {
+                    samplingUnits << new SamplingUnitTO(unit)
+                }
+            }
+        }
+        return samplingUnits
+    }
+
 }
 

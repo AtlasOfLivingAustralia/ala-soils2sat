@@ -1,6 +1,6 @@
 package au.org.ala.soils2sat
 
-class Question {
+class Question implements Serializable {
 
     String text
     String description

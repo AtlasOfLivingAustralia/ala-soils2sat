@@ -4,6 +4,7 @@ class ExtractController {
 
     def transient springSecurityService
     def transient extractService
+    def transient studyLocationService
 
     def index() {
         def user = springSecurityService.currentUser as User
@@ -66,13 +67,102 @@ class ExtractController {
         }
 
         selectSamplingUnits {
-            on("continue").to "citationDetails"
+            onEntry {
+                flow.availableSamplingUnits = studyLocationService.getAvailableSamplingUnits(flow.selectedVisitIds)
+                if (!flow.selectedSamplingUnits) {
+                    flow.selectedSamplingUnits = flow.availableSamplingUnits*.id
+                }
+            }
+            on("continue").to("processSamplingUnits")
+
+            on("themedExtract").to "themeQuestions"
             on("back").to "showVisits"
+            on("cancel").to "cancel"
+        }
+
+        processSamplingUnits {
+            action {
+                def selected = params.get("samplingUnitId")
+                def selectedUnitIds = []
+                flow.samplingUnits = params.samplingUnits
+
+                if (flow.samplingUnits == 'matrix') {
+                    return matrix()
+                }
+
+                if (!selected) {
+                    flow.selectedSamplingUnits = selectedUnitIds
+                    flash.errorMessage = "You must select at least one sampling unit to extract data for"
+                    return error()
+                }
+
+                if (selected instanceof String) {
+                    selectedUnitIds << selected
+                } else if (isCollection(selected)) {
+                    selected.each {
+                        selectedUnitIds << it
+                    }
+                }
+                flow.selectedSamplingUnits = selectedUnitIds
+                return nonMatrix()
+            }
+            on("matrix").to("themeQuestions")
+            on("nonMatrix").to("citationDetails")
+        }
+
+        themeQuestions {
+            onEntry {
+                def questions = Question.list().sort { it.id }
+                [questions: questions]
+            }
+
+            on("continue") {
+                def selected = params.get("questionId")
+                def selectedQuestionIds = []
+                if (selected instanceof String) {
+                    selectedQuestionIds << selected
+                } else if (isCollection(selected)) {
+                    selected.each { selectedQuestionIds << it }
+                }
+
+                if (!selectedQuestionIds) {
+                    flash.errorMessage ="Please select at least one question you are interested in"
+                    return error()
+                }
+
+                flow.selectedQuestionIds = selectedQuestionIds
+            }.to "pointsOfView"
+            on("back").to "selectSamplingUnits"
+            on("cancel").to "cancel"
+        }
+
+        pointsOfView {
+            onEntry {
+                def questions = []
+                def contextMap = [:]
+                flow.selectedQuestionIds?.each {
+                    def question = Question.get(it)
+                    questions << question
+                    def matrixValues = MatrixValue.findAllByQuestionAndRequired(question, true)
+                    def contexts = matrixValues*.ecologicalContext
+                    contextMap[question] = contexts
+                }
+                [questions: questions, contextMap: contextMap]
+            }
+            on("continue").to "themeSamplingUnits"
+            on("back").to "themeQuestions"
+            on("cancel").to "cancel"
+        }
+
+        themeSamplingUnits {
+            on("continue").to "citationDetails"
+            on("back").to "pointsOfView"
             on("cancel").to "cancel"
         }
 
         citationDetails {
             onEntry {
+                println flow.selectedSamplingUnits
                 def user = springSecurityService.currentUser as User
                 if (user.userProfile) {
                     if (!flow.creatorSurname) {
@@ -90,7 +180,7 @@ class ExtractController {
                 flow.creatorGivenNames = params.get("givenNames")
 
             }.to "extractAndPackage"
-            on("back").to "selectSamplingUnits"
+            on("back").to { flow.samplingUnits == 'matrix' ? "themeSamplingUnits" : "selectSamplingUnits" }
             on("cancel").to "cancel"
         }
 
@@ -98,7 +188,8 @@ class ExtractController {
             action {
                 def user = springSecurityService.currentUser as User
                 def selectedVisitIds = flow.selectedVisitIds as List<String>
-                def results = extractService.extractAndPackageData(user, selectedVisitIds, null)
+                def selectedSamplingUnits = flow.selectedSamplingUnits
+                def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits)
                 flow.extractionResults = results
             }
 
