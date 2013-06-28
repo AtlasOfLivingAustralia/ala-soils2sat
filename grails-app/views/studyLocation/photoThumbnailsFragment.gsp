@@ -2,11 +2,13 @@
     <g:each in="${attachments}" var="attachment">
         <li class="span2" attachmentId="${attachment.id}">
             <div style="text-align: center">
-                <a href="#" class="thumbnail" style="height: 140px">
+                <a href="#" class="thumbnail" style="height: 140px" title="${attachment.name} (${attachment.mimeType})">
                     <sts:spinner />
                 </a>
                 <div style="float: right; background-color: transparent; margin-top: -20px; padding-right: 5px;">
-                    <i class="icon-info-sign infoButton" title="${attachment.name} (${attachment.mimeType})"></i>
+                    <g:if test="${attachment.comment}">
+                        <i class="icon-comment infoButton" title="${attachment.comment}"></i>
+                    </g:if>
                     <span style="clear: both" />
                 </div>
             </div>

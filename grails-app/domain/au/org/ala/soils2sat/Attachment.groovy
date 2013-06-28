@@ -5,7 +5,10 @@ class Attachment {
     String attachmentId
     Date dateUploaded
     User uploadedBy
-    String ownerId // In the case of a study location, its the name, a visit will be studyLocationName_dateOfFirstVisit (yyyymmdd)
+    String originalName
+    AttachmentOwnerType attachedTo
+    String studyLocationName
+    String studyLocationVisitStartDate
     AttachmentCategory category
     String name
     String mimeType
@@ -18,8 +21,11 @@ class Attachment {
         attachmentId nullable: true
         uploadedBy nullable: false
         dateUploaded nullable: false
-        ownerId nullable: false
+        attachedTo nullable: false
+        studyLocationName nullable: false
+        studyLocationVisitStartDate nullable: true
         category nullable: false
+        originalName nullable: false
         name nullable: true
         mimeType nullable: true
         comment nullable: true

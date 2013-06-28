@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.soils2sat.AttachmentOwnerType; au.org.ala.soils2sat.AttachmentCategory" %>
+<%@ page import="au.org.ala.soils2sat.AttachmentCategory" %>
 <!doctype html>
 <html>
     <head>
@@ -14,15 +14,17 @@
 
         <div id='login' class="container-fluid">
 
-            <h3>Upload Attachment</h3>
+            <h3>Edit Attachment</h3>
 
             <g:form class="form-horizontal" controller="attachment" action="saveAttachment" enctype="multipart/form-data">
 
-                <g:render template="form" model="${[attachment: attachment]}" />
+                <g:hiddenField name="id" value="${attachment?.id}" />
+
+                <g:render template="form" model="${[attachment:attachment]}" />
 
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" class="btn btn-small btn-primary"><i class="icon-upload icon-white"></i>&nbsp;Upload</button>
+                        <button type="submit" class="btn btn-small btn-primary">Save</button>
                     </div>
                 </div>
 

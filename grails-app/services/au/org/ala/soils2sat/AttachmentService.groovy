@@ -3,6 +3,8 @@ package au.org.ala.soils2sat
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 
+import java.awt.image.BufferedImage
+
 class AttachmentService {
 
     def springSecurityService
@@ -10,10 +12,21 @@ class AttachmentService {
 
     private static final int THUMBNAIL_SIZE = 100
 
-    public Attachment saveAttachment(String ownerId, AttachmentCategory category, String comment, MultipartFile file) {
-        def attachment = new Attachment(uploadedBy: springSecurityService.currentUser as User, dateUploaded: new Date(), ownerId: ownerId, category: category, name: file.originalFilename, mimeType: file.contentType, size: file.size, comment: comment)
+    public Attachment saveAttachment(Map properties, MultipartFile file) {
+
+        def attachment = new Attachment(properties)
+        attachment.name = file.originalFilename
+        attachment.originalName = file.originalFilename
+        attachment.dateUploaded = new Date()
+        attachment.uploadedBy = springSecurityService.currentUser as User
+        attachment.mimeType = file.contentType
+        attachment.size = file.size
         attachment.attachmentId =  attachmentStorageService.storeAttachmentFile(attachment, file.bytes)
+
         attachment.save(failOnError: true)
+
+        generateThumbnail(attachment)
+
         return attachment
     }
 
@@ -21,6 +34,18 @@ class AttachmentService {
         if (attachment) {
             return attachmentStorageService.retrieveAttachmentFile(attachment.attachmentId)
         }
+        return null
+    }
+
+    public BufferedImage getAttachmentAsImage(Attachment attachment) {
+
+        if (attachment.mimeType?.startsWith("image/")) {
+            // just return the raw bytes, as it is already an image
+            return ImageUtils.bytesToImage(getAttachmentBytes(attachment))
+        } else if (attachment.mimeType?.equalsIgnoreCase("application/pdf")) {
+            return ImageUtils.createImageFromPDFBytes(getAttachmentBytes(attachment))
+        }
+
         return null
     }
 

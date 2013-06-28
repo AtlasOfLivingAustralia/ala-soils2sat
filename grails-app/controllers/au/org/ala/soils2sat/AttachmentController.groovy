@@ -11,59 +11,91 @@ class AttachmentController {
 
     def upload() {
 
+        def attachment = new Attachment()
+
+        attachment.attachedTo = AttachmentOwnerType.StudyLocation
+
+        [attachment: attachment]
+    }
+
+    def edit() {
+        def attachment = Attachment.get(params.int("id"))
+        [attachment: attachment]
     }
 
     def saveAttachment() {
 
-        if (!params.file) {
-            flash.errorMessage = "You must choose a file to upload!"
-            redirect(controller:'attachment', action:'upload', params: params)
-            return
-        }
+        def attachment = Attachment.get(params.int("id"))
 
-        if (!params.attachTo) {
-            flash.errorMessage = "Select either StudyLocation or StudyLocationVisit"
-            redirect(controller:'attachment', action:'upload', params: params)
-            return
-        }
+        def fileList = []
 
-        if (!params.studyLocationName) {
-            flash.errorMessage = "You must enter a valid study location name"
-            redirect(controller:'attachment', action:'upload', params: params)
-            return
-        }
+        if (!attachment) {
+            attachment = new Attachment(params)
 
-        if (params.attachTo == 'studyLocationVisit' && !params.studyLocationVisitStartDate) {
-            flash.errorMessage = "You must specify a visit start date!"
-            redirect(controller:'attachment', action:'upload', params: params)
-            return
-        }
-
-        def category = params.category as AttachmentCategory
-
-        if (!category) {
-            flash.errorMessage = "No category specified"
-            redirect(controller:'attachment', action:'upload', params: params)
-            return
-        }
-
-        def ownerId = "${params.studyLocationName}"
-        if (params.attachTo == 'studyLocationVisit') {
-            ownerId += "_${params.studyLocationVisitStartDate}"
-        }
-
-        if(request instanceof MultipartHttpServletRequest) {
             def mprequest = request as MultipartHttpServletRequest
             for (String paramName : mprequest.getMultiFileMap().keySet()) {
                 List<MultipartFile> files = mprequest.getMultiFileMap().get(paramName);
                 files.each { file ->
-                    if (file != null) {
-                        def attachment = attachmentService.saveAttachment(ownerId, category, params.comment, file)
-                        if (attachment) {
-                            attachmentService.generateThumbnail(attachment)
-                        }
+                    if (file.size > 0) {
+                        fileList << file
                     }
                 }
+            }
+
+            if (!fileList) {
+                flash.errorMessage = "You must choose a file to upload!"
+                render(view:'upload', model: [attachment:attachment])
+                return
+            }
+            attachment = new Attachment(params)
+        } else {
+            attachment.setProperties(params)
+        }
+
+        if (!attachment.attachedTo) {
+            flash.errorMessage = "Select either StudyLocation or StudyLocationVisit"
+            render(view:'upload', model: [attachment:attachment])
+            return
+        }
+
+        if (!attachment.studyLocationName) {
+            flash.errorMessage = "You must enter a valid study location name"
+            render(view:'upload', model: [attachment:attachment])
+            return
+        }
+
+
+        if (attachment.attachedTo == AttachmentOwnerType.StudyLocationVisit) {
+            if (!attachment.studyLocationVisitStartDate) {
+                flash.errorMessage = "You must specify a visit start date!"
+                render(view:'upload', model: [attachment:attachment])
+                return
+            }
+        } else {
+            attachment.studyLocationVisitStartDate = null
+        }
+
+        if (!attachment.category) {
+            flash.errorMessage = "No category specified"
+            render(view:'upload', model: [attachment:attachment])
+            return
+        }
+
+        if (fileList) {
+            def mprequest = request as MultipartHttpServletRequest
+            fileList.each { file ->
+            }
+            for (String paramName : mprequest.getMultiFileMap().keySet()) {
+                List<MultipartFile> files = mprequest.getMultiFileMap().get(paramName);
+                files.each { file ->
+                    if (file != null) {
+                        attachmentService.saveAttachment(attachment.properties, file)
+                    }
+                }
+            }
+        } else {
+            if (attachment.id) {
+                attachment.save(failOnError: true)
             }
         }
 
@@ -78,6 +110,20 @@ class AttachmentController {
             response.contentType = attachment.mimeType
             response.setHeader("Content-disposition", "attachment;filename=${filename}")
             response.outputStream.write(bytes)
+            response.flushBuffer()
+        }
+    }
+
+    def downloadAsImage() {
+        def attachment = Attachment.get(params.int("id"))
+        if (attachment) {
+            def image = attachmentService.getAttachmentAsImage(attachment)
+            def filename = attachment.name ?: UUID.randomUUID().toString()
+            // Preserve the mime type if attachment is actually an image, otherwise its image representation will be jpeg
+            def mimeType = (attachment.mimeType?.startsWith('image/') ? attachment.mimeType : 'image/jpeg')
+            response.setContentType(mimeType)
+            response.setHeader("Content-disposition", "attachment;filename=${filename}")
+            response.outputStream.write(ImageUtils.imageToBytes(image))
             response.flushBuffer()
         }
     }
@@ -97,7 +143,7 @@ class AttachmentController {
         def height = 0
         def width = 0
         if (attachment) {
-            def bufferedImage = ImageUtils.bytesToImage(attachmentService.getAttachmentBytes(attachment))
+            def bufferedImage = attachmentService.getAttachmentAsImage(attachment)
             height = bufferedImage.height
             width = bufferedImage.width
         }

@@ -18,6 +18,7 @@
 
         <g:javascript library="application"/>
         <r:require module='jqueryui' />
+        <r:require module="panZoom" />
         <r:require module="bootstrap"/>
         <r:layoutResources />
 

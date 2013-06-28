@@ -353,7 +353,7 @@ class StudyLocationController {
         } != null
 
         def attachmentMap = [:]
-        def attachments = Attachment.findAllByOwnerId(studyLocationName)
+        def attachments = Attachment.findAllByAttachedToAndStudyLocationName(AttachmentOwnerType.StudyLocation, studyLocationName)
         if (attachments) {
             attachments.each {
                 if (!attachmentMap[it.category]) {
@@ -462,7 +462,7 @@ class StudyLocationController {
         def isSelected = appState.selectedVisits.find { it.studyLocationVisitId == studyLocationVisitId }
 
         def attachmentMap = [:]
-        def attachments = Attachment.findAllByOwnerId("${studyLocationName}_${visitDetail.visitStartDate}")
+        def attachments = Attachment.findAllByAttachedToAndStudyLocationNameAndStudyLocationVisitStartDate(AttachmentOwnerType.StudyLocationVisit, studyLocationName, visitDetail.visitStartDate)
         if (attachments) {
             attachmentMap = attachments.collectEntries { [ it.category, it ]}
         }
@@ -769,7 +769,7 @@ class StudyLocationController {
         def studyLocationName = params.studyLocationName
         def attachments = []
         if (studyLocationName) {
-            attachments = Attachment.findAllByOwnerIdAndCategory(studyLocationName, AttachmentCategory.Photo)
+            attachments = Attachment.findAllByAttachedToAndStudyLocationNameAndCategory(AttachmentOwnerType.StudyLocation, studyLocationName, AttachmentCategory.Photo)
         }
 
         render(view: 'photoThumbnailsFragment', model:[attachments: attachments])
@@ -780,7 +780,7 @@ class StudyLocationController {
         def attachments = []
 
         if (visitDetails) {
-            attachments = Attachment.findAllByOwnerIdAndCategory("${visitDetails.studyLocationName}_${visitDetails.visitStartDate}", AttachmentCategory.Photo)
+            attachments = Attachment.findAllByAttachedToAndStudyLocationNameAndStudyLocationVisitStartDateAndCategory(AttachmentOwnerType.StudyLocationVisit,visitDetails.studyLocationName, visitDetails.visitStartDate, AttachmentCategory.Photo)
         }
 
         render(view: 'photoThumbnailsFragment', model:[attachments: attachments.sort { it.id }])

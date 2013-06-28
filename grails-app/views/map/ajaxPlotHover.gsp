@@ -3,24 +3,16 @@
     <g:if test="${studyLocation}">
         <table>
             <tr>
-                <td>Visit dates</td>
+                <td><strong>Visit&nbsp;dates</strong></td>
                 <td><sts:formatDateStr date="${studyLocation.firstVisitDate}"/> - <sts:formatDateStr date="${studyLocation.lastVisitDate}"/></td>
             </tr>
             <tr>
-                <td>Position</td>
+                <td><strong>Position</strong></td>
                 <td>${studyLocation.longitude}, ${studyLocation.latitude}</td>
             </tr>
-            %{--<tr>--}%
-                %{--<td>Position (UTM)</td>--}%
-                %{--<td>${studyLocation.easting}, ${studyLocation.northing} (${studyLocation.mgaZone as Integer})</td>--}%
-            %{--</tr>--}%
             <tr>
-                <td>Observers</td>
-                <td>${studyLocation.observers?.join(", ")}</td>
-            </tr>
-            <tr>
-                <td>Sampling Units</td>
-                <td>${studyLocation.samplingUnits?.collect({ it.description })?.join(", ")}</td>
+                <td style="vertical-align: top"><strong>Sampling&nbsp;Units</strong></td>
+                <td style="vertical-align: top">${studyLocation.samplingUnits?.collect({ it.description })?.join(", ")}</td>
             </tr>
 
 

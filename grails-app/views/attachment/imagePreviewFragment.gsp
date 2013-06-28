@@ -44,6 +44,13 @@
         });
     });
 
-    $("#image-container").html('<img src="${createLink(controller:'attachment', action:'download', id: attachment.id)}" image-width="${imageWidth}" image-height="${imageHeight}" alt="">');
+    $("#image-container").html('<img src="${createLink(controller:'attachment', action:'downloadAsImage', id: attachment.id)}" image-width="${imageWidth}" image-height="${imageHeight}" alt="" />');
+
+    var overallHeight = $("#modal_element_id").height();
+    if (overallHeight) {
+        var headerHeight = $(".modal-header").height();
+        var containerHeight = (overallHeight - (headerHeight + 80));  // padding
+        $("#image-container").css("height", containerHeight);
+    }
 
 </script>

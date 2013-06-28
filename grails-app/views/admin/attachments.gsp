@@ -22,6 +22,15 @@
                     }
                 });
 
+                $(".btnEdit").click(function(e) {
+                    e.preventDefault();
+                    var attachmentId = $(this).parents("[attachmentId]").attr("attachmentId");
+                    if (attachmentId) {
+                        window.location = "${createLink(controller:'attachment', action:'edit')}?id=" + attachmentId;
+                    }
+                });
+
+
                 $(".btnPreview").click(function(e) {
                     var attachmentId = $(this).parents("[attachmentId]").attr("attachmentId");
                     if (attachmentId) {
@@ -51,26 +60,28 @@
                     <g:sortableColumn title="Date Uploaded" property="dateUploaded" />
                     <g:sortableColumn title="OwnerId" property="ownerId" />
                     <g:sortableColumn title="Category" property="category" />
-                    <g:sortableColumn title="Filename" property="name" />
+                    <g:sortableColumn title="Name" property="name" />
                     <g:sortableColumn title="Mime type" property="mimeType" />
                     <g:sortableColumn title="Size" property="size" />
-                    <th/>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <g:each in="${attachments}" var="attachment">
                     <tr attachmentId="${attachment.id}">
                         <td><g:formatDate date="${attachment.dateUploaded}" format="${au.org.ala.soils2sat.DateUtils.S2S_DATE_TIME_FORMAT}" /> </td>
-                        <td>${attachment.ownerId}</td>
+                        <td>${attachment.studyLocationName}<g:if test="${attachment.studyLocationVisitStartDate}">_${attachment.studyLocationVisitStartDate}</g:if></td>
                         <td>${attachment.category}</td>
                         <td>${attachment.name}</td>
                         <td>${attachment.mimeType}</td>
                         <td>${attachment.size}</td>
-                        <td>
+                        <td style="min-width:130px">
+                            <button class="btn btn-mini btn-danger btnDelete" title="Delete attachment"><i class="icon-remove icon-white"></i></button>
+                            <button class="btn btn-mini btnEdit" title="Edit attachment"><i class="icon-edit"></i></button>
                             <a class="btn btn-mini" href="${createLink(controller: 'attachment', action:'download', id: attachment.id)}" title="Download attachment">
                                 <i class="icon-download-alt"></i>
                             </a>
-                            <button class="btn btn-mini btn-danger btnDelete" title="Delete attachment"><i class="icon-remove icon-white"></i></button>
+
                             <g:if test="${attachment.mimeType.startsWith("image/")}">
                                 <button class="btn btn-mini btnPreview" title="Preview"><i class="icon-picture"></i></button>
                             </g:if>

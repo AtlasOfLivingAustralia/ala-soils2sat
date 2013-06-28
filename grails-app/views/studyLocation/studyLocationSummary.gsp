@@ -4,7 +4,6 @@
     <head>
         <r:require module='bootstrap_responsive'/>
         <r:require module="visualisationHandlers" />
-        <r:require module="panZoom" />
         <meta name="layout" content="detail"/>
         <title>Study Location Summary - ${studyLocationName}</title>
     </head>
@@ -39,6 +38,17 @@
                 $.ajax("${createLink(controller: 'studyLocation', action: 'studyLocationPhotoThumbnailsFragment', params: [studyLocationName: studyLocationName])}").done(function (html) {
                     $("#photoTab").html(html);
                 });
+            }
+
+            function viewMetagenomicsAsImage(attachmentId) {
+                if (attachmentId) {
+                    showModal({
+                        url: "${createLink(controller: 'attachment', action:'imagePreviewFragment')}/" + attachmentId,
+                        title: "Image Preview",
+                        height: 700,
+                        width: 800
+                    });
+                }
             }
 
             $(document).ready(function () {
@@ -87,6 +97,14 @@
                 $("#btnMovePrevious").click(function(e) {
                     e.preventDefault();
                     window.location = "${createLink(controller: "studyLocation", action: "previousSelectedStudyLocationSummary", params:[studyLocationName: studyLocationName])}";
+                });
+
+                $("#viewMetagenomicsLink").click(function(e) {
+                    e.preventDefault();
+                    var attachmentId = $(this).attr("attachmentId");
+                    if (attachmentId) {
+                        viewMetagenomicsAsImage(attachmentId);
+                    }
                 });
 
             });
@@ -160,15 +178,15 @@
                                     <td class="fieldColumn">Number of visits</td>
                                     <td>${studyLocationDetails.numberOfVisits}</td>
                                 </tr>
-                                <tr>
-                                    <td class="fieldColumn">Observers</td>
-                                    <td>
-                                        <g:set var="observers" value="${studyLocationDetails.observers}"/>
-                                        <g:each in="${observers}" var="observer" status="i">
-                                            <a href="#">${observer}</a><g:if test="${i < observers.size()-1}">,&nbsp;</g:if>
-                                        </g:each>
-                                    </td>
-                                </tr>
+                                %{--<tr>--}%
+                                    %{--<td class="fieldColumn">Observers</td>--}%
+                                    %{--<td>--}%
+                                        %{--<g:set var="observers" value="${studyLocationDetails.observers}"/>--}%
+                                        %{--<g:each in="${observers}" var="observer" status="i">--}%
+                                            %{--<a href="#">${observer}</a><g:if test="${i < observers.size()-1}">,&nbsp;</g:if>--}%
+                                        %{--</g:each>--}%
+                                    %{--</td>--}%
+                                %{--</tr>--}%
                                 <tr>
                                     <td class="fieldColumn">First visit date</td>
                                     <td><sts:formatDateStr date="${studyLocationDetails.firstVisitDate}"/></td>
@@ -192,7 +210,7 @@
                                     <td>
                                         <g:set var="pdfList" value="${attachmentMap[AttachmentCategory.MetagenomicAnalysis]}"/>
                                         <g:if test="${pdfList}">
-                                            <span>Yes, click <a href="${createLink(controller:'attachment', action:'download', id:pdfList[0].id )}">here</a> to download.</span>
+                                            <span>Yes, click <a id="viewMetagenomicsLink" href="#" attachmentId="${pdfList[0].id}">here</a> to view, or <a href="${createLink(controller:'attachment', action:'download', id:pdfList[0].id)}">download</a> as PDF.</span>
                                         </g:if>
                                         <g:else>
                                             <span>No</span>

@@ -44,7 +44,8 @@ grails.project.dependency.resolution = {
         compile 'org.imgscalr:imgscalr-lib:4.2'
         compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:2.7.5'
         compile 'org.apache.cxf:cxf-rt-rs-extension-search:2.7.5'
-
+        runtime 'org.apache.pdfbox:fontbox:1.8.2'
+        compile 'org.apache.pdfbox:pdfbox:1.8.2'
     }
 
     plugins {
