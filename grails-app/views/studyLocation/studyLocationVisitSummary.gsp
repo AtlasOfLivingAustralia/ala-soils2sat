@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <meta name="layout" content="detail"/>
         <title>Study Location Visit Summary - ${studyLocationName}</title>
     </head>

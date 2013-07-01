@@ -558,6 +558,10 @@ class StudyLocationController {
             case 4:
                 view = 'structuralSummaryDetail'
                 break;
+            case 5:
+                model.columnHeadings.remove("sampleId")
+                model.columnHeadings.add(0, "sampleId")
+                break;
             case 6:
                 model.columnHeadings.remove("sampleId")
                 model.columnHeadings.add(0, "sampleId")

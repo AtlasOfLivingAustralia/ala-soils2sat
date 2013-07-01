@@ -17,7 +17,6 @@
         <link rel="stylesheet" href="${resource(dir: '/jqwidgets/styles', file: 'jqx.base.css')}" type="text/css"/>
 
         <g:javascript library="application"/>
-        <r:require module='jqueryui' />
         <r:require module="panZoom" />
         <r:require module="bootstrap"/>
         <r:layoutResources />

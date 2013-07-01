@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <meta name="layout" content="detail"/>
         <title>Compare Study Locations</title>
     </head>

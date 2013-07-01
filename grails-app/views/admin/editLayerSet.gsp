@@ -2,8 +2,6 @@
 <!doctype html>
 <html>
 <head>
-    <r:require module='jqueryui'/>
-    <r:require module='fancybox'/>
     <meta name="layout" content="adminLayout"/>
     <title>Soils to Satellites - Admin - Edit layer set</title>
 </head>

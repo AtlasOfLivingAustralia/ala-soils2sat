@@ -36,7 +36,6 @@
         e.preventDefault();
         var replaceExisting = $("#chkClearExisting").prop('checked');
         addLayerSet(${layerSet.id}, replaceExisting);
-        $.fancybox.close();
     });
 
     $("#btnEditLayerSet").click(function (e) {

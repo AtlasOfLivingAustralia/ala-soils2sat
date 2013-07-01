@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <meta name="layout" content="adminLayout"/>
         <title>Soils to Satellites - Admin - Data Extractions</title>
     </head>
@@ -60,9 +59,9 @@
                 </g:each>
             </tbody>
         </table>
-        <div class="pagination">
-            <g:paginate total="${extractions.totalCount}" omitNext="true" omitPrev="true" />
-        </div>
+
+        <g:paginate total="${extractions.totalCount}" omitNext="true" omitPrev="true" />
+
     </body>
 
 </html>

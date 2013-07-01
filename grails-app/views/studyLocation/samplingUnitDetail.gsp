@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <meta name="layout" content="detail"/>
         <title>Sampling Unit details - ${studyLocationDetail?.studyLocationName} - Visit <sts:formatDateStr date="${visitDetail.visitStartDate}" />  - ${samplingUnitName}</title>
     </head>

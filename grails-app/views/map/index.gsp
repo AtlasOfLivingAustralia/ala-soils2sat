@@ -2,9 +2,7 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <r:require module='openlayers'/>
-
         <meta name="layout" content="soils2sat"/>
         <title>Soils to Satellites</title>
         <style type="text/css" media="screen">

@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <meta name="layout" content="adminLayout"/>
         <title>Soils to Satellites - Admin - Attachment</title>
     </head>

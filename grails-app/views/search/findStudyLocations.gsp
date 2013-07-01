@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 <head>
-    <r:require module='jqueryui'/>
     <r:require module='openlayers'/>
     <meta name="layout" content="detail"/>
     <title>Find Study Locations</title>\

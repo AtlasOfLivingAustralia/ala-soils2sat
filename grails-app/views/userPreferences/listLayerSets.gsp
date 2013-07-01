@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
 	<head>
-        <r:require module='jqueryui' />
 		<meta name="layout" content="detail"/>
 		<title>Your layer sets</title>
 	</head>

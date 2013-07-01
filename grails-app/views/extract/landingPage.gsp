@@ -2,7 +2,6 @@
 <!doctype html>
 <html>
     <head>
-        <r:require module='jqueryui'/>
         <sec:ifLoggedIn>
             <meta name="layout" content="profilePage"/>
         </sec:ifLoggedIn>
