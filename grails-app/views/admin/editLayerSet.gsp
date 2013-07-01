@@ -3,7 +3,6 @@
 <html>
 <head>
     <r:require module='jqueryui'/>
-    <r:require module='bootstrap_responsive'/>
     <r:require module='fancybox'/>
     <meta name="layout" content="adminLayout"/>
     <title>Soils to Satellites - Admin - Edit layer set</title>

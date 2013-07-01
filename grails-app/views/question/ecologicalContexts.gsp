@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/html">
     <head>
         <r:require module='jqueryui' />
-        <r:require module='bootstrap_responsive' />
         <meta name="layout" content="detail"/>
         <title>Questions - Ecological Contexts</title>
     </head>

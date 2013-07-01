@@ -37,7 +37,7 @@
 
     <body>
 
-    <r:require module="bootstrap_responsive"/>
+    <r:require module="bootstrap"/>
     <r:require module="panZoom" />
 
     <div class="container-fluid">

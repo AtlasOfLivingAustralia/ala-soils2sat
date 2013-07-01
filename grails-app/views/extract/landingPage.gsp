@@ -3,7 +3,6 @@
 <html>
     <head>
         <r:require module='jqueryui'/>
-        <r:require module='bootstrap_responsive'/>
         <sec:ifLoggedIn>
             <meta name="layout" content="profilePage"/>
         </sec:ifLoggedIn>

@@ -3,7 +3,6 @@
 <html>
     <head>
         <r:require module='jqueryui'/>
-        <r:require module='bootstrap_responsive'/>
         <meta name="layout" content="detail"/>
         <title>Sampling Unit details - ${studyLocationDetail?.studyLocationName} - Visit <sts:formatDateStr date="${visitDetail.visitStartDate}" />  - ${samplingUnitName}</title>
     </head>

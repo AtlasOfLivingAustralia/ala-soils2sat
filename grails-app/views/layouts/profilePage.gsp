@@ -36,7 +36,7 @@
     </head>
 
     <body>
-    <r:require module="bootstrap_responsive"/>
+    <r:require module="bootstrap-responsive-css"/>
     <div class="container-fluid">
         <legend>
             <table style="width: 100%">

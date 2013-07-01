@@ -2,6 +2,7 @@ package au.org.ala.soils2sat
 
 import grails.converters.JSON
 import org.grails.plugins.csv.CSVWriter
+import org.hibernate.criterion.Order
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
@@ -16,13 +17,13 @@ class AdminController {
 
     def userList() {
 
-        def userList = User.list()
+        params.max = params.max ?: 10
+        params.offset = params.offset ?: 0
 
-        userList.removeAll {
-            it.username == 'admin'
-        }
+        def userList = User.findAll("from User where not username = 'admin' order by case when applicationState.lastLogin is null then 1 else 0 end, applicationState.lastLogin desc",[:], params)
+        def totalCount = User.count - 1
 
-        [userList: userList.sort({ it.applicationState?.lastLogin }).reverse()]
+        [userList: userList, totalUsers: totalCount]
     }
 
     def addUser() {
@@ -103,6 +104,7 @@ class AdminController {
 
         if (!params.userId) {
             userInstance = new User(username: params.email, password:params.password, enabled: true, accountExpired: false, accountLocked: false)
+            def applicationState = new UserApplicationState(user: userInstance)
             userInstance.save(flush: true, failOnError: true)
 
             def roles = ['ROLE_USER']
@@ -111,7 +113,6 @@ class AdminController {
             }
 
             userService.addRoles(userInstance, roles)
-
         } else {
             if (params.password) {
                 userInstance.password = params.password

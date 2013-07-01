@@ -3,7 +3,6 @@
 <html>
     <head>
         <r:require module='jqueryui'/>
-        <r:require module='bootstrap_responsive'/>
         <meta name="layout" content="detail"/>
         <title>Species Analysis</title>
     </head>

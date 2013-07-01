@@ -38,17 +38,17 @@ modules = {
         resource url:'/fancybox/fancybox_sprite.png'
     }
 
-    bootstrap {
-        resource url: '/bootstrap/js/bootstrap.min.js'
-        resource url: '/bootstrap/css/bootstrap.min.css'
-        resource url: '/bootstrap/img/glyphicons-halflings-white.png'
-        resource url: '/bootstrap/img/glyphicons-halflings.png'
-    }
-
-    bootstrap_responsive {
-        dependsOn 'bootstrap'
-        resource url: '/bootstrap/css/bootstrap-responsive.min.css'
-    }
+//    bootstrap {
+//        resource url: '/bootstrap/js/bootstrap.min.js'
+//        resource url: '/bootstrap/css/bootstrap.min.css'
+//        resource url: '/bootstrap/img/glyphicons-halflings-white.png'
+//        resource url: '/bootstrap/img/glyphicons-halflings.png'
+//    }
+//
+//    bootstrap_responsive {
+//        dependsOn 'bootstrap'
+//        resource url: '/bootstrap/css/bootstrap-responsive.min.css'
+//    }
 
     visualisationHandlers {
         dependsOn 'jquery'

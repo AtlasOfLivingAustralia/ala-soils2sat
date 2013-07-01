@@ -2,7 +2,6 @@
 <html>
 	<head>
     <r:require module='jqueryui' />
-    <r:require module='bootstrap_responsive' />
     <r:require module='fancybox' />
 		<meta name="layout" content="adminLayout"/>
 		<title>Soils to Satellites - Admin - User List</title>
@@ -31,6 +30,9 @@
         </tr>
       </g:each>
     </table>
+
+    <g:paginate total="${totalUsers}" controller="admin" action="userList" />
+
     <content tag="adminButtonBar">
       <button class="btn btn-small btn-primary" id="btnAddNewUser"><i class="icon-user icon-white"></i>&nbsp;Add user</button>
     </content>

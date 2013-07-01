@@ -3,7 +3,6 @@
 <html>
 	<head>
         <r:require module='jqueryui' />
-        <r:require module='bootstrap_responsive' />
 		<meta name="layout" content="detail"/>
 		<title>Your layer sets</title>
 	</head>
