@@ -162,7 +162,6 @@ class ExtractController {
 
         citationDetails {
             onEntry {
-                println flow.selectedSamplingUnits
                 def user = springSecurityService.currentUser as User
                 if (user.userProfile) {
                     if (!flow.creatorSurname) {

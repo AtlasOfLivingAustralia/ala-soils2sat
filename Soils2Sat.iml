@@ -113,7 +113,6 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.json-lib/json-lib/jars/json-lib-2.3-jdk15.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.groovy.modules.http-builder/http-builder/jars/http-builder-0.5.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.eclipse.jdt.core.compiler/ecj/jars/ecj-3.7.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-codec/commons-codec/jars/commons-codec-1.6.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.2.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.2.4.jar!/" />
@@ -131,6 +130,9 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-api/jars/cxf-api-2.7.5.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-frontend-jaxrs/jars/cxf-rt-frontend-jaxrs-2.7.5.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.imgscalr/imgscalr-lib/jars/imgscalr-lib-4.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/jempbox/bundles/jempbox-1.8.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/fontbox/bundles/fontbox-1.8.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/pdfbox/bundles/pdfbox-1.8.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -138,7 +140,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="Soils2Sat-grailsPlugins" />
-    <orderEntry type="library" name="grails-2.2.1" level="application" />
+    <orderEntry type="library" name="grails-2.2.3" level="application" />
   </component>
 </module>
 
