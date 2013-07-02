@@ -56,7 +56,11 @@
                                 <h4>${question.text} in terms of</h4>
                                 <ul class="thumbnails">
                                     <g:each in="${contextMap[question]}" var="context">
-                                        <li><small>${context.name}</small></li>
+                                        <li>
+                                            <g:set var="isChecked" value="${selectedContextIds?.contains(context.id?.toString())}" />
+                                            <g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0" name="contextId" checked="${isChecked}" value="${context.id}" />
+                                            <small>${context.name}</small>
+                                        </li>
                                     </g:each>
                                 </ul>
                             </g:each>

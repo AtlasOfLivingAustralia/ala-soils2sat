@@ -59,7 +59,7 @@
                 <div class="span12">
                     <g:form>
                         <div class="well well-small">
-                            <h4>Environmental Layers</h4>
+                            <h4>Map Layers</h4>
                             <table>
                                 <g:each in="${appState.layers}" var="layer">
                                     <tr layerName="${layer.name}">

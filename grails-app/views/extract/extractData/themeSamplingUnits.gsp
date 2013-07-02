@@ -53,6 +53,13 @@
 
                         <div class="well well-small">
                             <h4>Available sampling units</h4>
+                            <ul>
+                                <g:each in="${availableContextSamplingUnits}" var="unit">
+                                    <li>
+                                        ${unit.name} (${unit.id})
+                                    </li>
+                                </g:each>
+                            </ul>
                         </div>
 
                         <g:link class="btn btn-small" event="cancel">Cancel</g:link>

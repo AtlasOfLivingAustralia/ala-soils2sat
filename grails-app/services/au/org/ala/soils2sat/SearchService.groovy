@@ -103,7 +103,7 @@ class SearchService extends ServiceBase {
         switch (criteria.criteriaDefinition.type) {
             case CriteriaType.SpatialPortalLayer:
             case CriteriaType.SpatialPortalField:
-                def value = layerService.getIntersectValues(candidate.latitude, candidate.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
+                def value = layerService.getIntersectValues(candidate.point.latitude, candidate.point.longitude, [criteria.criteriaDefinition.fieldName])[criteria.criteriaDefinition.fieldName]
                 result = SearchCriteriaUtils.eval(criteria, value as String)
                 break
             default:

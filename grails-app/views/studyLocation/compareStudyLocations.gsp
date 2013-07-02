@@ -130,7 +130,7 @@
                     </div>
                 </g:if>
                 <g:else>
-                    <p>You must first select at least one environmental layer, and two or more study locations before using this feature.</p>
+                    <p>You must first select at least one map layer, and two or more study locations before using this feature.</p>
                 </g:else>
             </div>
         </div>

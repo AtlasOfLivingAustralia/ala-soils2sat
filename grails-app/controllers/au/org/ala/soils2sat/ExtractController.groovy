@@ -144,7 +144,6 @@ class ExtractController {
                     flash.errorMessage ="Please select at least one question you are interested in"
                     return error()
                 }
-
                 flow.selectedQuestionIds = selectedQuestionIds
             }.to "pointsOfView"
             on("back").to "selectSamplingUnits"
@@ -152,24 +151,60 @@ class ExtractController {
         }
 
         pointsOfView {
+
             onEntry {
                 def questions = []
                 def contextMap = [:]
+                def allIds = []
                 flow.selectedQuestionIds?.each {
                     def question = Question.get(it)
                     questions << question
                     def matrixValues = MatrixValue.findAllByQuestionAndRequired(question, true)
                     def contexts = matrixValues*.ecologicalContext
+                    allIds.addAll(contexts.collect { it.id.toString() })
                     contextMap[question] = contexts
                 }
+                if (!flow.selectedContextIds) {
+                    flow.selectedContextIds = allIds
+                }
+
                 [questions: questions, contextMap: contextMap]
             }
-            on("continue").to "themeSamplingUnits"
+            on("continue") {
+                def selected = params.get("contextId")
+                def selectedContextIds = []
+                if (selected instanceof String) {
+                    selectedContextIds << selected
+                } else if (isCollection(selected)) {
+                    selected.each { selectedContextIds << it }
+                }
+
+                if (!selectedContextIds) {
+                    flash.errorMessage ="Please select at least one context that you are interested in"
+                    return error()
+                }
+
+                flow.selectedContextIds = selectedContextIds
+            }.to "themeSamplingUnits"
             on("back").to "themeQuestions"
             on("cancel").to "cancel"
         }
 
         themeSamplingUnits {
+            onEntry {
+                flow.selectedContextIds?.each {
+                    def context = EcologicalContext.get(it as Integer)
+                    def availableUnits = []
+                    if (context) {
+                        context.samplingUnits?.each {
+                            if (!availableUnits.contains(it)) {
+                                availableUnits << it
+                            }
+                        }
+                    }
+                    flow.availableContextSamplingUnits = availableUnits
+                }
+            }
             on("continue").to "citationDetails"
             on("back").to "pointsOfView"
             on("cancel").to "cancel"

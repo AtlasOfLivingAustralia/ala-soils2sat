@@ -17,7 +17,7 @@
     <table class="table table-striped table-bordered">
         <thread>
             <tr>
-                <th>Environmental Layer</th>
+                <th>Map Layer</th>
                 <th>Value at study location ${studyLocationName}</th>
             </tr>
         </thread>

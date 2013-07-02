@@ -43,6 +43,15 @@ class SearchCriteriaUtils {
         return criteria.value
     }
 
+    public static boolean eval(SearchCriteria criteria, String value) {
+        CriteriaTranslator evaluator = factory(criteria)
+        if (evaluator) {
+            return evaluator.evaluate(value)
+        }
+        return false
+    }
+
+
     public static CriteriaTranslator factory(SearchCriteria criteria) {
         switch (criteria.criteriaDefinition.valueType) {
             case CriteriaValueType.NumberRangeDouble:
@@ -101,6 +110,27 @@ class SearchCriteriaUtils {
 
         }
 
+        boolean evaluate(String value) {
+            Date date = null
+            try {
+                date = _sdf.parse(value)
+            } catch (Exception ex) {
+                date = _sdf2.parse(value)
+            }
+
+            switch (operator) {
+                case "lt":
+                    return date <= startDate
+                    break
+                case "gt":
+                    return date >= startDate
+                    break
+                case "bt":
+                    return date >= startDate && date <= endDate
+                    break
+            }
+        }
+
         String displayString(Closure<String> valueFormatter) {
             switch (operator) {
                 case "lt":
@@ -139,6 +169,15 @@ class SearchCriteriaUtils {
             this.values = value?.split("\\|")
         }
 
+        boolean evaluate(String value) {
+            for (String candidate : values) {
+                if (candidate.equalsIgnoreCase(value)) {
+                    return true
+                }
+            }
+            return false
+        }
+
         String displayString(Closure<String> formatValue) {
             if (values) {
                 def sb = new StringBuilder()
@@ -175,6 +214,13 @@ class SearchCriteriaUtils {
         public StringPatternTranslator(String valueToMatch) {
             this.valueToMatch = valueToMatch
         }
+        boolean evaluate(String value) {
+            if (valueToMatch.equalsIgnoreCase(value)) {
+                return true
+            }
+        }
+
+
 
         public String displayString(Closure<String> formatValue) {
             return "matches ${formatValue(valueToMatch)}"
@@ -214,6 +260,22 @@ class SearchCriteriaUtils {
                 }
             }
 
+        }
+
+        public boolean evaluate(String testValue) {
+            Double val = Double.parseDouble(testValue)
+            switch (operator) {
+                case "lt":
+                    return val <= value1
+                    break
+                case "gt":
+                    return val >= value1
+                    break
+                case "bt":
+                    return val >= value1 && val <= value2
+                    break
+            }
+            return false
         }
 
         CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
@@ -275,7 +337,22 @@ class SearchCriteriaUtils {
                     throw new RuntimeException("Unrecognized number range criteria format: " + pattern)
                 }
             }
+        }
 
+        public boolean evaluate(String testValue) {
+            Double val = Integer.parseInt(testValue)
+            switch (operator) {
+                case "lt":
+                    return val <= value1
+                    break
+                case "gt":
+                    return val >= value1
+                    break
+                case "bt":
+                    return val >= value1 && val <= value2
+                    break
+            }
+            return false
         }
 
         CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition partial) {
@@ -318,6 +395,15 @@ class SearchCriteriaUtils {
             value = Boolean.parseBoolean(pattern)
         }
 
+        public boolean evaluate(String testValue) {
+            def truthiness = ['true', '1', 'yes']
+            if (value) {
+                return truthiness.contains(testValue?.toLowerCase())
+            } else {
+                return !truthiness.contains(testValue?.toLowerCase())
+            }
+        }
+
         public String displayString(Closure<String> formatValue) {
             if (value) {
                 return formatValue("Yes")
@@ -337,6 +423,7 @@ class SearchCriteriaUtils {
 
 public interface CriteriaTranslator {
 
+    public boolean evaluate(String value)
     public String displayString(Closure<String> valueFormatter)
     public CompleteCondition createFIQLCondition(SearchCriteria criteria, PartialCondition condition)
 

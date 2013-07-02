@@ -61,11 +61,9 @@
         </div>
 
         <div class="tab-pane" id="mapLayersTabPane">
-
-            <h5>Environmental layers</h5>
             <p style="margin-bottom: 10px;">
-                <button id="btnLayerRemoveAll" class="btn btn-mini btn-danger">Remove All&nbsp;<i class="icon-remove icon-white"/></button>
-                <button id="btnLayerAdd" class="btn btn-mini btn-success">Add Layer&nbsp;<i class="icon-plus icon-white"/></button>
+                <button id="btnLayerAdd" class="btn btn-mini btn-success"><i class="icon-plus icon-white"></i>&nbsp;Add Map Layer</button>
+                <button id="btnLayerRemoveAll" class="btn btn-mini btn-danger"><i class="icon-remove icon-white"></i>&nbsp;Remove All Layers</button>
             </p>
 
             <div id="layersTable" style="overflow-y: auto">
@@ -250,7 +248,7 @@
 
     function resizeTabPanes() {
         var mapHeight = $("#mapContent").height() + $("#mapContent").offset().top;
-        var height = mapHeight - 150;
+        var height = mapHeight - 140;
         $(".tab-pane").height(height);
         $("#selectedContent").height(height - 90);
         $("#layersTable").height(height - 60);

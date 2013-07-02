@@ -68,18 +68,18 @@
                             <table>
                                 <tr>
                                     <td style="width: 30px">
-                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="all" checked="${!samplingUnits || samplingUnits == 'all' }"/>
+                                        <g:radio id="allSamplingUnits" style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="all" checked="${!samplingUnits || samplingUnits == 'all' }"/>
                                     </td>
                                     <td>
-                                        <span>All available sampling units</span>
+                                        <label for="allSamplingUnits">All available sampling units</label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="vertical-align: top">
-                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="selected" checked="${samplingUnits == 'selected'}" />
+                                        <g:radio id="selectedSamplingUnits" style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="selected" checked="${samplingUnits == 'selected'}" />
                                     </td>
                                     <td style="vertical-align: top">
-                                        <span>Selected sampling units</span>
+                                        <label for="selectedSamplingUnits">Selected sampling units</label>
                                         <div id="availableSamplingUnits" style="display: none">
                                             <table>
                                                 <g:each in="${availableSamplingUnits}" var="unit">
@@ -95,10 +95,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <g:radio style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="matrix" checked="${samplingUnits == 'matrix'}"/>
+                                        <g:radio id="themeQuestion" style="display: inline-block; vertical-align: middle; margin-top: 0px" name="samplingUnits" value="matrix" checked="${samplingUnits == 'matrix'}"/>
                                     </td>
                                     <td>
-                                        <span>Answer a specific theme question...</span>
+                                        <label for="themeQuestion">Answer a specific theme question...</label>
                                     </td>
                                 </tr>
                             </table>

@@ -241,7 +241,7 @@
                             <h4>Environmental Data</h4>
                             <small>* Determined by the selected layers on map page</small>
                             <div id="environmentalDataSection">
-                                <sts:loading message="Loading environmental data" />
+                                <sts:loading message="Loading map layer data..." />
                             </div>
 
 

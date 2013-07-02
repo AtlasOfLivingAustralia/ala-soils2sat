@@ -142,7 +142,7 @@
             function addLayerClicked() {
                 showModal({
                     url: "${createLink(controller: 'map', action:'addLayerFragment')}",
-                    title: "Add Environmental Layer",
+                    title: "Add Map Layer",
                     height: 560,
                     width: 700
                 });
