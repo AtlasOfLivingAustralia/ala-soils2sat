@@ -58,7 +58,7 @@
         window.open("${createLink(controller: 'admin', action:'editLayerSet', id:layerSet.id)}", "UserPreferences");
         </g:if>
         <g:else>
-        window.open("${createLink(controller:'userPreferences', action:'editLayerSet', params:[layerSetId: layerSet.id])}", "UserPreferences");
+        window.open("${createLink(controller:'userProfile', action:'editLayerSet', params:[layerSetId: layerSet.id])}", "UserPreferences");
         </g:else>
     });
 

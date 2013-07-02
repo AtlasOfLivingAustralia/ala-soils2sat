@@ -67,7 +67,7 @@
 
     $("#btnEditUserLayerSets").click(function (e) {
         e.preventDefault();
-        window.open("${createLink(controller:'userPreferences', action:'listLayerSets')}", "UserPreferences");
+        window.open("${createLink(controller:'userProfile', action:'listLayerSets')}", "UserPreferences");
     });
 
 </script>

@@ -40,7 +40,7 @@
                         <sts:navSeperator/>
                         <span class="sts-breadcrumb"><g:pageProperty name="page.pageTitle"/></span>
                     </td>
-                    <td style="text-align: right"><span><g:pageProperty name="page.adminButtonBar"/></span></td>
+                    <td style="text-align: right"><span><g:pageProperty name="page.profileButtonBar"/></span></td>
                 </tr>
             </table>
         </legend>
@@ -50,6 +50,7 @@
                 <ul class="nav nav-list nav-stacked nav-tabs">
                     <sts:breadcrumbItem href="${createLink(controller: 'userProfile', action: 'index')}" title="Details" />
                     <sts:breadcrumbItem href="${createLink(controller: 'userProfile', action: 'extractions')}" title="My Extractions" active="Extractions" />
+                    <sts:breadcrumbItem href="${createLink(controller: 'userProfile', action: 'listLayerSets')}" title="My Layer Sets" active="Layer Sets" />
                 </ul>
             </div>
 
