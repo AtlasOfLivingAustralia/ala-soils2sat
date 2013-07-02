@@ -1,4 +1,17 @@
-grails.servlet.version = "2.5" // Change depending on target container compliance (2.5 or 3.0)
+grails.servlet.version = "2.5" /*
+ * ﻿Copyright (C) 2013 Atlas of Living Australia
+ * All Rights Reserved.
+ *
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */ // Change depending on target container compliance (2.5 or 3.0)
 
 //grails.project.class.dir = "target/classes"
 //grails.project.test.class.dir = "target/test-classes"
@@ -51,6 +64,7 @@ grails.project.dependency.resolution = {
     plugins {
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.8.3"
+        compile ":jquery-ui:1.8.24"
         runtime ":resources:1.2.RC2"
         compile (":twitter-bootstrap:2.3.2") { excludes 'svn' }
 
