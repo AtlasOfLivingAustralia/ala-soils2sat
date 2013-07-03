@@ -492,9 +492,9 @@ class StudyLocationController {
 
     def downloadSamplingUnit() {
         def visitId = params.studyLocationVisitId
-        def samplingUnitTypeId = params.int("samplingUnitTypeId")
+        def samplingUnitTypeId = params.samplingUnitTypeId
         def visitDetail = studyLocationService.getStudyLocationVisitDetails(visitId as String)
-        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId?.toString());
+        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.parse(samplingUnitTypeId));
 
         def dataList = data?.samplingUnitData
         def samplingUnitName = data?.samplingUnit?.description
@@ -546,10 +546,11 @@ class StudyLocationController {
     def samplingUnitDetail() {
 
         def visitId = params.studyLocationVisitId
-        def samplingUnitTypeId = params.int("samplingUnitTypeId")
+        def samplingUnitTypeId = params.samplingUnitTypeId
+        def samplingUnitType = SamplingUnitType.parse(samplingUnitTypeId)
         def visitDetail = studyLocationService.getStudyLocationVisitDetails(visitId as String)
         def studyLocationDetail = studyLocationService.getStudyLocationDetails(visitDetail?.studyLocationName)
-        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId?.toString());
+        def data = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitType);
         def dataList = data?.samplingUnitData
         def samplingUnitName = data?.samplingUnit?.description
 
@@ -563,25 +564,26 @@ class StudyLocationController {
         def model = [visitDetail: visitDetail, studyLocationDetail: studyLocationDetail, samplingUnitTypeId: samplingUnitTypeId, samplingUnitName: samplingUnitName, columnHeadings: colHeadings, dataList: dataList]
 
         def view = 'samplingUnitDetail'
-        switch (samplingUnitTypeId) {
-            case 0:
+
+        switch (samplingUnitType) {
+            case SamplingUnitType.PointIntercept:
                 dataList = dataList.sort { it.transect }
                 def interceptTypesList = ['substrate', 'herbariumDetermination', 'growthForm']
                 model.interceptTypes = interceptTypesList.collectEntries { [it, StringUtils.makeTitleFromCamelCase(it)]}
                 view = 'pointInterceptDetail'
                 break;
-            case 4:
+            case SamplingUnitType.StructuralSummary:
                 view = 'structuralSummaryDetail'
                 break;
-            case 5:
+            case SamplingUnitType.SoilObservation:
                 model.columnHeadings.remove("sampleId")
                 model.columnHeadings.add(0, "sampleId")
                 break;
-            case 6:
+            case SamplingUnitType.SoilBulkDensity:
                 model.columnHeadings.remove("sampleId")
                 model.columnHeadings.add(0, "sampleId")
                 break;
-            case 7:
+            case SamplingUnitType.SoilCharacter:
                 def groups = [
                         "Miscellaneous" : ["comments", "ec", "ph", "effervescence", "collectedBy", "horizon"],
                         "Texture" : ["textureGrade", "textureModifier", "textureQualifier"],
@@ -604,7 +606,7 @@ class StudyLocationController {
 
     def pointInterceptVisualisations() {
         def visitId = params.studyLocationVisitId as String
-        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.POINT_INTERCEPT)
+        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.PointIntercept)
         def pointInterceptType = params.pointInterceptType ?: "herbariumDetermination"
 
         if (!data) {
@@ -616,7 +618,7 @@ class StudyLocationController {
     def pointInterceptImage() {
 
         def visitId = params.studyLocationVisitId as String
-        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.POINT_INTERCEPT)
+        def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.PointIntercept)
 
         if (!data) {
             return

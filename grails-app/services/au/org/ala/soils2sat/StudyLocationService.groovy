@@ -77,8 +77,12 @@ class StudyLocationService extends ServiceBase {
         return results
     }
 
+    public getSamplingUnitDetails(String visitId, SamplingUnitType samplingUnitType) {
+        return getSamplingUnitDetails(visitId, samplingUnitType?.value)
+    }
+
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId,#samplingUnitTypeId}")
-    public getSamplingUnitDetails(String visitId, String samplingUnitTypeId) {
+    public getSamplingUnitDetails(String visitId, int samplingUnitTypeId) {
         def details = proxyServiceCall(grailsApplication, "getSamplingUnits/${visitId}/getDetails/${samplingUnitTypeId}")
         if (details) {
 
@@ -95,7 +99,7 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getSoilPhForStudyLocationVisit(String studyLocationVisitId) {
-        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.SOIL_CHARACTER)
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.SoilCharacter)
         def rows = []
         if (samplingUnit?.samplingUnitData) {
             rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, pH: it.ph ] }
@@ -125,7 +129,7 @@ class StudyLocationService extends ServiceBase {
 
     public getSoilECForStudyLocationVisit(String studyLocationVisitId) {
         // Get the most recent visit, and get its soil PH from the soil characterisation sampling unit...
-        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.SOIL_CHARACTER)
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.SoilCharacter)
         def rows = []
         if (samplingUnit?.samplingUnitData) {
             rows = samplingUnit.samplingUnitData.collect { [upperDepth: it.upperDepth, lowerDepth: it.lowerDepth, EC: it.ec ] }
@@ -172,7 +176,7 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getPointInterceptTaxaForVisit(String studyLocationVisitId) {
-        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.POINT_INTERCEPT)
+        def samplingUnit = getSamplingUnitDetails(studyLocationVisitId, SamplingUnitType.PointIntercept)
         def taxaMap = [:]
         samplingUnit?.samplingUnitData?.each {
             def name = StringUtils.collapseSpaces(it.herbariumDetermination)

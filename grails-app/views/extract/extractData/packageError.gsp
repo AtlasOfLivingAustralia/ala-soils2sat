@@ -51,24 +51,23 @@
                 <div class="span12">
                     <g:form>
                         <div class="well well-small">
-                            <h4>Please provide context</h4>
-                            <g:each in="${questions}" var="question">
-                                <h5>${question.text} in terms of</h5>
-                                <ul class="thumbnails">
-                                    <g:each in="${contextMap[question]}" var="context">
-                                        <li>
-                                            <g:set var="isChecked" value="${selectedContextIds?.contains(context.id?.toString())}" />
-                                            <g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0" name="contextId" checked="${isChecked}" value="${context.id}" />
-                                            <small>${context.name}</small>
-                                        </li>
-                                    </g:each>
-                                </ul>
-                            </g:each>
+                        <h4>Data Extraction Failed</h4>
+                            <div class="alert alert-error">
+
+                                <g:set var="errorSource" value="" />
+                                <g:if test="${packageException instanceof au.org.ala.soils2sat.DOIMintingFailedException}">
+                                    <g:set var="errorSource" value="from the TERN DOI Service" />
+                                </g:if>
+
+                                The data extraction has failed. The error returned ${errorSource} was:
+                                <br/>
+                                <br/>
+                                <strong>${packageException?.message}</strong>
+                            </div>
                         </div>
 
-                        <g:link class="btn btn-small" event="cancel">Cancel</g:link>
-                        <g:link class="btn btn-small" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
-                        <g:submitButton name="continue" class="btn btn-small btn-primary" value="Next" />
+                        <g:link class="btn btn-small btn-primary" event="finish">Return to Map</g:link>
+
                     </g:form>
                 </div>
             </div>

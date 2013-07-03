@@ -53,7 +53,7 @@ class ExtractService {
         return localPath
     }
 
-    private String createArchiveFile(String packageName, User user, List<String> visitIds, List<String> samplingUnits) {
+    private String createArchiveFile(String packageName, User user, List<String> visitIds, List<SamplingUnitType> samplingUnits) {
 
         def localPath = constructLocalFileArchivePath(packageName)
 
@@ -73,11 +73,13 @@ class ExtractService {
                 def visitDetails = studyLocationService.getStudyLocationVisitDetails(visitId)
                 if (visitDetails) {
                     visitDetails.samplingUnits.each { samplingUnit ->
-                        String samplingUnitId = samplingUnit.id?.toString()
-                        if (!samplingUnits || samplingUnits.contains(samplingUnitId)) {
-                            manifestEntries << writeZipEntry(user, zipStream, writer, "Visit_${visitId}_${samplingUnit.description}.txt", writeSamplingUnit(visitId, samplingUnitId))
+                        SamplingUnitType samplingUnitType = SamplingUnitType.parse(samplingUnit.id?.toString())
+                        if (!samplingUnits || samplingUnits.contains(samplingUnitType)) {
+                            manifestEntries << writeZipEntry(user, zipStream, writer, "Visit_${visitId}_${samplingUnit.description}.txt", writeSamplingUnit(visitId, samplingUnitType))
                         }
                     }
+
+                    manifestEntries << writeZipEntry(user, zipStream, writer, "Visit_${visitId}_VoucheredHerbaria.txt", writeVoucheredSpecimens(visitId))
                 }
             }
 
@@ -98,14 +100,23 @@ class ExtractService {
         return localPath
     }
 
-    def writeSamplingUnit(String visitId, String samplingUnitTypeId) {
+    def writeVoucheredSpecimens(String visitId) {
+        def names = studyLocationService.getVoucheredTaxaForStudyLocationVisit(visitId)
+        return { User user, Writer writer, manifestEntry ->
+            names.each { name ->
+                writer << name << "\n"
+            }
+            manifestEntry.comment = "Vouchered specimens for visit ${visitId}"
+        }
+    }
 
-        def samplingUnit = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitTypeId)
+    def writeSamplingUnit(String visitId, SamplingUnitType samplingUnitType) {
+        def samplingUnit = studyLocationService.getSamplingUnitDetails(visitId, samplingUnitType)
         def data = samplingUnit?.samplingUnitData
         if (!samplingUnit || !data) {
             return { User user, Writer writer, manifestEntry ->
-                writer.write("Sampling unit data could not be retrieved: SiteVisitId ${visitId}, samplingUnitTypeId ${samplingUnitTypeId}".toString())
-                manifestEntry.comment = "Data for visit ${visitId} and sampling unit type ${samplingUnitTypeId}: Data could not be retrieved"
+                writer.write("Sampling unit data could not be retrieved: SiteVisitId ${visitId}, samplingUnitType ${samplingUnitType}".toString())
+                manifestEntry.comment = "Data for visit ${visitId} and sampling unit type ${samplingUnitType}: Data could not be retrieved"
             }
         }
 
@@ -142,62 +153,55 @@ class ExtractService {
     }
 
 
-    def extractAndPackageData(User user, List<String> visitIds, List<String> samplingUnits) {
+    def extractAndPackageData(User user, List<String> visitIds, List<SamplingUnitType> samplingUnits) {
 
-        try {
-            logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits}")
 
-            def packageName = generateVisitPackageName()
-            logService.log("Package name is '${packageName}'")
+        logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits}")
 
-            def localPath = createArchiveFile(packageName, user, visitIds, samplingUnits)
-            logService.log("Download local filepath is '$localPath'")
+        def packageName = generateVisitPackageName()
+        logService.log("Package name is '${packageName}'")
 
-            def downloadUrl = grailsLinkGenerator.link(controller: 'extract', action:'downloadPackage', params:[packageName: packageName], absolute: true)
-            logService.log("Download URL is '$downloadUrl'")
+        def localPath = createArchiveFile(packageName, user, visitIds, samplingUnits)
+        logService.log("Download local filepath is '$localPath'")
 
-            // Create a record for this extract
-            def dataExtraction = new DataExtraction(packageName: packageName, username: user.username, date: new Date(), localFile: localPath)
-            // get each visits details...
-            Date firstDate = null
-            Date lastDate = null
+        def downloadUrl = grailsLinkGenerator.link(controller: 'extract', action:'downloadPackage', params:[packageName: packageName], absolute: true)
+        logService.log("Download URL is '$downloadUrl'")
 
-            visitIds?.each {
-                def details = studyLocationService.getStudyLocationVisitDetails(it)
-                if (details) {
-                    dataExtraction.addToStudyLocationVisits("${details.studyLocationName}_${details.getVisitStartDate()}")
-                    def candidateStartDate = DateUtils.tryParse(details.visitStartDate)
-                    if (!firstDate || (candidateStartDate && firstDate.after(candidateStartDate))) {
-                        firstDate = candidateStartDate
-                    }
-                    def candidateEndDate = DateUtils.tryParse(details.visitEndDate) ?: candidateStartDate
-                    if (!lastDate || (candidateEndDate && lastDate.before(candidateEndDate))) {
-                        lastDate = candidateEndDate
-                    }
+        // Create a record for this extract
+        def dataExtraction = new DataExtraction(packageName: packageName, username: user.username, date: new Date(), localFile: localPath)
+        // get each visits details...
+        Date firstDate = null
+        Date lastDate = null
+
+        visitIds?.each {
+            def details = studyLocationService.getStudyLocationVisitDetails(it)
+            if (details) {
+                dataExtraction.addToStudyLocationVisits("${details.studyLocationName}_${details.getVisitStartDate()}")
+                def candidateStartDate = DateUtils.tryParse(details.visitStartDate)
+                if (!firstDate || (candidateStartDate && firstDate.after(candidateStartDate))) {
+                    firstDate = candidateStartDate
+                }
+                def candidateEndDate = DateUtils.tryParse(details.visitEndDate) ?: candidateStartDate
+                if (!lastDate || (candidateEndDate && lastDate.before(candidateEndDate))) {
+                    lastDate = candidateEndDate
                 }
             }
-            dataExtraction.firstVisitDate = firstDate
-            dataExtraction.lastVisitDate = lastDate ?: firstDate
-
-            // Store the version of the app used to create the extract
-            dataExtraction.appVersion = "${grailsApplication.metadata['app.version']}.${grailsApplication.metadata['app.buildNumber']} (built ${grailsApplication.metadata['app.buildDate']} ${grailsApplication.metadata['app.buildProfile']})"
-
-            dataExtraction.save(failOnError: true)
-
-            // Mint a DOI for this extract
-            String doi = ""
-            try {
-                doi = this.DOIService.mintDOI(dataExtraction, user)
-                dataExtraction.doi = doi
-            } catch (DOIMintingFailedException doimex) {
-                doi = "DOI Minting Failed: " + doimex.message
-            }
-
-            return [success: true, packageUrl: downloadUrl, DOI: doi, message:'']
-        } catch (Exception ex) {
-            throw ex
-            // return [success: false, packageUrl: '', DOI: '', message: ex.message]
         }
+        dataExtraction.firstVisitDate = firstDate
+        dataExtraction.lastVisitDate = lastDate ?: firstDate
+
+        // Store the version of the app used to create the extract
+        dataExtraction.appVersion = "${grailsApplication.metadata['app.version']}.${grailsApplication.metadata['app.buildNumber']} (built ${grailsApplication.metadata['app.buildDate']} ${grailsApplication.metadata['app.buildProfile']})"
+
+        dataExtraction.save(failOnError: true)
+
+        // Mint a DOI for this extract
+        String doi = ""
+
+        doi = this.DOIService.mintDOI(dataExtraction, user)
+        dataExtraction.doi = doi
+
+        return [success: true, packageUrl: downloadUrl, DOI: doi, message:'']
     }
 
     private ManifestEntry writeZipEntry(User user, ZipOutputStream zipStream, Writer writer, String filename, Closure closure) {

@@ -40,7 +40,7 @@ class VisualisationController {
         def taxaMap = studyLocationService.getPointInterceptTaxaForVisit(params.studyLocationVisitId)
         def data = []
         if (taxaMap) {
-            def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.STRUCTURAL_SUMMARY)?.samplingUnitData[0]
+            def structuralSummary = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.StructuralSummary)?.samplingUnitData[0]
 
             // Cleanse duplicate spaces out of taxa names
             structuralSummary.each {
@@ -664,7 +664,7 @@ class VisualisationController {
         def pointInterceptType = params.pointInterceptType as String
         def colorMap = VisualisationUtils.getColorMapForIntersectProperty(pointInterceptType)
 
-        def samplingUnit = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.POINT_INTERCEPT)
+        def samplingUnit = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.PointIntercept)
         if (!samplingUnit) {
             return
         }
@@ -729,7 +729,7 @@ class VisualisationController {
         def pointInterceptType = params.pointInterceptType as String
         def colorMap = VisualisationUtils.getColorMapForIntersectProperty(pointInterceptType)
 
-        def samplingUnit = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.POINT_INTERCEPT)
+        def samplingUnit = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId, SamplingUnitType.PointIntercept)
         if (!samplingUnit) {
             return
         }

@@ -19,6 +19,7 @@ import au.edu.aekos.shared.doiclient.jaxb.DateType
 import au.edu.aekos.shared.doiclient.jaxb.Resource
 import au.edu.aekos.shared.doiclient.service.DoiClientConfig
 import au.edu.aekos.shared.doiclient.service.DoiClientService
+import au.edu.aekos.shared.doiclient.service.DoiClientServiceException
 import au.edu.aekos.shared.doiclient.service.DoiClientServiceImpl
 import au.edu.aekos.shared.doiclient.util.ResourceBuilder
 import groovy.xml.MarkupBuilder
@@ -57,11 +58,12 @@ class DOIService extends ServiceBase {
         try {
             def doi = doiClientService.mintDoi(buildCreateXML(user.userProfile.fullName, "Data extract ${extraction.packageName}", []), landingPageUrl)
             return doi
+        } catch (DoiClientServiceException doiEx) {
+            throw new DOIMintingFailedException(doiEx.message)
         } catch (Exception ex) {
-            ex.printStackTrace()
-            println ex
             throw new DOIMintingFailedException(ex.message)
         }
+
     }
 
     private String makeDOIUrl(String api, Map params) {

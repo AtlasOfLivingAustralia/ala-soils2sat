@@ -20,6 +20,7 @@ class ExtractController {
     def transient springSecurityService
     def transient extractService
     def transient studyLocationService
+    def transient DOIService
 
     def index() {
         def user = springSecurityService.currentUser as User
@@ -85,6 +86,10 @@ class ExtractController {
             onEntry {
                 flow.availableSamplingUnits = studyLocationService.getAvailableSamplingUnits(flow.selectedVisitIds)
                 if (!flow.selectedSamplingUnits) {
+                    def selected = []
+                    flow.availableSamplingUnits.each {
+                        selected << SamplingUnitType.parse(it.id?.toString())
+                    }
                     flow.selectedSamplingUnits = flow.availableSamplingUnits*.id
                 }
             }
@@ -237,12 +242,24 @@ class ExtractController {
             action {
                 def user = springSecurityService.currentUser as User
                 def selectedVisitIds = flow.selectedVisitIds as List<String>
-                def selectedSamplingUnits = flow.selectedSamplingUnits
-                def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits)
-                flow.extractionResults = results
+                def selectedSamplingUnits = flow.selectedSamplingUnits.collect { SamplingUnitType.parse(it.toString())}
+
+                try {
+                    def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits)
+                    flow.extractionResults = results
+                } catch (Exception ex) {
+                    flow.packageException = ex
+                    return packageFailed()
+                }
+
             }
 
+            on("packageFailed").to "packageError"
             on("success").to "extractionResults"
+        }
+
+        packageError {
+            on("finish").to "finish"
         }
 
         extractionResults {
@@ -315,6 +332,36 @@ class ExtractController {
 
 
         [extraction: extraction, filesize: filesize, filename: filename, manifestText: manifestText, author: author]
+    }
+
+    def mintDOI() {
+
+        def packageName = params.packageName
+        def extraction = DataExtraction.findByPackageName(packageName)
+        def userInstance = User.findByUsername(extraction.username)
+
+        if (!extraction) {
+            flash.errorMessage = "No extraction with that package name found!"
+            redirect(controller:'userProfile', action:'extractions')
+            return
+        }
+
+        if (!userInstance) {
+            flash.errorMessage = "No user object found for username ${extraction.username}!"
+            redirect(controller:'userProfile', action:'extractions')
+            return
+        }
+
+        try {
+            def doi = this.DOIService.mintDOI(extraction, userInstance)
+            extraction.doi = doi
+        } catch (DOIMintingFailedException ex) {
+            flash.errorMessage = "The DOI minting failed, possibly because the DOI service is currently unavailable. Try again later. <br /> " + ex.message
+            redirect(controller:'userProfile', action:'extractions')
+            return
+        }
+
+        redirect(controller:'userProfile', action:'extractions')
     }
 
 }

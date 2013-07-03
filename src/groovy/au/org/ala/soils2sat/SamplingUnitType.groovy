@@ -15,19 +15,41 @@
 
 package au.org.ala.soils2sat
 
-/**
- * Created with IntelliJ IDEA.
- * User: baird
- * Date: 18/06/13
- * Time: 9:09 AM
- * To change this template use File | Settings | File Templates.
- */
-class SamplingUnitType {
+public enum SamplingUnitType {
 
-    public static final String POINT_INTERCEPT ="0"
-    public static final String BASAL_AREA ="1"
-    public static final String STRUCTURAL_SUMMARY ="4"
-    public static final String SOIL_OBSERVATION ="5"
-    public static final String SOIL_BULK_DENSITY ="6"
-    public static final String SOIL_CHARACTER = "7"
+    PointIntercept(0),
+    BasalArea(1),
+    StructuralSummary(4),
+    SoilObservation(5),
+    SoilBulkDensity(6),
+    SoilCharacter(7)
+
+    private final int value
+
+    SamplingUnitType(int value) {
+        this.value = value
+    }
+
+    public int getValue() {
+        return value
+    }
+
+    public String getValueAsString() {
+        return value.toString()
+    }
+
+    public static SamplingUnitType parse(String str) {
+        SamplingUnitType candidate = null
+
+        if (str.isNumber()) {
+            int val = Integer.parseInt(str)
+            candidate = values().find { it.value == val }
+        } else {
+            candidate = values().find { it.toString().equalsIgnoreCase(str) }
+        }
+
+        return candidate
+    }
+
+
 }

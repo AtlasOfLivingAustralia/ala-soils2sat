@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<%@ page import="au.org.ala.soils2sat.UserProfile; au.org.ala.soils2sat.User; au.org.ala.soils2sat.DateUtils" %>
 %{--
   - ﻿Copyright (C) 2013 Atlas of Living Australia
   - All Rights Reserved.
@@ -12,8 +14,6 @@
   - implied. See the License for the specific language governing
   - rights and limitations under the License.
 --}%
-<?xml version="1.0" encoding="UTF-8"?>
-<%@ page import="au.org.ala.soils2sat.UserProfile; au.org.ala.soils2sat.User; au.org.ala.soils2sat.DateUtils" %>
 <registryObjects xmlns="http://ands.org.au/standards/rif-cs/registryObjects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ands.org.au/standards/rif-cs/registryObjects http://services.ands.org.au/documentation/rifcs/schema/registryObjects.xsd">
     <g:each in="${extracts}" var="extract">
         <registryObject group="Terrestrial Ecosystem Research Network">
@@ -84,6 +84,3 @@
         </registryObject>
     </g:each>
 </registryObjects>
-
-
-
