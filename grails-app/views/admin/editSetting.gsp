@@ -33,6 +33,7 @@
 
         </script>
         <content tag="adminButtonBar">
+            <a href="${createLink(controller:'admin', action:'settings')}" class="btn btn-small"><i class="icon-chevron-left"></i>&nbsp;Back to settings</a>
         </content>
 
         <g:form class="form-horizontal" action="updateSetting">

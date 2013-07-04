@@ -20,7 +20,38 @@ class SettingService {
     public static String OBSERVATION_RADIUS_KEY = "ala.observation.radius"
     public static String OBSERVATION_RANK_KEY = "ala.observation.rank"
     public static String OBSERVATION_FILTER_KEY = "ala.observation.taxonFilter"
-    public static String LAYER_STYLES = "ala.layer.styles"
+    public static String LAYER_STYLES_KEY = "ala.layer.styles"
+    public static String DOI_SERVICE_URL_KEY = "tern.doi.service.url.base"
+    public static String DOI_SERVICE_USERNAME_KEY = "tern.doi.service.username"
+    public static String DOI_SERVICE_APP_ID_KEY = "tern.doi.service.app.id"
+
+    public String getDOIServiceUrl() {
+        def setting = Setting.findByKey(DOI_SERVICE_URL_KEY)
+        if (!setting) {
+            setting = new Setting(key: DOI_SERVICE_URL_KEY, value: "https://doi.tern.uq.edu.au/test/", comment: "The service url for the TERN DOI Minting service")
+            setting.save()
+        }
+        return setting.value
+    }
+
+    public String getDOIServiceUsername() {
+        def setting = Setting.findByKey(DOI_SERVICE_USERNAME_KEY)
+        if (!setting) {
+            setting = new Setting(key: DOI_SERVICE_USERNAME_KEY, value: "David.Baird@csiro.au", comment: "Name of a user registered to use the TERN DOI Minting service.")
+            setting.save()
+        }
+        return setting.value
+    }
+
+    public String getDOIServiceAppId() {
+        def setting = Setting.findByKey(DOI_SERVICE_APP_ID_KEY)
+        if (!setting) {
+            setting = new Setting(key: DOI_SERVICE_APP_ID_KEY, value: "4367305c3431f6ac3166953b56ea27e5", comment: "The APP ID to use when calling TERN DOI Minting service - must be affiliated with the DOI Minting Service Username setting.")
+            setting.save()
+        }
+        return setting.value
+    }
+
 
     public float getObservationRadius() {
         def setting = Setting.findByKey(OBSERVATION_RADIUS_KEY)
@@ -50,10 +81,10 @@ class SettingService {
     }
 
     public String getLayerStyles() {
-        def setting = Setting.findByKey(LAYER_STYLES)
+        def setting = Setting.findByKey(LAYER_STYLES_KEY)
         if (!setting) {
             def defaultValues = ['ibra7_regions':'ibra7_labels_style', 'ibra7_subregions':'ibra7_subregion_labels_style']
-            setting = new Setting(key: LAYER_STYLES, value: "[]", comment:"The filter expression to apply to ALA queries (Default 'kingdom:Plantae'")
+            setting = new Setting(key: LAYER_STYLES_KEY, value: "[]", comment:"The filter expression to apply to ALA queries (Default 'kingdom:Plantae'")
             setting.save()
         }
         return setting.value

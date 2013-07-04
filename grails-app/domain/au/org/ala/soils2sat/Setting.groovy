@@ -15,7 +15,7 @@
 
 package au.org.ala.soils2sat
 
-class Setting {
+class Setting implements Serializable {
 
     String key
     String value

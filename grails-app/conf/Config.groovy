@@ -77,15 +77,12 @@ grails.exceptionresolver.params.exclude = ['password']
 grails.hibernate.cache.queries = false
 
 //aekosServiceRoot = "http://s2s-dev.ecoinformatics.org.au:8080/s2s-services"
-aekosServiceRoot = "http://115.146.85.34:8080/s2s-services"
+aekosServiceRoot = "http://115.146.85.23:8080/s2s-services"
 
 spatialPortalRoot = "http://spatial.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
-doiServiceRoot = "https://doi.tern.uq.edu.au/test/"
-doiAppId = "4367305c3431f6ac3166953b56ea27e5"
-doiUserId = "David.Baird@csiro.au"
-doiS2SRoot = "http://soils2sat-dev.ala.org.au"
+doiS2SRoot = "http://soils2sat.ala.org.au"
 doiKeystorePath = "/resources/ternkeystore.bks"
 doiKeystorePassword = "mysecret"
 
@@ -104,7 +101,6 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
     }
 }
 
