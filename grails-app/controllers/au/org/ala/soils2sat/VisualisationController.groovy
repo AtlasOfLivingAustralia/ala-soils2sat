@@ -824,7 +824,7 @@ class VisualisationController {
         render(view:'pieChart', model:[name:'PIGroundCover', title:'Fractional Ground Cover (AusPlots)', columns: columns, data: data, colors: colors])
     }
 
-    private def calculateFractionalCover(piData, List excludedGrowthForms = null) {
+    private static def calculateFractionalCover(piData, List excludedGrowthForms = null) {
 
         def timer = new CodeTimer("calculateFractionalCover")
 
@@ -861,7 +861,7 @@ class VisualisationController {
         return results
     }
 
-    private FractionalCoverState classifyFractionalCover(List rows, List excludedGrowthForms = null) {
+    private static FractionalCoverState classifyFractionalCover(List rows, List excludedGrowthForms = null) {
         int i = 0;
 
         def result = FractionalCoverState.Ignore
