@@ -26,6 +26,23 @@
                 <div class="visualisation" visLink="${createLink(controller:'visualisation', action:'PICountPercentBreakdown', params:[pointInterceptType: pointInterceptType, studyLocationVisitId: studyLocationVisitId])}"></div>
             </td>
         </tr>
+        <tr>
+            <td width="50%">
+                <div class="visualisation" visLink="${createLink(controller:'visualisation', action:'PIFractionalCover', params:[studyLocationVisitId: studyLocationVisitId])}"></div>
+            </td>
+            <td width="50%">
+                <div class="visualisation" visLink="${createLink(controller:'visualisation', action:'AusCoverFractionalCover', params:[studyLocationName: visitDetails.studyLocationName])}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="50%">
+                <div class="visualisation" visLink="${createLink(controller:'visualisation', action:'PIFractionalCoverAusPlotsVsAusCover', params:[studyLocationVisitId: studyLocationVisitId])}"></div>
+            </td>
+            <td width="50%">
+                <div class="visualisation" visLink="${createLink(controller:'visualisation', action:'PIGroundCover', params:[studyLocationVisitId: studyLocationVisitId])}"></div>
+            </td>
+        </tr>
+
     </table>
 </div>
 

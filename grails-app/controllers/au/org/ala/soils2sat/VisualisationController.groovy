@@ -15,6 +15,7 @@
 
 package au.org.ala.soils2sat
 
+import ala.soils2sat.CodeTimer
 import ala.soils2sat.DrawingUtils
 
 import java.awt.Color
@@ -769,6 +770,189 @@ class VisualisationController {
         render(view:'pieChart', model:[name:'PICountBreakDown', title:'% Breakdown for ' + title, columns: columns, data: data, colors: colors])
     }
 
+    def AusCoverFractionalCover() {
 
+        def ausCoverData = getAusCoverFractionalCover(params.studyLocationName)
+
+        def columns = [['string', "Percent"], ['number', 'Count']]
+        def data =[
+                ["Photosynthetic Vegetation (PV)", ausCoverData[FractionalCoverState.PV]],
+                ["Non-Photosynthetic Vegetation (NPV)", ausCoverData[FractionalCoverState.NPV]],
+                ["Bare Soil (BS)", ausCoverData[FractionalCoverState.BS]]
+        ]
+
+        def colors = ['green', '#FA9D03', '#71381E']
+
+        render(view:'pieChart', model:[name:'AusCoverFractionalCover', title:'Fractional Cover (AusCover)', columns: columns, data: data, colors: colors])
+    }
+
+    def PIFractionalCover() {
+        def piData = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId as String, SamplingUnitType.PointIntercept)
+        def results = [:]
+        if (piData) {
+            results = calculateFractionalCover(piData.samplingUnitData)
+        }
+
+        def columns = [['string', "Percent"], ['number', 'Count']]
+        def data =[
+                ["Photosynthetic Vegetation (PV)", results[FractionalCoverState.PV] ?: 0],
+                ["Non-Photosynthetic Vegetation (NPV)", results[FractionalCoverState.NPV] ?: 0],
+                ["Bare Soil (BS)", results[FractionalCoverState.BS] ?: 0]
+        ]
+
+        def colors = ['green', '#FA9D03', '#71381E']
+
+        render(view:'pieChart', model:[name:'PIFractionalCover', title:'Fractional Cover (AusPlots)', columns: columns, data: data, colors: colors])
+    }
+
+    def PIGroundCover() {
+        def piData = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId as String, SamplingUnitType.PointIntercept)
+        def results = [:]
+        if (piData) {
+            results = calculateFractionalCover(piData.samplingUnitData, ['chenopod', 'epiphyte', 'nc', 'shrub', 'tree mallee', 'tree/palm', ''])
+        }
+
+        def columns = [['string', "Percent"], ['number', 'Count']]
+        def data =[
+                ["Photosynthetic Vegetation (PV)", results[FractionalCoverState.PV] ?: 0],
+                ["Non-Photosynthetic Vegetation (NPV)", results[FractionalCoverState.NPV] ?: 0],
+                ["Bare Soil (BS)", results[FractionalCoverState.BS] ?: 0]
+        ]
+
+        def colors = ['green', '#FA9D03', '#71381E']
+
+        render(view:'pieChart', model:[name:'PIGroundCover', title:'Fractional Ground Cover (AusPlots)', columns: columns, data: data, colors: colors])
+    }
+
+    private def calculateFractionalCover(piData, List excludedGrowthForms = null) {
+
+        def timer = new CodeTimer("calculateFractionalCover")
+
+        def sorted = piData.sort { a, b ->
+            a.transect <=> b.transect ?: a.pointNumber <=> b.pointNumber ?: b.height <=> a.height
+        }
+
+        def pointMap = [:]
+
+        // First pass throws out invalid rows, and sorts them into buckets based on transect and point number
+        piData.each { row ->
+            if (row.transect && row.pointNumber != null) {
+                def key = "${row.transect}_${row.pointNumber}"
+                if (!pointMap[key]) {
+                    pointMap[key] = []
+                }
+                pointMap[key] << row
+            }
+        }
+
+        def results = [:]
+        FractionalCoverState.values().each {
+            results[it] = 0
+        }
+
+        // second pass means going over every point that has valid data and working out what it's classification is
+        pointMap.values().each { List set ->
+            def classification = classifyFractionalCover(set, excludedGrowthForms)
+            results[classification]++
+        }
+
+        timer.stop(true)
+
+        return results
+    }
+
+    private FractionalCoverState classifyFractionalCover(List rows, List excludedGrowthForms = null) {
+        int i = 0;
+
+        def result = FractionalCoverState.Ignore
+        while (i < rows.size()) {
+            def row = rows[i]
+            if (row.inCanopySky == null && row.dead == null) {
+                return FractionalCoverState.BS
+            }
+
+            if ((row.inCanopySky == null || row.dead == null)) {
+                // invalid row, ignore
+                continue
+            }
+
+            if (row.inCanopySky || excludedGrowthForms?.contains(row.growthForm?.toLowerCase())) {
+                // assume BS unless another row in this set satisfies the conditions
+                result = FractionalCoverState.BS
+            } else {
+                if (row.dead) {
+                    return FractionalCoverState.NPV
+                } else {
+                    return FractionalCoverState.PV
+                }
+            }
+
+            i++
+        }
+
+        return result
+    }
+
+    private getAusCoverFractionalCover(String studyLocationName) {
+        def bsLayerName = "auscover_fractional_cover_bs"
+        def npvLayerName = "auscover_fractional_cover_npv"
+        def pvLayerName = "auscover_fractional_cover_pv"
+
+        def results = [:]
+        FractionalCoverState.values().each {
+            results[it] = 0
+        }
+
+        def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocationName)
+        if (studyLocationDetails) {
+            def values = layerService.getIntersectValues(studyLocationDetails.latitude, studyLocationDetails.longitude, [bsLayerName, pvLayerName, npvLayerName])
+            results[FractionalCoverState.BS] = values[bsLayerName]
+            results[FractionalCoverState.PV] = values[pvLayerName]
+            results[FractionalCoverState.NPV] = values[npvLayerName]
+        }
+
+        return results
+    }
+
+    def PIFractionalCoverAusPlotsVsAusCover() {
+
+        def visitDetails = studyLocationService.getStudyLocationVisitDetails(params.studyLocationVisitId)
+        def ausCoverData = getAusCoverFractionalCover(visitDetails.studyLocationName)
+        def piData = studyLocationService.getSamplingUnitDetails(params.studyLocationVisitId as String, SamplingUnitType.PointIntercept)
+        def ausPlotsData = [:]
+        if (piData) {
+            ausPlotsData = calculateFractionalCover(piData.samplingUnitData)
+        }
+
+        if (ausPlotsData.containsKey(FractionalCoverState.Ignore)) {
+            ausPlotsData.remove(FractionalCoverState.Ignore)
+        }
+
+        def ausPlotsTotal = 0
+        ausPlotsData.values().each {
+            ausPlotsTotal += it as Integer
+        }
+
+        def columns = [
+            ['string', 'Classification'],
+            ['number', 'AusCover'],
+            ['number', 'AusPlots'],
+        ]
+
+        def data = [
+            ['PV', ausCoverData[FractionalCoverState.PV], (ausPlotsData[FractionalCoverState.PV] / ausPlotsTotal) * 100],
+            ['NPV', ausCoverData[FractionalCoverState.NPV], (ausPlotsData[FractionalCoverState.NPV] / ausPlotsTotal) * 100],
+            ['BS', ausCoverData[FractionalCoverState.BS], ((ausPlotsData[FractionalCoverState.BS] / ausPlotsTotal) * 100)]
+        ]
+
+        def colors = ['#4E80BB', '#BD4E4C']
+
+        render(view:'columnChart', model: [columns: columns, data: data, colors: colors, title: "AusCover vs AusPlots Fractional Cover", name:'PIFractionalCoverAusPlotsVsAusCover', stacked: false, vAxisTitle: 'Percent (%)', showLegend: true])
+    }
+
+}
+
+enum FractionalCoverState {
+    PV, NPV, BS, Ignore
 }
 

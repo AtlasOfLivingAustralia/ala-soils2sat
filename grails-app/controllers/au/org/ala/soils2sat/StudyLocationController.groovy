@@ -606,13 +606,14 @@ class StudyLocationController {
 
     def pointInterceptVisualisations() {
         def visitId = params.studyLocationVisitId as String
+        def visitDetails = studyLocationService.getStudyLocationVisitDetails(visitId)
         def data = studyLocationService.getSamplingUnitDetails(visitId, SamplingUnitType.PointIntercept)
         def pointInterceptType = params.pointInterceptType ?: "herbariumDetermination"
 
         if (!data) {
             return
         }
-        [studyLocationVisitId: visitId, data: data?.samplingUnitData, pointInterceptType: pointInterceptType]
+        [studyLocationVisitId: visitId, data: data?.samplingUnitData, pointInterceptType: pointInterceptType, visitDetails: visitDetails]
     }
 
     def pointInterceptImage() {
