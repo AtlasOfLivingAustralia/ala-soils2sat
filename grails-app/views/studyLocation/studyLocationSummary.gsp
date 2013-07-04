@@ -231,6 +231,18 @@
                                         </g:else>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="fieldColumn">External Links</td>
+                                    <td>
+                                        <g:set var="linkFileList" value="${attachmentMap[AttachmentCategory.LinkFile]}"/>
+                                        <g:if test="${linkFileList}">
+                                            <sts:renderFileLinks attachmentList="${linkFileList}" />
+                                        </g:if>
+                                        <g:else>
+                                            <span class="muted">N/A</span>
+                                        </g:else>
+                                    </td>
+                                </tr>
 
                             </table>
 

@@ -30,6 +30,7 @@ class S2STagLib {
     def layerService
     def groovyPageLocator
     def studyLocationService
+    def attachmentService
 
     /**
      * @attr active
@@ -388,5 +389,54 @@ class S2STagLib {
             }
         }
     }
+
+    /**
+     * @attr attachmentList
+     */
+    def renderFileLinks = { attrs, body ->
+        if (attrs.attachmentList) {
+            def list = attrs.attachmentList
+            def urlList = []
+            list?.each { Attachment attachment ->
+                if (attachment.mimeType?.equalsIgnoreCase("text/plain")) {
+                    def bytes = attachmentService.getAttachmentBytes(attachment)
+                    def reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bytes)))
+                    try {
+                        def lines = reader.readLines()
+                        lines?.each { line ->
+                            if (line.size() > 0) {
+                                if (line.contains(",")) {
+                                    // split at the first comma
+                                    urlList << [url: line.substring(0, line.indexOf(",")), label: line.substring(line.indexOf(",") + 1)]
+                                } else {
+                                    urlList << [url: line, label: line]
+                                }
+                            }
+                        }
+
+                    } finally {
+                        if (reader) {
+                            reader.close()
+                        }
+                    }
+                }
+            }
+
+            if (urlList) {
+                def mb = new MarkupBuilder(out)
+                mb.ul {
+                    urlList.each { urlEntry ->
+                        li {
+                            a(href:urlEntry.url, target:'S2SExternLink') {
+                                mkp.yield(urlEntry.label)
+                                mb.img(src:resource(dir:'images', file:'external-link.png'))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 }
