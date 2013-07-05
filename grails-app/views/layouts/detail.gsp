@@ -1,3 +1,4 @@
+<%@ page import="grails.util.Environment" %>
 %{--
   - ﻿Copyright (C) 2013 Atlas of Living Australia
   - All Rights Reserved.
@@ -41,9 +42,16 @@
 
         <Style type="text/css">
 
-        body {
-            padding-top: 60px;
-        }
+            body {
+                padding-top: 60px;
+            }
+
+            .environmentOverlay {
+                float: left;
+                position: absolute;
+                font-size: 12px;
+                color: red;
+            }
 
         </Style>
         <script type="text/javascript">
@@ -88,6 +96,11 @@
                 <div class="container-fluid">
                     <a class="brand" href="${createLink(controller: 'map', action: 'index')}" style="padding-bottom: 0; padding-top: 0">
                         <img src="${resource(dir:'/images', file:'Soils-to-Satellites_40px.png')}" />
+                        <g:if test="${["development", "test"].contains(Environment.current.name)}">
+                            <span class="environmentOverlay">
+                                ${Environment.current.name?.toUpperCase()}&nbsp; Environment
+                            </span>
+                        </g:if>
                     </a>
                     <div class="nav-collapse collapse">
                         <div class="navbar-text pull-right">

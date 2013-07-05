@@ -868,6 +868,11 @@ class VisualisationController {
         while (i < rows.size()) {
             def row = rows[i]
             if (row.inCanopySky == null && row.dead == null) {
+
+                if (row.substrate.equalsIgnoreCase("litter") || row.substrate.equalsIgnoreCase("cwd")) {
+                    return FractionalCoverState.NPV
+                }
+
                 return FractionalCoverState.BS
             }
 
@@ -878,7 +883,11 @@ class VisualisationController {
 
             if (row.inCanopySky || excludedGrowthForms?.contains(row.growthForm?.toLowerCase())) {
                 // assume BS unless another row in this set satisfies the conditions
-                result = FractionalCoverState.BS
+                if (row.substrate.equalsIgnoreCase("litter") || row.substrate.equalsIgnoreCase("cwd")) {
+                    result = FractionalCoverState.NPV
+                } else {
+                    result = FractionalCoverState.BS
+                }
             } else {
                 if (row.dead) {
                     return FractionalCoverState.NPV

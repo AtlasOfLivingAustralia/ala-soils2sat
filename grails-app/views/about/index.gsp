@@ -20,7 +20,6 @@
         <meta name="layout" content="soils2sat"/>
         <style type='text/css' media='screen'>
         </style>
-
     </head>
 
     <body>
