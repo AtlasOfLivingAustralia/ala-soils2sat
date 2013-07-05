@@ -13,7 +13,7 @@
   - rights and limitations under the License.
   --}%
 
-<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="au.org.ala.soils2sat.StringUtils; org.apache.commons.lang.StringEscapeUtils" %>
 <!doctype html>
 <html>
     <head>
@@ -53,13 +53,15 @@
 
                         <div class="well well-small">
                             <h4>Available sampling units</h4>
-                            <ul>
-                                <g:each in="${availableContextSamplingUnits}" var="unit">
-                                    <li>
-                                        ${unit.name} (${unit.id})
-                                    </li>
+                            <table>
+                                <g:each in="${availableContextSamplingUnits?.sort { it.value}}" var="unit">
+                                    <tr>
+                                        <g:set var="isChecked" value="${selectedSamplingUnits?.contains(unit.value)}" />
+                                        <td style="width:30px; vertical-align: middle"><g:checkBox style="display: inline-block; vertical-align: middle; margin-top:0" name="selectedSamplingUnitTypeId" checked="${isChecked}" value="${unit}" /></td>
+                                        <td>${StringUtils.makeTitleFromCamelCase(unit.toString())}</td>
+                                    </tr>
                                 </g:each>
-                            </ul>
+                            </table>
                         </div>
 
                         <g:link class="btn btn-small" event="cancel">Cancel</g:link>

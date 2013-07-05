@@ -49,6 +49,8 @@
         <content tag="pageTitle">Matrix</content>
 
         <content tag="adminButtonBar">
+            <button id="btnClearAll" class="btn btn-small"><i class="icon-trash"></i>&nbsp;Clear all values</button>
+            <button id="btnSetAll" class="btn btn-small"><i class="icon-ok"></i>&nbsp;Set all to 'Y'</button>
             <button id="btnImport" class="btn btn-small"><i class="icon-upload"></i>&nbsp;Import matrix</button>
             <button id="btnExport" class="btn btn-small"><i class="icon-download-alt"></i>&nbsp;Export matrix</button>
             <button id="btnAddQuestion" class="btn btn-small btn-primary"><i class="icon-plus icon-white"></i>&nbsp;Add question</button>
@@ -79,7 +81,7 @@
 
                             <td class="value-cell ${theClass}" questionId="${question.id}" ecologicalContextId="${context.id}">
                                 <small>
-                                <g:select class="input-mini cmbValue" name="value_${context.id}_${question.id}" from="${['', 'Y', 'N']}" value="${required}" />
+                                <g:select style="width: 70px" class="input-small cmbValue" name="value_${context.id}_${question.id}" from="${['', 'Y', 'N']}" value="${required}" />
                                 </small>
                             </td>
                         </g:each>
@@ -91,6 +93,16 @@
         <script type="text/javascript">
 
             $(document).ready(function() {
+
+                $("#btnClearAll").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(action:'clearMatrixValues')}";
+                });
+
+                $("#btnSetAll").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(action:'setAllMatrixValues')}";
+                })
 
                 $("#btnExport").click(function(e) {
                     e.preventDefault();

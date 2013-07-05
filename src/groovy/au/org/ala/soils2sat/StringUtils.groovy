@@ -17,6 +17,13 @@ package au.org.ala.soils2sat
 
 class StringUtils {
 
+    /**
+     * Replaces consecutive runs on spaces with a single space within a string
+     *
+     * @param argStr
+     * @return
+     */
+
     public static String collapseSpaces(String argStr) {
         if (argStr == null || argStr.length() == 0) {
             return argStr;
@@ -36,6 +43,11 @@ class StringUtils {
         return argBuf.toString();
     }
 
+    /**
+     * Returns the first floating point number is a string that starts with a numeric, but may possibly contain other non numeric characters
+     * @param str
+     * @return
+     */
     public static String firstNumber(String str) {
         if (str == null || str.length() == 0) {
             return str

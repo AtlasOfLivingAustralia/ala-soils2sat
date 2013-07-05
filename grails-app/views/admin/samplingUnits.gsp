@@ -25,6 +25,7 @@
         <content tag="pageTitle">Sampling Units</content>
 
         <content tag="adminButtonBar">
+            <button id="btnGenerate" class="btn btn-small"><i class="icon-remove icon-wrench"></i>&nbsp;Auto-Generate sampling units</button>
             <button id="btnDeleteAll" class="btn btn-danger btn-small"><i class="icon-remove icon-white"></i>&nbsp;Delete all sampling units</button>
             <button id="btnImport" class="btn btn-small" style="margin-right: 10px"><i class="icon-upload"></i>&nbsp;Import from csv</button>
             <button id="btnExport" class="btn btn-small"><i class="icon-download-alt"></i>&nbsp;Export to csv</button>
@@ -90,6 +91,11 @@
                     if (confirm("Are you sure you wish to delete all Sampling Units?")) {
                         window.location = "${createLink(action:"deleteAllSamplingUnits")}";
                     }
+                });
+
+                $("#btnGenerate").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'admin', action:'generateSamplingUnits')}";
                 });
 
             });

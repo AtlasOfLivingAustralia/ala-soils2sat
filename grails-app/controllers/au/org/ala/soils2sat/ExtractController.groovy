@@ -86,10 +86,6 @@ class ExtractController {
             onEntry {
                 flow.availableSamplingUnits = studyLocationService.getAvailableSamplingUnits(flow.selectedVisitIds)
                 if (!flow.selectedSamplingUnits) {
-                    def selected = []
-                    flow.availableSamplingUnits.each {
-                        selected << SamplingUnitType.parse(it.id?.toString())
-                    }
                     flow.selectedSamplingUnits = flow.availableSamplingUnits*.id
                 }
             }
@@ -133,6 +129,7 @@ class ExtractController {
         themeQuestions {
             onEntry {
                 def questions = Question.list().sort { it.id }
+                flow.selectedSamplingUnits = null
                 [questions: questions]
             }
 
@@ -197,20 +194,40 @@ class ExtractController {
 
         themeSamplingUnits {
             onEntry {
+                def availableUnits = []
                 flow.selectedContextIds?.each {
                     def context = EcologicalContext.get(it as Integer)
-                    def availableUnits = []
                     if (context) {
                         context.samplingUnits?.each {
-                            if (!availableUnits.contains(it)) {
-                                availableUnits << it
+                            def normalized = it.name.replaceAll("\\s", "")
+                            def type = SamplingUnitType.parse(normalized)
+                            if (type) {
+                                if (!availableUnits.contains(type)) {
+                                    availableUnits << type
+                                }
                             }
                         }
                     }
-                    flow.availableContextSamplingUnits = availableUnits
                 }
+
+                flow.availableContextSamplingUnits = availableUnits
+                if (!flow.selectedSamplingUnits) {
+                    flow.selectedSamplingUnits = availableUnits*.value
+                }
+
             }
-            on("continue").to "citationDetails"
+            on("continue"){
+                def selected = params.selectedSamplingUnitTypeId
+                def selectedUnits = []
+                if (isCollection(selected)) {
+                    selected?.each {
+                        selectedUnits << SamplingUnitType.parse(it)
+                    }
+                } else {
+                    selectedUnits << SamplingUnitType.parse(selected)
+                }
+                flow.selectedSamplingUnits = selectedUnits*.value
+            }.to "citationDetails"
             on("back").to "pointsOfView"
             on("cancel").to "cancel"
         }

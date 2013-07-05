@@ -16,6 +16,7 @@
 package au.org.ala.soils2sat
 
 import grails.converters.JSON
+import org.apache.commons.lang.WordUtils
 import org.grails.plugins.csv.CSVWriter
 import org.hibernate.criterion.Order
 import org.springframework.web.multipart.MultipartFile
@@ -334,7 +335,7 @@ class AdminController {
         for (EcologicalContextType1 t1 : EcologicalContextType1.values()) {
             for (EcologicalContextType2 t2 : EcologicalContextType2.values()) {
                 for (EcologicalContextType3 t3 : EcologicalContextType3.values()) {
-                    def name = "${t1.description} + ${t2.description} + ${t3.description}"
+                    def name = "${t1.description} ${t2.description} at a ${t3.description} level"
                     def existing = EcologicalContext.findByName(name)
                     if (!existing) {
                         def context = new EcologicalContext(name: name)
@@ -345,6 +346,19 @@ class AdminController {
         }
 
         redirect(action:'ecologicalContexts')
+    }
+
+    def generateSamplingUnits() {
+        SamplingUnitType.values().each { value ->
+            def name = StringUtils.makeTitleFromCamelCase(value.toString())
+            def existing = SamplingUnit.findByName(name)
+            if (!existing) {
+                def unit = new SamplingUnit(name: name)
+                unit.save()
+            }
+        }
+
+        redirect(action:'samplingUnits')
     }
 
     def deleteEcologicalContext() {
@@ -413,6 +427,31 @@ class AdminController {
             flash.errorMessage = "Could not locate specified context!"
         }
         redirect(action:'ecologicalContexts')
+    }
+
+    def clearMatrixValues() {
+        def values = MatrixValue.list()
+        values.each {
+            it.delete()
+        }
+        redirect(action:'matrix')
+    }
+
+    def setAllMatrixValues() {
+        def questions = Question.list();
+        def contexts = EcologicalContext.list();
+        questions.each { question ->
+            contexts.each { context ->
+                def existing = MatrixValue.findByEcologicalContextAndQuestion(context, question)
+                if (existing) {
+                    existing.required = true
+                } else {
+                    existing = new MatrixValue(question: question, ecologicalContext: context, required: true)
+                    existing.save()
+                }
+            }
+        }
+        redirect(action:'matrix')
     }
     
     def setMatrixValue() {
