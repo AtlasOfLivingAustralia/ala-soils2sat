@@ -39,11 +39,11 @@ class VisualisationUtils {
         switch (property) {
             case "substrate":
                 return [
-                    "Bare": new Color(218, 44, 67),
-                    "Litter": new Color(107, 142, 35),
+                    "Bare": Color.decode("#71381E"),
+                    "Litter": Color.decode("#FA9D03"),
                     "Rock": Color.gray,
                     "Outcrop": Color.lightGray,
-                    "Gravel": Color.yellow,
+                    "Gravel": Color.decode("#AD8347"),
                     "CWD": Color.black,
                     "Crypto": Color.green
                 ]
