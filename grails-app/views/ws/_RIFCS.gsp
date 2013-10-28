@@ -53,7 +53,7 @@
                     </temporal>
                     <g:each in="${locationMap[extract].keySet()}" var="studyLocationName">
                         <g:set var="coord" value="${locationMap[extract][studyLocationName]}" />
-                        <spatial type="kmlPolyCoords">${coord.longitude}, ${coord.latitude}</spatial>
+                        <spatial type="kmlPolyCoords">${coord.longitude},${coord.latitude}</spatial>
                     </g:each>
                 </coverage>
                 <relatedObject>
