@@ -24,6 +24,7 @@ class SettingService {
     public static String DOI_SERVICE_URL_KEY = "tern.doi.service.url.base"
     public static String DOI_SERVICE_USERNAME_KEY = "tern.doi.service.username"
     public static String DOI_SERVICE_APP_ID_KEY = "tern.doi.service.app.id"
+    public static String RIFCS_DEFAULT_CITATION_NAME_KEY = "rifcs.default.citation.name"
 
     public String getDOIServiceUrl() {
         def setting = Setting.findByKey(DOI_SERVICE_URL_KEY)
@@ -85,6 +86,15 @@ class SettingService {
         if (!setting) {
             def defaultValues = ['ibra7_regions':'ibra7_labels_style', 'ibra7_subregions':'ibra7_subregion_labels_style']
             setting = new Setting(key: LAYER_STYLES_KEY, value: "[]", comment:"The filter expression to apply to ALA queries (Default 'kingdom:Plantae'")
+            setting.save()
+        }
+        return setting.value
+    }
+
+    public String getRifcsDefaultCitationName() {
+        def setting = Setting.findByKey(RIFCS_DEFAULT_CITATION_NAME_KEY)
+        if (!setting) {
+            setting = new Setting(key: RIFCS_DEFAULT_CITATION_NAME_KEY, value: "Pullan, Martin", comment:"The default name to use for citations if none is given during the extract")
             setting.save()
         }
         return setting.value

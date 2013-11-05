@@ -51,11 +51,12 @@ class DOIService {
             throw new RuntimeException("Extraction package is null!")
         }
 
-        def landingPageUrl = grailsApplication.config.doiS2SRoot + grailsLinkGenerator.link(controller: 'extract', action:'landingPage', params:[packageName: extraction.packageName], absolute: false)
-
+        // def landingPageUrl = grailsApplication.config.doiS2SRoot + grailsLinkGenerator.link(controller: 'extract', action:'landingPage', params:[packageName: extraction.packageName], absolute: false)
+        def landingPageUrl = grailsLinkGenerator.link(controller: 'extract', action:'landingPage', params:[packageName: extraction.packageName], absolute: false)
 
         try {
-            def doi = doiClientService.mintDoi(buildCreateXML(user.userProfile.fullName, "Data extract ${extraction.packageName}", []), landingPageUrl)
+            def resource = buildCreateXML(user.userProfile.fullName, "Data extract ${extraction.packageName}", [])
+            def doi = doiClientService.mintDoi(resource, landingPageUrl)
             return doi
         } catch (DoiClientServiceException doiEx) {
             throw new DOIMintingFailedException(doiEx.message)

@@ -27,7 +27,13 @@ class UserProfile implements Serializable {
     static transients = ['fullName']
 
     public String getFullName() {
-        return "${givenNames}, ${surname}"
+        if (!givenNames && !surname) {
+            return null
+        } else if (!givenNames) {
+            return surname
+        } else {
+            return "${surname}, ${givenNames}"
+        }
     }
 
     static constraints = {

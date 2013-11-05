@@ -31,6 +31,7 @@ class S2STagLib {
     def groovyPageLocator
     def studyLocationService
     def attachmentService
+    def settingService
 
     /**
      * @attr active
@@ -438,5 +439,19 @@ class S2STagLib {
         }
     }
 
+    /**
+     * @attr profile User Profile
+     */
+    def citationName = { attrs, body ->
+
+        def defaultName = settingService.rifcsDefaultCitationName
+        def profile = attrs.profile as UserProfile
+        String name = profile.fullName ?: defaultName
+        if (name) {
+            out << name
+        }
+
+    }
 
 }
+

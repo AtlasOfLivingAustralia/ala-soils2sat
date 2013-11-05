@@ -35,11 +35,10 @@
                 </rights>
                 <identifier type="local">${createLink(controller: 'extract', action:'landingPage',params:[packageName:extract.packageName], absolute: true)}</identifier>
                 <dates type="dc.created">
-                    <g:set var="now" value="${new Date()}" />
-                    <date type="dateFrom" dateFormat="W3CDTF">${DateUtils.getW3CDTFDate(now)}</date>
-                    <date type="dateTo" dateFormat="W3CDTF">${DateUtils.getW3CDTFDate(now)}</date>
+                    <date type="dateFrom" dateFormat="W3CDTF">${DateUtils.getW3CDTFDate(extract.date)}</date>
+                    <date type="dateTo" dateFormat="W3CDTF">${DateUtils.getW3CDTFDate(extract.date)}</date>
                 </dates>
-                <location dateFrom="${DateUtils.getW3CDTFDate(now)}">
+                <location dateFrom="${DateUtils.getW3CDTFDate(extract.date)}">
                     <address>
                         <electronic type="url">
                             <value>${createLink(uri: '/', absolute: true)}</value>
@@ -78,7 +77,7 @@
                 <citationInfo>
                     <g:set var="author" value="${User.findByUsername(extract.username)}" />
                     <g:set var="profile" value="${UserProfile.findByUser(author)}" />
-                    <fullCitation>${profile?.fullName}. <g:formatDate date="${extract.date}" format="yyyy" /> Version ${extract.appVersion}. Soils2Satellite. ${extract.doi}. Obtained from ${createLink(uri:'/', absolute: true)}, made available by the Eco-Informatics Facility (http://www.tern.org.au/Eco-informatics-pg17733.html) of the Terrestrial Ecosystem Research Network (TERN, http://www.tern.org.au ). Accessed Date <g:formatDate date="${extract.date}" format="${DateUtils.S2S_DATE_TIME_FORMAT}" />.</fullCitation>
+                    <fullCitation><sts:citationName profile="${profile}" />. <g:formatDate date="${extract.date}" format="yyyy" /> Version ${extract.appVersion}. Soils2Satellite. ${extract.doi}. Obtained from ${createLink(uri:'/', absolute: true)}, made available by the Eco-Informatics Facility (http://www.tern.org.au/Eco-informatics-pg17733.html) of the Terrestrial Ecosystem Research Network (TERN, http://www.tern.org.au ). Accessed Date <g:formatDate date="${extract.date}" format="${DateUtils.S2S_DATE_TIME_FORMAT}" />.</fullCitation>
                 </citationInfo>
             </collection>
         </registryObject>

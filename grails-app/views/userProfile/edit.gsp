@@ -37,6 +37,11 @@
 
         <content tag="pageTitle">Details</content>
 
+        <content tag="profileButtonBar">
+            Citation Profile (${user.username})
+        </content>
+
+
         <div class="container">
             <g:hasErrors bean="${userProfile}">
                 <ul class="errors" role="alert">
@@ -49,6 +54,7 @@
             <div class="row">
                 <div class="span12">
                     <g:form method="post" class="form-horizontal" >
+                        <g:hiddenField name="userId" value="${user.id}" />
                         <g:hiddenField name="id" value="${userProfile?.id}" />
                         <g:hiddenField name="version" value="${userProfile?.version}" />
                         <fieldset class="form">

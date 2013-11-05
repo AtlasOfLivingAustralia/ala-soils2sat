@@ -18,31 +18,66 @@ package au.org.ala.soils2sat
 class UserProfileController {
 
     def springSecurityService
+    def userService
 
     def index() {
         redirect(action:"edit")
     }
 
     def edit() {
+
         def user = springSecurityService.currentUser as User
-        def userProfile = user.userProfile
-        if (!userProfile) {
-            userProfile = new UserProfile(user: user)
-            userProfile.save()
+
+        if (params.userId) {
+            if (!userService.isAdmin(user)) {
+                flash.errorMessage = "You do not have permission to edit other users profiles!"
+                redirect(action:'index')
+                return
+            }
+
+            user = User.get(params.int('userId'))
         }
-        [user: user, userProfile: userProfile]
+
+        if (user) {
+            def userProfile = user.userProfile
+            if (!userProfile) {
+                userProfile = new UserProfile(user: user)
+                userProfile.save()
+            }
+            return [user: user, userProfile: userProfile]
+        } else {
+            flash.errorMessage = 'Could not find user!'
+            redirect(action:'index')
+        }
     }
 
     def update() {
-        def user = springSecurityService.currentUser as User
-        def userProfile = user.userProfile
+        def userProfile = UserProfile.get(params.int("id"))
+        if (userProfile) {
+            def currentUser = springSecurityService.currentUser as User
+            if (currentUser?.id != userProfile.user.id) {
+                if (!userService.isAdmin(currentUser)) {
+                    flash.errorMessage = "You do not have permission to update other users profiles!"
+                    redirect(action:'index')
+                    return
+                }
+            }
+        }
+
         if (!userProfile) {
-            userProfile = new UserProfile(user: user)
+            def user = User.get(params.int("userId"))
+            if (user) {
+                userProfile = new UserProfile(user: user)
+            } else {
+                flash.errorMessage = "Internal error!"
+                redirect(action:'index')
+                return
+            }
         }
 
         userProfile.setProperties(params)
         flash.message = "User profile updated"
-        redirect(action: "edit")
+        redirect(action: "edit", params: [userId: params.userId])
     }
 
     def extractions() {
