@@ -51,14 +51,18 @@
                 <div class="span12">
                     <div class="well well-small">
                         <h4>Extract Data</h4>
-                        Some explanatory text that outlines what is going to happen, including:
-                        <ul>
-                            <li>Confirming/selecting which visits to export</li>
-                            <li>Confirming/selecting which sampling units to export</li>
-                            <li>The minting of a DOI</li>
-                            <li>The publication of a RIF/CS thing</li>
-                            <li>The actual extraction and packaging of the data</li>
-                        </ul>
+                        <p>
+                        Click <em>Next</em> to begin the process of creating a citable data extract.
+                        </p>
+                        <p>
+                            This process will guide you through the following steps:
+                            <ul>
+                                <li>Confirming/selecting which visits to export</li>
+                                <li>Confirming/selecting which sampling units to export</li>
+                                <li>Confirming/entering basic citation details</li>
+                                <li>The extraction and packaging of the selected data, including the minting and publication of a unique DOI for this extract.</li>
+                            </ul>
+                        </p>
                     </div>
                     <g:link class="btn btn-small" event="cancel">Cancel</g:link>
                     <g:link class="btn btn-small btn-primary" event="continue">Next&nbsp;<i class="icon-chevron-right icon-white"></i></g:link>

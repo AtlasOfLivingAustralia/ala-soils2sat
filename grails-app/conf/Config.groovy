@@ -123,6 +123,7 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+    debug  'au.edu.aekos.shared.doiclient.service.DoiClientServiceImpl'  // DOI Generation XML
 }
 
 // Added by the Spring Security Core plugin:
