@@ -28,6 +28,7 @@ class AdminController {
     def userService
     def layerService
     def studyLocationService
+    def settingService
 
     def index() { }
 
@@ -577,6 +578,15 @@ class AdminController {
     def editSetting() {
         def setting = Setting.get(params.id)
         [setting: setting]
+    }
+
+    def deleteSetting() {
+        def setting = Setting.get(params.id)
+
+        if (setting) {
+            settingService.deleteSetting(setting)
+        }
+        redirect(action:'settings')
     }
 
     def updateSetting() {

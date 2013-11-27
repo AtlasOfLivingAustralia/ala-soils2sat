@@ -14,12 +14,15 @@
  */
 
 import au.org.ala.soils2sat.Role
+import au.org.ala.soils2sat.S2SSetting
+import au.org.ala.soils2sat.SettingService
 import au.org.ala.soils2sat.User
 import au.org.ala.soils2sat.UserRole
 
 class BootStrap {
 
     def grailsApplication
+    def settingService
 
     def init = { servletContext ->
 
@@ -48,6 +51,9 @@ class BootStrap {
         if (!extractDirectory.exists()) {
             extractDirectory.mkdirs()
         }
+
+        // go through all the setting service methods to prime the settings table
+        settingService.setSettingDefaults()
 
     }
 

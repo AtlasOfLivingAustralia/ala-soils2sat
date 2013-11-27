@@ -23,6 +23,7 @@ class SearchService extends ServiceBase {
     def studyLocationService
     def grailsApplication
     def layerService
+    def settingService
 
     List<StudyLocationVisitSearchResult> searchStudyLocationVisits(UserSearch userSearch) {
 
@@ -116,7 +117,7 @@ class SearchService extends ServiceBase {
 
     @Override
     protected String getServiceRootUrl() {
-        return "${grailsApplication.config.aekosServiceRoot}"
+        return settingService.soils2SatServiceUrl
     }
 
 }

@@ -23,8 +23,8 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 class StudyLocationService extends ServiceBase {
 
     def grailsApplication
-    def layerService
     def logService
+    def settingService
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName}")
     List<StudyLocationTO> getStudyLocations() {
@@ -193,7 +193,7 @@ class StudyLocationService extends ServiceBase {
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#studyLocationName}")
     def getStudyLocationDetailsOld(String studyLocationName) {
-        def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName, serviceUrl:'http://s2s-dev.ecoinformatics.org.au:8080/s2s-services/getSiteLocationDetails'])
+        def details = proxyServiceCall(grailsApplication, "getSiteLocationDetails", [siteLocationName: studyLocationName, serviceUrl:"${serviceRootUrl}/getSiteLocationDetails"])
         def results = new StudyLocationDetails(details)
         return results
     }
@@ -233,7 +233,7 @@ class StudyLocationService extends ServiceBase {
 
     @Override
     protected String getServiceRootUrl() {
-        return "${grailsApplication.config.aekosServiceRoot}"
+        return settingService.soils2SatServiceUrl
     }
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#siteId}")

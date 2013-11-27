@@ -35,7 +35,7 @@
                     <th>Setting</th>
                     <th>Value</th>
                     <th>Comment</th>
-                    <th></th>
+                    <th style="min-width: 60px"></th>
                 </tr>
             </thead>
             <tbody>
@@ -51,8 +51,11 @@
                             ${setting.comment}
                         </td>
                         <td>
-                            <a href="${createLink(controller:'admin', action:'editSetting', id: setting.id)}" title="Edit this setting">
+                            <a href="${createLink(controller:'admin', action:'editSetting', id: setting.id)}" class="btn btn-mini" title="Edit this setting">
                                 <i class="icon-edit"></i>
+                            </a>
+                            <a href="${createLink(controller:'admin', action:'deleteSetting', id: setting.id)}" class="btn btn-danger btn-mini" title="Delete this setting (revert to default)">
+                                <i class="icon-remove icon-white"></i>
                             </a>
                         </td>
                     </tr>

@@ -17,6 +17,8 @@ package au.org.ala.soils2sat
 
 class SettingService {
 
+    def grailsApplication
+
     public static String OBSERVATION_RADIUS_KEY = "ala.observation.radius"
     public static String OBSERVATION_RANK_KEY = "ala.observation.rank"
     public static String OBSERVATION_FILTER_KEY = "ala.observation.taxonFilter"
@@ -25,7 +27,9 @@ class SettingService {
     public static String DOI_SERVICE_USERNAME_KEY = "tern.doi.service.username"
     public static String DOI_SERVICE_APP_ID_KEY = "tern.doi.service.app.id"
     public static String RIFCS_DEFAULT_CITATION_NAME_KEY = "rifcs.default.citation.name"
+    public static String SOILS2SAT_SERVICE_URL_KEY = "tern.soil2sat.service.url.base"
 
+    @S2SSetting
     public String getDOIServiceUrl() {
         def setting = Setting.findByKey(DOI_SERVICE_URL_KEY)
         if (!setting) {
@@ -35,6 +39,17 @@ class SettingService {
         return setting.value
     }
 
+    @S2SSetting
+    public String getSoils2SatServiceUrl() {
+        def setting = Setting.findByKey(SOILS2SAT_SERVICE_URL_KEY)
+        if (!setting) {
+            setting = new Setting(key: SOILS2SAT_SERVICE_URL_KEY, value: grailsApplication.config.aekosServiceRoot, comment: "The service url for the TERN Soils2Sat services (AEKOS)")
+            setting.save()
+        }
+        return setting.value
+    }
+
+    @S2SSetting
     public String getDOIServiceUsername() {
         def setting = Setting.findByKey(DOI_SERVICE_USERNAME_KEY)
         if (!setting) {
@@ -44,6 +59,7 @@ class SettingService {
         return setting.value
     }
 
+    @S2SSetting
     public String getDOIServiceAppId() {
         def setting = Setting.findByKey(DOI_SERVICE_APP_ID_KEY)
         if (!setting) {
@@ -53,7 +69,7 @@ class SettingService {
         return setting.value
     }
 
-
+    @S2SSetting
     public float getObservationRadius() {
         def setting = Setting.findByKey(OBSERVATION_RADIUS_KEY)
         if (!setting) {
@@ -63,15 +79,17 @@ class SettingService {
         return Float.parseFloat(setting.value)
     }
 
+    @S2SSetting
     public String getObservationsRank() {
         def setting = Setting.findByKey(OBSERVATION_RANK_KEY)
         if (!setting) {
-            setting = new Setting(key: OBSERVATION_RANK_KEY, value: "species", comment:"The rank of the taxanomic names to return when looking for observation records close to a locality (e.g. species or genus)")
+            setting = new Setting(key: OBSERVATION_RANK_KEY, value: "species", comment:"The rank of the taxonomic names to return when looking for observation records close to a locality (e.g. species or genus)")
             setting.save()
         }
         return setting.value
     }
 
+    @S2SSetting
     public String getTaxonFilter() {
         def setting = Setting.findByKey(OBSERVATION_FILTER_KEY)
         if (!setting) {
@@ -81,6 +99,7 @@ class SettingService {
         return setting.value
     }
 
+    @S2SSetting
     public String getLayerStyles() {
         def setting = Setting.findByKey(LAYER_STYLES_KEY)
         if (!setting) {
@@ -91,6 +110,7 @@ class SettingService {
         return setting.value
     }
 
+    @S2SSetting
     public String getRifcsDefaultCitationName() {
         def setting = Setting.findByKey(RIFCS_DEFAULT_CITATION_NAME_KEY)
         if (!setting) {
@@ -100,5 +120,26 @@ class SettingService {
         return setting.value
     }
 
+    def setSettingDefaults() {
+        def methods = SettingService.class.getDeclaredMethods()
+        methods.each { method ->
+            def annotations = method.declaredAnnotations*.annotationType()
+            if (annotations.contains(S2SSetting.class)) {
+                try {
+                    def value = method.invoke(this, null)
+                    println "${method.name} returns \"${value}\""
+                } catch (Exception ex) {
+                    println "Failed!" + ex.message
+                }
+            }
+        }
+    }
+
+    def deleteSetting(Setting setting) {
+        if (setting) {
+            setting.delete()
+        }
+        setSettingDefaults()
+    }
 
 }

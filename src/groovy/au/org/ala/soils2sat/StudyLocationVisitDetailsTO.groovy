@@ -49,4 +49,5 @@ class VisitObserverTO {
     String id
     String observerName
     String siteLocationVisit
+    String affiliation
 }
