@@ -247,8 +247,15 @@ class ExtractController {
 
             on("continue") {
 
-                flow.creatorSurname = params.get("surname")
-                flow.creatorGivenNames = params.get("givenNames")
+                flow.creatorSurname = params.get("surname")?.trim()
+                flow.creatorGivenNames = params.get("givenNames")?.trim()
+
+                if (!flow.creatorSurname || !flow.creatorGivenNames) {
+                    flash.message = "You must supply both a Surname and Given Names for the citation details."
+                    return error()
+                }
+
+
 
             }.to "extractAndPackage"
             on("back").to { flow.samplingUnits == 'matrix' ? "themeSamplingUnits" : "selectSamplingUnits" }
@@ -261,8 +268,10 @@ class ExtractController {
                 def selectedVisitIds = flow.selectedVisitIds as List<String>
                 def selectedSamplingUnits = flow.selectedSamplingUnits.collect { SamplingUnitType.parse(it.toString())}
 
+                def creator = "${flow.creatorSurname}, ${flow.creatorGivenNames}"
+
                 try {
-                    def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits)
+                    def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits, creator)
                     flow.extractionResults = results
                 } catch (Exception ex) {
                     flow.packageException = ex

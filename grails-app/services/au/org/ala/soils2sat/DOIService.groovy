@@ -46,7 +46,7 @@ class DOIService {
         return svc
     }
 
-    def mintDOI(DataExtraction extraction, User user) {
+    def mintDOI(DataExtraction extraction, String creator) {
         if (!extraction) {
             throw new RuntimeException("Extraction package is null!")
         }
@@ -55,7 +55,7 @@ class DOIService {
         def landingPageUrl = grailsLinkGenerator.link(controller: 'extract', action:'landingPage', params:[packageName: extraction.packageName], absolute: false)
 
         try {
-            def resource = buildCreateXML(user.userProfile.fullName, "Data extract ${extraction.packageName}", [])
+            def resource = buildCreateXML(creator, "Data extract ${extraction.packageName}", [])
             def doi = doiClientService.mintDoi(resource, landingPageUrl)
             return doi
         } catch (DoiClientServiceException doiEx) {

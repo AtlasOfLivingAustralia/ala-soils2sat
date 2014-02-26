@@ -153,10 +153,10 @@ class ExtractService {
     }
 
 
-    def extractAndPackageData(User user, List<String> visitIds, List<SamplingUnitType> samplingUnits) {
+    def extractAndPackageData(User user, List<String> visitIds, List<SamplingUnitType> samplingUnits, String creator) {
 
 
-        logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits}")
+        logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits} Citation: ${creator}")
 
         def packageName = generateVisitPackageName()
         logService.log("Package name is '${packageName}'")
@@ -198,7 +198,7 @@ class ExtractService {
         // Mint a DOI for this extract
         String doi = ""
 
-        doi = this.DOIService.mintDOI(dataExtraction, user)
+        doi = this.DOIService.mintDOI(dataExtraction, creator)
         dataExtraction.doi = doi
 
         return [success: true, packageUrl: downloadUrl, DOI: doi, message:'']

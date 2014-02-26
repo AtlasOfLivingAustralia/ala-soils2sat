@@ -56,14 +56,14 @@
                         <div class="control-group">
                             <label class="control-label" for="surname">Creator Surname</label>
                             <div class="controls">
-                                <g:textField name="surname" value="${creatorSurname}"/>
+                                <g:textField name="surname" value="${creatorSurname}" required="" />
                             </div>
                         </div>
 
                         <div class="control-group">
                             <label class="control-label" for="givenNames">Creator Given Names</label>
                             <div class="controls">
-                                <g:textField name="givenNames" value="${creatorGivenNames}"/>
+                                <g:textField name="givenNames" value="${creatorGivenNames}" required="" />
                             </div>
                         </div>
 
