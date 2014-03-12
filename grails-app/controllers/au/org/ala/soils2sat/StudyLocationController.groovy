@@ -600,10 +600,12 @@ class StudyLocationController {
             case SamplingUnitType.SoilObservation:
                 model.columnHeadings.remove("sampleId")
                 model.columnHeadings.add(0, "sampleId")
+                dataList = dataList.sort { it.sampleId }
                 break;
             case SamplingUnitType.SoilBulkDensity:
                 model.columnHeadings.remove("sampleId")
                 model.columnHeadings.add(0, "sampleId")
+                dataList = dataList.sort { it.sampleId }
                 break;
             case SamplingUnitType.SoilCharacter:
                 def groups = [
