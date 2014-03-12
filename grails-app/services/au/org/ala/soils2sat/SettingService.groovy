@@ -29,6 +29,8 @@ class SettingService {
     public static String RIFCS_DEFAULT_CITATION_NAME_KEY = "rifcs.default.citation.name"
     public static String SOILS2SAT_SERVICE_URL_KEY = "tern.soil2sat.service.url.base"
 
+    public static String SOILS2SAT_SAMPLING_UNIT_COLUMNORDER_PREFIX = "tern.soil2sat.samplingunit.colorder."
+
     @S2SSetting
     public String getDOIServiceUrl() {
         def setting = Setting.findByKey(DOI_SERVICE_URL_KEY)
@@ -115,6 +117,28 @@ class SettingService {
         def setting = Setting.findByKey(RIFCS_DEFAULT_CITATION_NAME_KEY)
         if (!setting) {
             setting = new Setting(key: RIFCS_DEFAULT_CITATION_NAME_KEY, value: "Pullan, Martin", comment:"The default name to use for citations if none is given during the extract")
+            setting.save()
+        }
+        return setting.value
+    }
+
+    @S2SSetting
+    String getSamplingUnitColumnOrderings() {
+        def settings = []
+        SamplingUnitType.values().each {
+            def map = [:]
+            map[it.toString()] = getSamplingUnitColumnOrdering(it)
+            settings << map
+        }
+        return settings.toString()
+    }
+
+    public String getSamplingUnitColumnOrdering(SamplingUnitType samplingUnitType) {
+
+        def key = SOILS2SAT_SAMPLING_UNIT_COLUMNORDER_PREFIX + samplingUnitType.toString()
+        def setting = Setting.findByKey(key)
+        if (!setting) {
+            setting = new Setting(key: key, value: "", comment: "The column ordering for sampling unit type '${samplingUnitType.toString()}'")
             setting.save()
         }
         return setting.value

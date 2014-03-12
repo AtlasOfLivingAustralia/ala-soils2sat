@@ -93,6 +93,7 @@ class StudyLocationService extends ServiceBase {
             details.samplingUnitData = details?.samplingUnitData?.sort {
                 it.id
             }
+
         }
 
         return details

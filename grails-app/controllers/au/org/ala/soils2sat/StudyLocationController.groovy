@@ -554,9 +554,31 @@ class StudyLocationController {
         def dataList = data?.samplingUnitData
         def samplingUnitName = data?.samplingUnit?.description
 
+        def orderStr = settingService.getSamplingUnitColumnOrdering(samplingUnitType)
+        def ordering = []
+        if (orderStr) {
+            ordering = orderStr.split(",")
+        }
+
         def colHeadings = []
         if (dataList && dataList[0]) {
-            colHeadings = dataList[0]?.collect { it.key }
+            def temp = dataList[0]?.collect { it.key }
+            // first to the ordered columns...
+            ordering.each { String colName ->
+                colName = colName.replaceAll("\\s+", "")
+                if (colName) {
+                    def existing = temp.find { String existing -> colName.equalsIgnoreCase(existing)}
+                    if (existing) {
+                        colHeadings << colName
+                        temp.remove(existing)
+                    }
+                }
+            }
+
+            // now the rest of them...
+            temp.each { colName ->
+                colHeadings << colName
+            }
         }
 
         colHeadings?.remove('id')
