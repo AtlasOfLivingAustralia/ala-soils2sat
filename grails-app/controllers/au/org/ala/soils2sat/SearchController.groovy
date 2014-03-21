@@ -145,7 +145,6 @@ class SearchController {
 
     def ajaxCriteriaDetailFragment() {
         try {
-
             def criteriaDefinition = SearchCriteriaDefinition.get(params.int("searchCriteriaDefinitionId"))
             if (criteriaDefinition) {
                 switch (criteriaDefinition.type) {

@@ -134,6 +134,31 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/jempbox/bundles/jempbox-1.8.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/fontbox/bundles/fontbox-1.8.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/pdfbox/bundles/pdfbox-1.8.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.webflow/spring-webflow/jars/spring-webflow-2.0.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/ognl/ognl/jars/ognl-2.7.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-commons-annotations/jars/hibernate-commons-annotations-3.2.0.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-core/jars/hibernate-core-3.6.10.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.webflow/spring-js/jars/spring-js-2.0.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.webflow/spring-binding/jars/spring-binding-2.0.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.ehcache/ehcache-core/jars/ehcache-core-2.4.8.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-ehcache/jars/hibernate-ehcache-3.6.10.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-entitymanager/jars/hibernate-entitymanager-3.6.10.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-validator/jars/hibernate-validator-4.1.0.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.validation/validation-api/jars/validation-api-1.0.0.GA.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/antlr/antlr/jars/antlr-2.7.7.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-orm/jars/spring-orm-3.2.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-plugin-support/jars/grails-datastore-gorm-plugin-support-3.0.2.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-hibernate-core/jars/grails-datastore-gorm-hibernate-core-3.0.2.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-hibernate/jars/grails-datastore-gorm-hibernate-3.0.2.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/junit/junit-dep/jars/junit-dep-4.10.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.eclipse.jdt.core.compiler/ecj/jars/ecj-3.7.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-websocket/jars/tomcat-embed-websocket-7.0.52.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-log4j/jars/tomcat-embed-logging-log4j-7.0.52.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-el/jars/tomcat-embed-el-7.0.52.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.52.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-catalina-ant/jars/tomcat-catalina-ant-7.0.52.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.52.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -141,7 +166,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="Soils2Sat-grailsPlugins" />
-    <orderEntry type="library" name="grails-2.2.3" level="application" />
+    <orderEntry type="library" name="grails-2.3.7" level="application" />
   </component>
 </module>
 
