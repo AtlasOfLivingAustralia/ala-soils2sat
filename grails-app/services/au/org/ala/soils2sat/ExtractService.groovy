@@ -20,6 +20,7 @@ import net.sf.json.JSONNull
 import org.apache.commons.io.FilenameUtils
 import org.grails.plugins.csv.CSVWriter
 import org.h2.store.fs.FileUtils
+import org.springframework.dao.CannotAcquireLockException
 
 import java.text.SimpleDateFormat
 import java.util.zip.ZipEntry
@@ -29,22 +30,33 @@ import java.util.zip.ZipOutputStream
 class ExtractService {
 
     def studyLocationService
-    def layerService
     def logService
     def grailsApplication
     def grailsLinkGenerator
     def DOIService
+    def sessionFactory
+
+    private static final byte[] _lock = []
 
     private String generateVisitPackageName() {
         // Create a unique package name based on date and number of packages already created.
-        boolean fileExists = true // Assume the package already exists until it is actually tested
         def packageName = ""
         def sdf = new SimpleDateFormat("yyyyMMdd")
-        while (fileExists) {
-            def lastDailyId = LastDailyId.nextNumber
-            packageName = String.format("SLV-%s-%04d",sdf.format(lastDailyId.date), lastDailyId.lastNumber)
-            fileExists = new File(constructLocalFileArchivePath(packageName)).exists()
+        synchronized (_lock) {
+            def lastNumber = 0
+            File file = null
+            while (!file || file.exists()) {
+                def today = new Date()
+                packageName = String.format("SLV-%s-%04d", sdf.format(today), ++lastNumber)
+                file = new File(constructLocalFileArchivePath(packageName))
+                println "${file.absolutePath} exists? ${file.exists()}"
+            }
+            if (file) {
+                // create an empty file within the synchronized block so that some other thread won't also try to create this file
+                file.createNewFile()
+            }
         }
+
         return packageName
     }
 
@@ -309,14 +321,17 @@ class ExtractService {
             }
 
             def results = getLayerDataForLocations(appState.selectedPlotNames, appState.layers?.collect({ it.name }))
-
             def csvWriter = new au.com.bytecode.opencsv.CSVWriter(writer)
             csvWriter.writeNext(columnHeaders as String[])
 
             results.fieldNames.each { fieldName ->
                 def lineItems = [fieldName]
                 appState.selectedPlotNames?.each { studyLocation ->
-                    def value = results.data[studyLocation][fieldName]
+                    def value = ""
+                    if (results.data[studyLocation]) {
+                        value = results.data[studyLocation][fieldName] ?: ""
+                    }
+
                     lineItems << value ?: ''
                 }
                 csvWriter.writeNext(lineItems as String[])
@@ -377,9 +392,4 @@ class ExtractService {
         return manifestText
     }
 
-}
-
-class ManifestEntry {
-    String filename
-    String comment
 }
