@@ -21,7 +21,6 @@
           <root url="file://$MODULE_DIR$/target/plugins/csv-0.3.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/twitter-bootstrap-2.3.2/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/jquery-ui-1.8.24/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/resources-1.2.7/web-app" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -47,9 +46,8 @@
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/google-visualization-0.6.2/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/google-visualization-0.6.2/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/hibernate-3.6.10.10">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-3.6.10.10/src/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-3.6.10.10/src/groovy" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.3">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.3/grails-app/i18n" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/src/groovy" isTestSource="false" />
@@ -61,11 +59,11 @@
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-ui-1.8.24/grails-app/i18n" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-ui-1.8.24/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/resources-1.2.7">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.7/src/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.7/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.7/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.7/grails-app/taglib" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/plugins/rest-0.7">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/rest-0.7/src/groovy" isTestSource="false" />
@@ -77,10 +75,7 @@
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/spring-security-core-1.2.7.3/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/spring-security-core-1.2.7.3/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/tomcat-7.0.52.1">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/tomcat-7.0.52.1/src/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/tomcat-7.0.52.1/src/groovy" isTestSource="false" />
-    </content>
+    <content url="file://$MODULE_DIR$/target/plugins/tomcat-2.2.3" />
     <content url="file://$MODULE_DIR$/target/plugins/twitter-bootstrap-2.3.2">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/twitter-bootstrap-2.3.2/grails-app/i18n" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/twitter-bootstrap-2.3.2/grails-app/taglib" isTestSource="false" />
@@ -91,7 +86,61 @@
     <content url="file://$MODULE_DIR$/target/plugins/webxml-1.4.1">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
     </content>
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.3" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library name="Grails User Library (Soils2Sat-grailsPlugins)">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/postgresql/postgresql/jars/postgresql-9.1-901.jdbc4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.opencsv/opencsv/jars/opencsv-2.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.liquibase/liquibase-core/jars/liquibase-core-2.0.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/jboss/javassist/jars/javassist-3.7.ga.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/xml-resolver/xml-resolver/jars/xml-resolver-1.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sourceforge.nekohtml/nekohtml/jars/nekohtml-1.9.9.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.ezmorph/ezmorph/jars/ezmorph-1.0.6.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.json-lib/json-lib/jars/json-lib-2.3-jdk15.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.groovy.modules.http-builder/http-builder/jars/http-builder-0.5.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-codec/commons-codec/jars/commons-codec-1.6.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.2.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.2.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-rs-extension-search/jars/cxf-rt-rs-extension-search-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-transports-http/jars/cxf-rt-transports-http-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-bindings-xml/jars/cxf-rt-bindings-xml-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.ws.rs/javax.ws.rs-api/jars/javax.ws.rs-api-2.0-m10.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.sun.xml.bind/jaxb-impl/jars/jaxb-impl-2.1.13.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-core/jars/cxf-rt-core-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/wsdl4j/wsdl4j/jars/wsdl4j-1.6.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.geronimo.specs/geronimo-javamail_1.4_spec/bundles/geronimo-javamail_1.4_spec-1.7.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.ws.xmlschema/xmlschema-core/bundles/xmlschema-core-2.0.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.woodstox/stax2-api/jars/stax2-api-3.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.2.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-api/jars/cxf-api-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.cxf/cxf-rt-frontend-jaxrs/jars/cxf-rt-frontend-jaxrs-2.7.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.imgscalr/imgscalr-lib/jars/imgscalr-lib-4.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/jempbox/bundles/jempbox-1.8.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/fontbox/bundles/fontbox-1.8.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/pdfbox/bundles/pdfbox-1.8.2.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.webflow/spring-webflow/jars/spring-webflow-2.0.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/ognl/ognl/jars/ognl-2.7.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-commons-annotations/jars/hibernate-commons-annotations-3.2.0.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-core/jars/hibernate-core-3.6.10.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.webflow/spring-js/jars/spring-js-2.0.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.webflow/spring-binding/jars/spring-binding-2.0.8.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-ehcache/jars/hibernate-ehcache-3.6.10.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-validator/jars/hibernate-validator-4.1.0.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.validation/validation-api/jars/validation-api-1.0.0.GA.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/antlr/antlr/jars/antlr-2.7.7.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-web/jars/spring-security-web-3.0.7.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-core/jars/spring-security-core-3.0.7.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

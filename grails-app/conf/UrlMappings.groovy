@@ -22,7 +22,7 @@ class UrlMappings {
 			}
 		}
 
-		"/"(controller: 'map')
+		"/"(controller: 'map', action: 'index')
 		"500"(view:'/error')
 	}
 }
