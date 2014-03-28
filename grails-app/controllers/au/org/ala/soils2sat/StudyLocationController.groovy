@@ -65,34 +65,6 @@ class StudyLocationController {
         render (results as JSON)
     }
 
-    def synopsisFragment() {
-        def studyLocationName = params.studyLocationName;
-        def userInstance = springSecurityService.currentUser as User
-
-        [studyLocationName:studyLocationName, userInstance: userInstance, appState: userInstance?.applicationState]
-    }
-
-
-    def studyLocationDataFragment() {
-
-        def userInstance = springSecurityService.currentUser as User
-        def appState = userInstance?.applicationState
-
-        def layerNames = appState.layers.collect({ it.name }).join(",")
-
-        def studyLocationName = params.studyLocationName
-
-        def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
-        def results = []
-        if (layerNames && studyLocation) {
-            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layerNames}/${studyLocation.latitude}/${studyLocation.longitude}")
-            results = JSON.parse(url.text)
-
-        }
-
-        [results:results, userInstance: springSecurityService.currentUser, appState: appState, studyLocation: studyLocation]
-    }
-
     private Map getCompareData(User userInstance) {
         def appState = userInstance?.applicationState
         return extractService.getLayerDataForLocations(appState.selectedPlotNames, appState.layers?.collect({ it.name }))
@@ -207,8 +179,8 @@ class StudyLocationController {
         def results = [:]
 
         appState.selectedPlotNames.each { studyLocation ->
-            def studyLocationSummary = studyLocationService.getStudyLocationSummary(studyLocation)
-            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationSummary.latitude, studyLocationSummary.longitude)
+            def studyLocationDetails = studyLocationService.getStudyLocationDetails(studyLocation)
+            def studyLocationTaxaList = biocacheService.getTaxaNamesForLocation(studyLocationDetails.latitude, studyLocationDetails.longitude)
             results[studyLocation] = studyLocationTaxaList
         }
 

@@ -136,13 +136,14 @@ class VisualisationController {
         data?.each { element ->
             def row = [element.depth]
             boolean found = false
+            def ph = element.ph ?: 0
             litmusColors.each { color ->
-                if (!found && color.pH > element.ph) {
+                if (!found && color.pH > ph) {
                     found = true;
                     if (row.size() > 1) {
                         row.pop()
                     }
-                    row << element.ph
+                    row << ph
                     row << 0
                 } else {
                     row << 0
@@ -416,7 +417,7 @@ class VisualisationController {
 
         def realData = studyLocationService.getSoilPhForStudyLocation(params.studyLocationName)
 
-        def data = realData?.collect { [depth: "${it.upperDepth} - ${it.lowerDepth}", ph: it.pH ]}
+        def data = realData?.collect { [depth: "${it.upperDepth} - ${it.lowerDepth}", ph: it.pH]}
 
         def adjustedData = []
 
@@ -429,13 +430,14 @@ class VisualisationController {
         data?.each { element ->
             def row = [element.depth]
             boolean found = false
+            def ph = element.ph ?: 0
             litmusColors.each { color ->
-                if (!found && color.pH > element.ph) {
+                if (!found && color.pH > ph) {
                     found = true;
                     if (row.size() > 1) {
                         row.pop()
                     }
-                    row << element.ph
+                    row << ph
                     row << 0
                 } else {
                     row << 0
@@ -623,7 +625,9 @@ class VisualisationController {
                 double total = 0
                 if (phData) {
                     phData.each {
-                        total += (double) it.pH
+                        if (it.pH) {
+                            total += (double) it.pH
+                        }
                     }
                     value = total / phData.size()
                 }

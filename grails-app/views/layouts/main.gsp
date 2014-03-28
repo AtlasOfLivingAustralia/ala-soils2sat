@@ -1,3 +1,4 @@
+<%@ page import="grails.util.Environment" %>
 %{--
   - ﻿Copyright (C) 2013 Atlas of Living Australia
   - All Rights Reserved.

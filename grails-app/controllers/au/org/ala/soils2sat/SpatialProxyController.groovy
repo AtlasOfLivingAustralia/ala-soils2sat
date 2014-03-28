@@ -39,11 +39,11 @@ class SpatialProxyController {
     def intersect = {
 
         def layers = params.layers
-        def studyLocationName = params.studyLocationName
+        def studyLocationName = params.studyLocationName as String
 
-        def studyLocation = studyLocationService.getStudyLocationSummary(studyLocationName)
+        def studyLocation = studyLocationService.getStudyLocationDetails(studyLocationName)
         if (layers && studyLocation) {
-            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${latitude}/${longitude}")
+            def url = new URL("${grailsApplication.config.spatialPortalRoot}/ws/intersect/${layers}/${studyLocation.latitude}/${studyLocation.longitude}")
             response.setContentType("application/json")
             render url.getText()
             return
