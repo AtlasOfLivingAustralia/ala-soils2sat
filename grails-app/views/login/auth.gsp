@@ -38,7 +38,7 @@
                         </div>
                     </g:if>
 
-                    <form class="form-horizontal" action='${postUrl}' method='POST' id='loginForm' autocomplete='off'>
+                    <form class="form-horizontal" action='${postUrl}' method='POST' id='loginForm'>
                         <div class="control-group">
                             <label class="control-label" for='username'>Username:</label>
 

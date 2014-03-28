@@ -79,7 +79,9 @@ grails.project.dependency.resolution = {
         compile ':cache:1.0.1'
         compile ':csv:0.3.1'
         compile ':spring-security-core:1.2.7.3'
-        compile ':webflow:2.0.8.1'
+        compile (':webflow:2.0.8.1') {
+            excludes 'javassist'
+        }
         compile ':rest:0.7'
         compile ":google-visualization:0.6.2"
 
