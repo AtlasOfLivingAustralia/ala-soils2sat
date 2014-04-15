@@ -14,8 +14,6 @@
  */
 
 import au.org.ala.soils2sat.Role
-import au.org.ala.soils2sat.S2SSetting
-import au.org.ala.soils2sat.SettingService
 import au.org.ala.soils2sat.User
 import au.org.ala.soils2sat.UserRole
 

@@ -446,7 +446,7 @@ class S2STagLib {
 
         def defaultName = settingService.rifcsDefaultCitationName
         def profile = attrs.profile as UserProfile
-        String name = profile.fullName ?: defaultName
+        String name = profile?.fullName ?: defaultName
         if (name) {
             out << name
         }
