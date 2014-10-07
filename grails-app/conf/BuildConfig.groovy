@@ -18,6 +18,7 @@ grails.servlet.version = "2.5" /*
 //grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = 'target'
 
+grails.project.groupId = "au.org.ala"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 grails.project.war.file = "target/${appName}.war"
