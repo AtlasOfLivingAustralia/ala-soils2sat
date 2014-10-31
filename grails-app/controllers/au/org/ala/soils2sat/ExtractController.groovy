@@ -271,7 +271,12 @@ class ExtractController {
                 def creator = "${flow.creatorSurname}, ${flow.creatorGivenNames}"
 
                 try {
-                    def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits, creator)
+                    def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits)
+                    if (results.dataExtraction) {
+                        def doi = DOIService.mintDOI(results.dataExtraction as DataExtraction, creator)
+                        results.doi = doi
+                    }
+
                     flow.extractionResults = results
                 } catch (Exception ex) {
                     flow.packageException = ex
@@ -379,7 +384,8 @@ class ExtractController {
         }
 
         try {
-            def doi = this.DOIService.mintDOI(extraction, userInstance)
+            def creator = "${userInstance.userProfile?.surname}, ${userInstance.userProfile?.givenNames}"
+            def doi = this.DOIService.mintDOI(extraction, creator)
             extraction.doi = doi
         } catch (DOIMintingFailedException ex) {
             flash.errorMessage = "The DOI minting failed, possibly because the DOI service is currently unavailable. Try again later. <br /> " + ex.message

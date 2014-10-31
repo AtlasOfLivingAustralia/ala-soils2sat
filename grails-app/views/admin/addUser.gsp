@@ -81,7 +81,7 @@
                     <div class="control-group">
                         <div class="controls">
                             <g:submitButton class="btn btn-primary" name="submit" value='${userInstance ? "Save" : "Add user"}'/>
-                            <a href="${createLink(controller:'userProfile', action:'edit', params:[userId:userInstance.id])}" class="btn">Edit Citation Profile</a>
+                            <a href="${createLink(controller:'userProfile', action:'edit', params:[userId:userInstance?.id])}" class="btn">Edit Citation Profile</a>
                         </div>
                     </div>
 

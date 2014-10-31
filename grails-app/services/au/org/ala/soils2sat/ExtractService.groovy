@@ -165,10 +165,10 @@ class ExtractService {
     }
 
 
-    def extractAndPackageData(User user, List<String> visitIds, List<SamplingUnitType> samplingUnits, String creator) {
+    def extractAndPackageData(User user, List<String> visitIds, List<SamplingUnitType> samplingUnits) {
 
 
-        logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits} Citation: ${creator}")
+        logService.log("Extracting and Packaging visit data for ${user.username} Visits: ${visitIds} SamplingUnits: ${samplingUnits}")
 
         def packageName = generateVisitPackageName()
         logService.log("Package name is '${packageName}'")
@@ -205,15 +205,9 @@ class ExtractService {
         // Store the version of the app used to create the extract
         dataExtraction.appVersion = "${grailsApplication.metadata['app.version']}.${grailsApplication.metadata['app.buildNumber']} (built ${grailsApplication.metadata['app.buildDate']} ${grailsApplication.metadata['app.buildProfile']})"
 
-        dataExtraction.save(failOnError: true)
+        dataExtraction.save(failOnError: true, flush: true)
 
-        // Mint a DOI for this extract
-        String doi = ""
-
-        doi = this.DOIService.mintDOI(dataExtraction, creator)
-        dataExtraction.doi = doi
-
-        return [success: true, packageUrl: downloadUrl, DOI: doi, message:'']
+        return [success: true, packageUrl: downloadUrl, dataExtraction: dataExtraction, message:'' ]
     }
 
     private ManifestEntry writeZipEntry(User user, ZipOutputStream zipStream, Writer writer, String filename, Closure closure) {

@@ -19,6 +19,7 @@ public enum SamplingUnitType {
 
     PointIntercept(0),
     BasalArea(1),
+    LeafAreaIndex(2),
     StructuralSummary(4),
     SoilObservation(5),
     SoilBulkDensity(6),

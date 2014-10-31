@@ -78,7 +78,11 @@ class StudyLocationService extends ServiceBase {
     }
 
     public getSamplingUnitDetails(String visitId, SamplingUnitType samplingUnitType) {
-        return getSamplingUnitDetails(visitId, samplingUnitType?.value)
+        if (samplingUnitType == null) {
+            println "Break!"
+            return null;
+        }
+        return getSamplingUnitDetails(visitId, (int) samplingUnitType?.value)
     }
 
     @Cacheable(value="S2S_StudyLocationCache", key="{#root.methodName,#visitId,#samplingUnitTypeId}")
