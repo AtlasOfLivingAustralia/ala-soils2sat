@@ -272,9 +272,14 @@ class ExtractController {
 
                 try {
                     def results = extractService.extractAndPackageData(user, selectedVisitIds, selectedSamplingUnits)
-                    if (results.dataExtraction) {
-                        def doi = DOIService.mintDOI(results.dataExtraction as DataExtraction, creator)
-                        results.doi = doi
+                    // Need to reload the extraction so it gets a transaction
+                    def dataExtraction = DataExtraction.get((results.dataExtraction as DataExtraction)?.id)
+
+                    if (dataExtraction) {
+                        def doi = DOIService.mintDOI(dataExtraction, creator)
+                        dataExtraction.doi = doi
+                        dataExtraction.save(flush: true)
+                        results.DOI = doi
                     }
 
                     flow.extractionResults = results
