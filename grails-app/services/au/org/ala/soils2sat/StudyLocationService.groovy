@@ -230,11 +230,10 @@ class StudyLocationService extends ServiceBase {
         return traits
     }
 
-    @CacheEvict("S2S_LayerCache")
+    @CacheEvict("S2S_StudyLocationCache")
     public void flushCache() {
         logService.log("Flushing Layer Cache")
     }
-
 
     @Override
     protected String getServiceRootUrl() {
