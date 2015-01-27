@@ -79,7 +79,7 @@ class LayerService {
         return results
     }
 
-    @CacheEvict("S2S_LayerCache")
+    @CacheEvict(value = "S2S_LayerCache", allEntries = true)
     public void flushCache() {
         logService.log("Flushing Layer Cache")
     }

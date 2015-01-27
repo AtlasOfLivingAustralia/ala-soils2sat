@@ -36,16 +36,24 @@ class StudyLocationService extends ServiceBase {
             }
 
             def map = cleanMap(studyLocation)
-            results << new StudyLocationTO(map)
+            try {
+                results << new StudyLocationTO(map)
+            } catch (Exception ex) {
+                log.error("Failed to marshall Study Location - ", ex)
+            }
         }
 
         return results
     }
 
-    private Map cleanMap(JSONElement elem) {
+    private static Map cleanMap(JSONElement elem) {
         elem.each {
             if (it.value instanceof JSONObject.Null) {
                 it.value = null
+            }
+
+            if (it.value == "NaN") {
+                it.value = 0
             }
         }
         return elem
@@ -230,9 +238,9 @@ class StudyLocationService extends ServiceBase {
         return traits
     }
 
-    @CacheEvict("S2S_StudyLocationCache")
+    @CacheEvict(value = "S2S_StudyLocationCache", allEntries = true)
     public void flushCache() {
-        logService.log("Flushing Layer Cache")
+        logService.log("Flushing study location Cache")
     }
 
     @Override
