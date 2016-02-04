@@ -33,8 +33,8 @@ modules = {
 
     openlayers {
         defaultBundle false
-        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.11/OpenLayers.js'
-        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.11/theme/default/style.css'
+        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.js'
+        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css'
     }
 
     visualisationHandlers {
