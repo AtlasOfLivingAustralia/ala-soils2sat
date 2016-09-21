@@ -1,26 +1,19 @@
-language: groovy
-jdk:
-- oraclejdk7
-branches:
-  only:
-  - master
-before_install:
-- rm -rf ~/.sdkman
-- curl -s get.sdkman.io > ~/install_sdkman.sh
-- chmod 775 ~/install_sdkman.sh
-- ~/install_sdkman.sh
-- echo "sdkman_auto_answer=true" > ~/.sdkman/etc/config
-- source ~/.sdkman/bin/sdkman-init.sh
-- GRAILS_VERSION=`grep '^app\.grails\.version=' ./application.properties | sed -e
-  's/^app\.grails\.version=//g'`
-- sdk install grails $GRAILS_VERSION || true
-before_script:
-- mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_settings_old.groovy
-- MAVEN_REPO="ala-repo-snapshot"; grep '^app\.version=' ./application.properties |
-  grep -q "\-SNAPSHOT"; if [ "$?" = "1" ]; then MAVEN_REPO="ala-repo-release"; fi;
-script: grails clean && grails refresh-dependencies --non-interactive && grails prod
-  war --non-interactive && grails prod maven-deploy --repository=$MAVEN_REPO --non-interactive
-env:
-  global:
-  - secure: JiFByROcBuTGJYOHiA0vdfTIheHKW0Mo8IRSYT+KoLujlj/bPpPi/NFNjGVC3Mf9+EEPWqY6US6IzDOwo/eHqLikHL05i6/c6MZ60AjNg603DuR/GWJiQSli6z6/WTE0JW8nEKp6C5S7irItUqw4OiWO6M8v+aBNGD6hJLMYocY=
-  - secure: AVw5e4A+CL6x8IdgF7lqte1kWbed6xF8qnX5ttdCLQ++ah4WttaK+Zuv8v4qYWej/7blUhMrKBYRSydvSpNfVV2clTrpqvUPcx3MKqcuvGdo7QeFbfw3ubWlZVAUEsKlcwsab0HaR+fEtTqnt0lw88tWXSA6HnHLHswRqWyynKs=
+{
+  "language": "groovy",
+  "jdk": "oraclejdk7",
+  "sudo": false,
+  "before_install": [
+    "wget -q https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/ala_common.sh",
+    "chmod +x ala_common.sh",
+    "source ./ala_common.sh",
+    "ala_travis_grails_setup_env"
+  ],
+  "script": [
+    "ala_travis_grails_build"
+  ],
+  "global_env": "TRAVIS_DEPLOY_USERNAME=[secure] TRAVIS_DEPLOY_PASSWORD=[secure]",
+  "group": "stable",
+  "dist": "precise",
+  "os": "linux"
+}
+
