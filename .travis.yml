@@ -13,7 +13,7 @@ before_install:
 - source ~/.sdkman/bin/sdkman-init.sh
 - GRAILS_VERSION=`grep '^app\.grails\.version=' ./application.properties | sed -e
   's/^app\.grails\.version=//g'`
-- sdkman install grails $GRAILS_VERSION || true
+- sdk install grails $GRAILS_VERSION || true
 before_script:
 - mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_settings_old.groovy
 - MAVEN_REPO="ala-repo-snapshot"; grep '^app\.version=' ./application.properties |
