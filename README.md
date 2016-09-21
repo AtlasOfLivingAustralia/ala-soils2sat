@@ -1,1 +1,1 @@
-### ala-soils2sat   [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/ala-soils2sat.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/ala-soils2sat)
+### ala-soils2sat-aat   [![Build Status](https://travis-ci.org/tokmakoff/ala-soils2sat.svg?branch=master)](https://travis-ci.org/tokmakoff/ala-soils2sat)
