@@ -15,13 +15,15 @@
 
 package au.org.ala.soils2sat
 
+import groovy.util.logging.Log
+
 class ExtractController {
 
     def transient springSecurityService
     def transient extractService
     def transient studyLocationService
     def transient DOIService
-
+	
     def index() {
         def user = springSecurityService.currentUser as User
         if (!user) {
@@ -313,8 +315,9 @@ class ExtractController {
     }
 
     def downloadPackage() {
-        def packageName = params.packageName
-
+        
+		def packageName = params.packageName
+		
         if (!packageName) {
             // TODO: return a HTTP error code
             return
@@ -346,8 +349,18 @@ class ExtractController {
 
     def landingPage() {
         def packageName = params.packageName
+		log.error("INFO: Requesting packageName=" + packageName)
 
         def extraction = DataExtraction.findByPackageName(packageName)
+		
+		//Mosheh - 30-01-2018
+		//SD-35521: if extraction is null the system will throw error 500 because
+		//${extraction.packageName} will cause an NPE in the landingPage.gsp page.
+		if(extraction == null) {
+		  log.error("ERROR: DataExtraction.findByPackageName(" + packageName + ") returned null. Could not find packageName [" + packageName + "] in the system!")
+		  render(status: 200, text: 'The  packageName [' + packageName + '] was not found in the system! Sorry.')
+		}
+		
 
         def filesize = 0
         def filename = ""
