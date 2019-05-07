@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:10
+    container_name: s2s_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: soils2sat
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASS:-password}
+    volumes:
+      - s2s-pgdata:/var/lib/postgresql/data
+
+  app:
+    image: ternandsparrow/s2s-portal:${TAG:-dev}
+    build: ..
+    container_name: s2s_app
+    restart: unless-stopped
+    command: run-war
+    ports:
+      - 8080:8080
+    environment:
+      DBHOST: db
+      DBNAME: soils2sat
+      DBUSER: postgres
+      DBPASS: ${DB_PASS:-password}
+      AEKOS_SERVICES_URL: ${AEKOS_SERVICES_URL:-http://s2s-services.aekos.org.au:8080/s2s-services}
+      GRAILS_ENV: production
+      # TODO change DOI URL, Martin's name, anything else
+    volumes:
+      - s2s-extracts:/data/soils2sat/extracts
+
+volumes:
+  s2s-pgdata:
+  s2s-extracts:
