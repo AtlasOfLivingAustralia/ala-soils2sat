@@ -77,7 +77,7 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:$grailsVersion"
+        build ":tomcat:$grailsVersion" // if migrating to grails 2.5.3 change $grailsVersion to v7.0.70
 
         runtime ":database-migration:1.3.2"
         compile ':cache:1.0.1'

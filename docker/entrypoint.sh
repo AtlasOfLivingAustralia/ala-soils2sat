@@ -13,16 +13,29 @@ sed -i "s+postgresql://.*\"+postgresql://${DBHOST:?}/${DBNAME:?}\"+" $dsFile
 sed -i "s/username = \"\w\+\"/username = \"${DBUSER:?}\"/" $dsFile
 sed -i "s/password = \"\w\+\"/password = \"${DBPASS:?}\"/" $dsFile
 
-sed -i "s+aekosServiceRoot = \"\w\+\"+aekosServiceRoot = \"${AEKOS_SERVICES_URL:?}\"+" $configFile
+# config (managed in SettingService.groovy) is stored in the DB, you're just setting the *defaults* here
+# you can configure all settings in the web UI by accessing http://localhost:8080/ala-soils2sat/admin/settings as an
+# admin
+sed -i "s+aekosServiceRoot = \"\w\+\"+aekosServiceRoot = \"${DEFAULT_AEKOS_SERVICES_URL:?}\"+" $configFile
+sed -i "s+doiS2SRoot = \"\w\+\"+doiS2SRoot = \"${DEFAULT_DOI_S2S_ROOT_URL:?}\"+" $configFile
 
 # it would be nice if logs we written to stdout, but they aren't :(
 # FIXME need to 'forever' the tail processes so they restart if failed, or just get tomcat to write to stdout
 outFile=target/tomcat-out.txt
-echo '' > $outFile
+rm -f $outFile
+touch $outFile
 tail -f $outFile &
+
 errFile=target/tomcat-err.txt
-echo '' > $errFile
-tail -f $errFile &
+rm -f $errFile
+touch $errFile
+tail -f $errFile > /dev/stderr &
 
 grailsEnv=${GRAILS_ENV:-development}
-grails -Dgrails.env=$grailsEnv $@
+
+echo "[INFO] logging may not work, the log files live at out=$outFile, err=$errFile inside the container"
+
+grails \
+  -Dgrails.env=$grailsEnv \
+  -Dgrails.tomcat.jvmArgs="${TOMCAT_JVM_ARGS:-}" \
+  $@

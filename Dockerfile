@@ -34,4 +34,5 @@ ADD . /app/
 RUN grails compile
 # pass run-app to the `docker run...` command for dev mode
 CMD run-war
+EXPOSE 8080
 ENTRYPOINT ["/bin/bash", "./docker/entrypoint.sh"]
