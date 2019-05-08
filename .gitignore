@@ -33,3 +33,6 @@
 
 .idea/*
 docker/start-or-restart-stack.sh
+.gradle/
+.project
+.settings/
