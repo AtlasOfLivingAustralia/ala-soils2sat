@@ -31,7 +31,7 @@ services:
       PROXY_PORT: 8080
       PROXY_CONTEXT: ala-soils2sat
     volumes:
-      - ./nginx-helper/entrypoint.sh:/entrypoint.sh
+      - ./nginx-helper/entrypoint.sh:/entrypoint.sh:ro
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
 
   db:
@@ -58,7 +58,7 @@ services:
       DESTINATION_PATH: s3://${AWS_S3_BUCKET}/extracts
       BUCKET_LOCATION: ap-southeast-2
     volumes:
-      - s2s-extracts:/data
+      - s2s-extracts:/data:ro
 
   pgbackups3:
     image: schickling/postgres-backup-s3
