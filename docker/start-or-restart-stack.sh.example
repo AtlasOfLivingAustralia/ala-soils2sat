@@ -4,6 +4,8 @@
 #  DB data is stored in a volume so it *should* survive recreation of the DB container.
 cd `dirname "$0"`
 
+# see aws-s3-policy.json file for the required policy for this user, change the bucket name
+# in the policy if required
 export AWS_ACCESS_KEY_ID=replace-me      # TODO change this
 export AWS_SECRET_ACCESS_KEY=replace-me  # TODO change this
 export AWS_S3_BUCKET=some-bucket         # TODO change this
@@ -17,12 +19,16 @@ export DB_PASS=somesecurepassword        # TODO change this
 export DOMAIN_NAME=dev.s2s.somehost.com,111.222.333.444 # TODO change this
 export LE_CONTACT_EMAIL=change@me # TODO certificate expiration notification emails will be sent here
 
-# if you run this in a non-prod environment, you can (should!) disable DB snapshots with:
-#export DB_BACKUP_CRON_SCHEDULE='0 0 31 2 *' # feb 31, i.e. never, thanks https://stackoverflow.com/a/13938099/1410035
 export DB_BACKUP_CRON_SCHEDULE='@daily'
+export EXTRACTS_BACKUP_CRON_SCHEDULE='*/15 * * * *'
 export DB_BACKUP_PREFIX=dev- # choose something unique for each environment
+# if you run this in a non-prod environment, you can (should!) disable DB and extract snapshots by setting them to 
+# feb 31, i.e. never, thanks https://stackoverflow.com/a/13938099/1410035
+#export DB_BACKUP_CRON_SCHEDULE='0 0 31 2 *'
+#export EXTRACTS_BACKUP_CRON_SCHEDULE='0 0 31 2 *' 
 
 docker-compose up -d $@
 
-# pass NO_LE=1 env var to kill LetsEncrypt container, for running without certs
+# to kill LetsEncrypt container right after start, for running without certs (e.g. local dev)
+#   NO_LE=1 ./start-or-restart-stack.sh
 [ ! -z "$NO_LE" ] && docker stop s2s_le

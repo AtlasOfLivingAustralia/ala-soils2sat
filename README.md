@@ -41,21 +41,21 @@ We're running a number of docker containers.
   1. an nginx instance running as a reverse proxy to terminate HTTPS connections and do some caching
   1. a LetsEncrypt container to automatically generate the SSL/TLS certificates for nginx
 
-## Useful commands
+# Useful commands
 
-Trigger adhoc PG backup to S3:
+## Trigger adhoc PG backup to S3:
 ```bash
 docker exec -it s2s-pgbackups3 /bin/sh /backup.sh
 ```
 
-To start the service, or to update after making changes to `docker-compose.yml`:
-
+## To start the service, or to update after making changes to `docker-compose.yml`:
 ```bash
 ./docker/start-or-restart-stack.sh
 ```
 
-To stop the stack, but **leave the DB data volume alone**:
+## To stop the stack
 
+This will **leave the DB data volume alone** but stop the containers:
 ```bash
 docker-compose stop
 # from here you can run the `./docker/start-or-restart-stack.sh` command to start the stack again, and it'll pick up the existing DB data volume
@@ -70,8 +70,22 @@ To completely **remove all traces, including the DB data** and other data volume
 docker-compose down --volumes # the --volumes flag nukes the volumes too
 ```
 
-View the last 10 lines and follow logs for a container with:
+## View the last 10 lines and follow logs for a container with:
 
 ```bash
 docker logs --follow --tail 10 s2s_app
 ```
+
+## Connect to DB with psql
+You can connect to the DB as the superuser if you SSH to the docker host, then run:
+```bash
+docker exec -it s2s_db sh -c 'psql -U $POSTGRES_USER -d $POSTGRES_DB'
+```
+
+## Restoring a DB dump
+It depends on the format of your dump but the easiest way is probably to cat the dump into a shell inside the DB container:
+```bash
+cat data.backup | docker exec -i s2s_db sh -c 'pg_restore -v -U $POSTGRES_USER -d $POSTGRES_DB --clean --if-exists'
+```
+
+You could also `docker cp` the dump into the container, then `docker exec` to do the restore.

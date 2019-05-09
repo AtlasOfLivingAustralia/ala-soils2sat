@@ -6,8 +6,6 @@ services:
     container_name: s2s_app
     restart: unless-stopped
     command: run-war
-    ports:
-      - 8080:8080
     environment:
       DBHOST: db
       DBNAME: soils2sat
@@ -23,6 +21,19 @@ services:
     volumes:
       - s2s-extracts:/data/soils2sat/extracts
 
+  nginxhelper:
+    # creates some dynamic location config for nginx
+    image: jwilder/nginx-proxy:alpine-0.7.0
+    entrypoint: '/entrypoint.sh'
+    environment:
+      VIRTUAL_HOST_NAMES: ${DOMAIN_NAME}
+      PROXY_HOST: app
+      PROXY_PORT: 8080
+      PROXY_CONTEXT: ala-soils2sat
+    volumes:
+      - ./nginx-helper/entrypoint.sh:/entrypoint.sh
+      - s2s-nginx-vhostd:/etc/nginx/vhost.d
+
   db:
     image: postgres:10
     container_name: s2s_db
@@ -33,6 +44,21 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS:-password}
     volumes:
       - s2s-pgdata:/var/lib/postgresql/data
+
+  extractsbackups3:
+    image: silintl/sync-with-s3:1.2.0
+    container_name: s2s-extractsbackups3
+    restart: unless-stopped
+    init: true
+    environment:
+      ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
+      SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
+      CRON_SCHEDULE: ${EXTRACTS_BACKUP_CRON_SCHEDULE}
+      SOURCE_PATH: /data
+      DESTINATION_PATH: s3://${AWS_S3_BUCKET}/extracts
+      BUCKET_LOCATION: ap-southeast-2
+    volumes:
+      - s2s-extracts:/data
 
   pgbackups3:
     image: schickling/postgres-backup-s3
