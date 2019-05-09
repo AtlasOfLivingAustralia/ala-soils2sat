@@ -13,6 +13,7 @@ services:
       DBUSER: postgres
       DBPASS: ${DB_PASS:-password}
       GRAILS_ENV: production
+      TOMCAT_JVM_ARGS: '-Xmx4096m'
       VIRTUAL_HOST: ${DOMAIN_NAME}
       LETSENCRYPT_HOST: ${DOMAIN_NAME}
       LETSENCRYPT_EMAIL: ${LE_CONTACT_EMAIL}
@@ -26,6 +27,7 @@ services:
     # creates some dynamic location config for nginx
     image: jwilder/nginx-proxy:alpine-0.7.0
     entrypoint: '/entrypoint.sh'
+    container_name: s2s_nginx_helper
     environment:
       VIRTUAL_HOST_NAMES: ${DOMAIN_NAME}
       PROXY_HOST: app
