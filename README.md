@@ -35,11 +35,11 @@ http://localhost:8080/ala-soils2sat/admin/settings (change your host and port) t
 
 ## About
 We're running a number of docker containers.
-  1. the app using `grails run-war`, which uses tomcat
+  1. the S2S app
   1. Postgres
   1. a container to do periodic backups of the postgres database to AWS S3
-  1. an nginx instance running as a reverse proxy to terminate HTTPS connections and do some caching
-  1. a LetsEncrypt container to automatically generate the SSL/TLS certificates for nginx
+  1. a container to do periodic backups of the extracts directory to AWS S3
+  1. an nginx instance running as a reverse proxy
 
 # Useful commands
 

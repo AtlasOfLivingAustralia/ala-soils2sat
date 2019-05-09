@@ -17,12 +17,6 @@ services:
       TOMCAT_MAX_MEM_MB: 4096
       TOMCAT_MAX_PERM_MB: 512
       VIRTUAL_HOST: ${DOMAIN_NAME}
-      LETSENCRYPT_HOST: ${DOMAIN_NAME}
-      LETSENCRYPT_EMAIL: ${LE_CONTACT_EMAIL}
-      # allow HTTP and HTTPS because some JS doesn't use HTTPS
-      # more info: https://github.com/jwilder/nginx-proxy/pull/298#issuecomment-199464758
-      HTTPS_METHOD: noredirect
-      HSTS: "off"
       # FIXME check if merged https://github.com/entropia1/rpi-docker-nginx-proxy/commit/da2a72c56eee432b18b1cec175bba1d7c3f949e3
       # these values will populate the DB on first run, then you must change them via the web UI
       DEFAULT_AEKOS_SERVICES_URL: ${DEFAULT_AEKOS_SERVICES_URL:-http://s2s-services.aekos.org.au:8080/s2s-services}
@@ -104,24 +98,7 @@ services:
     container_name: s2s_nginx
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - s2s-nginx-certs:/etc/nginx/certs:ro
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
-      - s2s-nginx-html:/usr/share/nginx/html
-    labels:
-      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
-
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion:v1.10
-    container_name: s2s_le
-    restart: unless-stopped
-    init: true
-    depends_on:
-      - nginx-proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - s2s-nginx-certs:/etc/nginx/certs
-      - s2s-nginx-vhostd:/etc/nginx/vhost.d
-      - s2s-nginx-html:/usr/share/nginx/html
 
   autoheal: # thanks https://stackoverflow.com/a/48538213/1410035
     # will restart container with a failing healthcheck
@@ -136,6 +113,4 @@ services:
 volumes:
   s2s-pgdata:
   s2s-extracts:
-  s2s-nginx-certs:
   s2s-nginx-vhostd:
-  s2s-nginx-html:

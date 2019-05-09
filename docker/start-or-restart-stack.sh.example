@@ -15,10 +15,7 @@ export AWS_S3_BUCKET=some-bucket         # TODO change this
 export DB_PASS=somesecurepassword        # TODO change this
 
 # note that we're specifying multiple names using a comma separator.
-# each of these domains will have an HTTPS cert minted for it so they must be publicly reachable
-# note: you can't use an IP address, LetsEncrypt won't mint a cert for it
-export DOMAIN_NAME=dev.s2s.somehost.com,s2s.someother.host # TODO change this
-export LE_CONTACT_EMAIL=change@me # TODO certificate expiration notification emails will be sent here
+export DOMAIN_NAME=dev.s2s.somehost.com,s2s.someother.host,11.22.33.44 # TODO change this
 
 export DB_BACKUP_CRON_SCHEDULE='@daily'
 export EXTRACTS_BACKUP_CRON_SCHEDULE='*/15 * * * *'
@@ -29,7 +26,3 @@ export DB_BACKUP_PREFIX=dev- # choose something unique for each environment
 #export EXTRACTS_BACKUP_CRON_SCHEDULE='0 0 31 2 *'
 
 docker-compose up -d $@
-
-# to kill LetsEncrypt container right after start, for running without certs (e.g. local dev)
-#   NO_LE=1 ./start-or-restart-stack.sh
-[ ! -z "$NO_LE" ] && docker stop s2s_le
