@@ -31,6 +31,8 @@ ENTRYPOINT ["grails"]
 
 FROM grails225
 ADD . /app/
+# TODO it would be nice to build a WAR (maybe even self executing with Jetty) but we need a way to inject
+# config into the app, at least for DB connection.
 RUN grails compile
 # pass run-app to the `docker run...` command for dev mode
 CMD run-war

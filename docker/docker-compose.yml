@@ -38,7 +38,7 @@ services:
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
 
   db:
-    image: postgres:10
+    image: postgres:9.6
     container_name: s2s_db
     restart: unless-stopped
     environment:
