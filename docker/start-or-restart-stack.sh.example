@@ -16,16 +16,17 @@ export DB_PASS=somesecurepassword        # TODO change this
 
 # note that we're specifying multiple names using a comma separator.
 # each of these domains will have an HTTPS cert minted for it so they must be publicly reachable
-export DOMAIN_NAME=dev.s2s.somehost.com,111.222.333.444 # TODO change this
+# note: you can't use an IP address, LetsEncrypt won't mint a cert for it
+export DOMAIN_NAME=dev.s2s.somehost.com,s2s.someother.host # TODO change this
 export LE_CONTACT_EMAIL=change@me # TODO certificate expiration notification emails will be sent here
 
 export DB_BACKUP_CRON_SCHEDULE='@daily'
 export EXTRACTS_BACKUP_CRON_SCHEDULE='*/15 * * * *'
 export DB_BACKUP_PREFIX=dev- # choose something unique for each environment
-# if you run this in a non-prod environment, you can (should!) disable DB and extract snapshots by setting them to 
+# if you run this in a non-prod environment, you can (should!) disable DB and extract snapshots by setting them to
 # feb 31, i.e. never, thanks https://stackoverflow.com/a/13938099/1410035
 #export DB_BACKUP_CRON_SCHEDULE='0 0 31 2 *'
-#export EXTRACTS_BACKUP_CRON_SCHEDULE='0 0 31 2 *' 
+#export EXTRACTS_BACKUP_CRON_SCHEDULE='0 0 31 2 *'
 
 docker-compose up -d $@
 
