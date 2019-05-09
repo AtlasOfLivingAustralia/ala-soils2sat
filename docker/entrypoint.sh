@@ -24,22 +24,10 @@ cat <<EOF >> $confDir/BuildConfig.groovy
 grails.tomcat.jvmArgs= ["-Xmx${TOMCAT_MAX_MEM_MB:-1024}m", "-XX:MaxPermSize=${TOMCAT_MAX_PERM_MB:-512}m"]
 EOF
 
-# it would be nice if logs we written to stdout, but they aren't :(
-# FIXME need to 'forever' the tail processes so they restart if failed, or just get tomcat to write to stdout
-outFile=target/tomcat-out.txt
-rm -f $outFile
-touch $outFile
-tail -f $outFile &
-
-errFile=target/tomcat-err.txt
-rm -f $errFile
-touch $errFile
-tail -f $errFile > /dev/stderr &
-
 grailsEnv=${GRAILS_ENV:-development}
 
-echo "[INFO] logging may not work, the log files live at out=$outFile, err=$errFile inside the container"
-
+# pass 'run-app' to have logs written to stdout/err, 'run-war' writes to target/tomcat-{out,err}.txt
 grails \
+  -Ddisable.auto.recompile=${DISABLE_AUTO_RECOMPILE:-false} \
   -Dgrails.env=$grailsEnv \
   $@
