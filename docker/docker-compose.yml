@@ -13,7 +13,8 @@ services:
       DBUSER: postgres
       DBPASS: ${DB_PASS:-password}
       GRAILS_ENV: production
-      TOMCAT_JVM_ARGS: '-Xmx4096m'
+      TOMCAT_MAX_MEM_MB: 4096
+      TOMCAT_MAX_PERM_MB: 512
       VIRTUAL_HOST: ${DOMAIN_NAME}
       LETSENCRYPT_HOST: ${DOMAIN_NAME}
       LETSENCRYPT_EMAIL: ${LE_CONTACT_EMAIL}
@@ -22,6 +23,13 @@ services:
       DEFAULT_DOI_S2S_ROOT_URL: ${DEFAULT_DOI_S2S_ROOT_URL:-http://soils2sat.ala.org.au}
     volumes:
       - s2s-extracts:/data/soils2sat/extracts
+    healthcheck:
+      test: curl -sI localhost:8080/ala-soils2sat | grep -q '302 Found' || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 2
+      # yeah, it takes ages to start :'(
+      start_period: 5m
 
   nginxhelper:
     # creates some dynamic location config for nginx
@@ -38,7 +46,7 @@ services:
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
 
   db:
-    image: postgres:9.6
+    image: postgres:9.4
     container_name: s2s_db
     restart: unless-stopped
     environment:
@@ -108,6 +116,16 @@ services:
       - s2s-nginx-certs:/etc/nginx/certs
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
       - s2s-nginx-html:/usr/share/nginx/html
+
+  autoheal: # thanks https://stackoverflow.com/a/48538213/1410035
+    # will restart container with a failing healthcheck
+    image: willfarrell/autoheal
+    container_name: s2s_autoheal
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   s2s-pgdata:
