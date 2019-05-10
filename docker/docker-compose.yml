@@ -5,7 +5,6 @@ services:
     build: ..
     container_name: s2s_app
     restart: unless-stopped
-    command: run-war
     init: true
     environment:
       DBHOST: db

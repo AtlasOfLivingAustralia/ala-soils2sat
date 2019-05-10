@@ -3,8 +3,6 @@ FROM java:7 AS grails225
 # ...and modified for Grails 2.2.5 and Java 7 as the DockerHub repo doesn't provide it
 MAINTAINER Manuel Ortiz Bey <ortiz.manuel@mozartanalytics.com>
 
-# Set customizable env vars defaults.
-# Set Grails version (default: 3.2.8; min: 3.0.0; max: 3.2.8).
 ENV GRAILS_VERSION 2.2.5
 
 # Install Grails
@@ -28,13 +26,18 @@ WORKDIR /app
 ENTRYPOINT ["grails"]
 
 
-
-FROM grails225
-ADD . /app/
-# TODO it would be nice to build a WAR (maybe even self executing with Jetty) but we need a way to inject
-# config into the app, at least for DB connection.
+# pulling deps takes foooooooorever, so we'll cache it
+FROM grails225 as withDeps
+# FIXME need to find file that requires maven deps
+ADD ./grails-app/conf/BuildConfig.groovy grails-app/conf/
+# actually just triggering the dependency resolution
 RUN grails compile
-# pass run-app to the `docker run...` command for dev mode
-CMD run-app
+
+
+FROM withDeps
+ADD . /app/
+# TODO it would be nice to build a WAR (maybe even self executing with Jetty)
+# but we need a way to inject config into the app, at least for DB connection.
 EXPOSE 8080
+CMD ["run-app"]
 ENTRYPOINT ["/bin/bash", "./docker/entrypoint.sh"]

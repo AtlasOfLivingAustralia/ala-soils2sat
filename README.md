@@ -29,13 +29,15 @@ http://localhost:8080/ala-soils2sat/admin/settings (change your host and port) t
 
         ./docker/start-or-restart-stack.sh
         # or if you need to trigger a rebuild of the app Docker image (after a git pull)
+        # note: the docker cache means probably only the last stage of the multistage build
+        #       will happen. If you need a full rebuild, also pass --no-cache
         ./docker/start-or-restart-stack.sh --build
 
   1. open a browser to `https://<VM IP>:443` (port `80` will redirect to HTTPS)
 
 ## About
 We're running a number of docker containers.
-  1. the S2S app
+  1. the S2S app using `grails run-app`, which uses tomcat
   1. Postgres
   1. a container to do periodic backups of the postgres database to AWS S3
   1. a container to do periodic backups of the extracts directory to AWS S3
