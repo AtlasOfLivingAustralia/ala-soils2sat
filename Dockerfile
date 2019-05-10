@@ -28,7 +28,7 @@ ENTRYPOINT ["grails"]
 
 # pulling deps takes foooooooorever, so we'll cache it
 FROM grails225 as withDeps
-# FIXME need to find file that requires maven deps
+ADD ./application.properties .
 ADD ./grails-app/conf/BuildConfig.groovy grails-app/conf/
 # actually just triggering the dependency resolution
 RUN grails compile
