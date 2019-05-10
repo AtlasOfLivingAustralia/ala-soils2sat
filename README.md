@@ -1,4 +1,6 @@
-### ala-soils2sat-aat   [![Build Status](https://travis-ci.org/tokmakoff/ala-soils2sat.svg?branch=master)](https://travis-ci.org/tokmakoff/ala-soils2sat)
+> source for the Soils2Satellites webapp
+
+[![Build Status](https://travis-ci.org/tokmakoff/ala-soils2sat.svg?branch=master)](https://travis-ci.org/tokmakoff/ala-soils2sat)
 
 # Running with Docker
 
@@ -19,23 +21,23 @@ http://localhost:8080/ala-soils2sat/admin/settings (change your host and port) t
   1. clone this repo onto the VM
   1. copy the template script to start the docker stack
 
-        pushd ./docker
-        cp start-or-restart-stack.sh.example start-or-restart-stack.sh
-        chmod +x start-or-restart-stack.sh
-        popd
+          pushd ./docker
+          cp start-or-restart-stack.sh.example start-or-restart-stack.sh
+          chmod +x start-or-restart-stack.sh
+          popd
 
   1. edit `./docker/start-or-restart-stack.sh` to add the required sensitive details
   1. spin up the compose stack
 
-        ./docker/start-or-restart-stack.sh
-        # or if you need to trigger a rebuild of the app Docker image (after a git pull)
-        ./docker/start-or-restart-stack.sh --build
-        # note: the docker cache means probably only the last stage of the multistage build
-        #       of our app will happen. If you need a full rebuild, do a separate no-cache build
-        pushd ./docker
-        docker-compose build --no-cache
-        popd
-        ./docker/start-or-restart-stack.sh
+          ./docker/start-or-restart-stack.sh
+          # or if you need to trigger a rebuild of the app Docker image (after a git pull)
+          ./docker/start-or-restart-stack.sh --build
+          # note: the docker cache means probably only the last stage of the multistage build
+          #       of our app will happen. If you need a full rebuild, do a separate no-cache build
+          pushd ./docker
+          docker-compose build --no-cache
+          popd
+          ./docker/start-or-restart-stack.sh
 
   1. open a browser to `http://<VM IP>` (we don't run HTTPS because some of the client-side JS breaks)
 
