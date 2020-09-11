@@ -1,28 +1,30 @@
 #!/bin/bash
-# this will create a new stack if none exists, or if you've made changes to the docker-compose.yml
-#  then this will drop the old containers and create new ones with the new config.
-#  DB data is stored in a volume so it *should* survive recreation of the DB container.
+# this will create a new stack if none exists, or if you've made changes to the
+# docker-compose.yml then this will drop the old containers and create new ones
+# with the new config.  DB data is stored in a volume so it *should* survive
+# recreation of the DB container.
 cd `dirname "$0"`
 
-# see aws-s3-policy.json file for the required policy for this user, change the bucket name
-# in the policy if required
+# see aws-s3-policy.json file for the required policy for this user, change the
+# bucket name in the policy if required
 export AWS_ACCESS_KEY_ID=replace-me      # TODO change this
 export AWS_SECRET_ACCESS_KEY=replace-me  # TODO change this
 export AWS_S3_BUCKET=some-bucket         # TODO change this
 
-# if you change this, it's up to you to change it in the Postgres container. Or drop
-# the DB data volume (and all your data) and then it'll be recreated with this password.
+# if you change this, it's up to you to change it in the Postgres container. Or
+# drop the DB data volume (and all your data) and then it'll be recreated with
+# this password.
 export DB_PASS=somesecurepassword        # TODO change this
 
 # note that we're specifying multiple names using a comma separator.
 export DOMAIN_NAME=dev.s2s.somehost.com,s2s.someother.host,11.22.33.44 # TODO change this
 
 export DB_BACKUP_CRON_SCHEDULE='@daily'
-export EXTRACTS_BACKUP_CRON_SCHEDULE='*/15 * * * *'
+# Note: extracts are constantly backed up by a file system watcher
 export DB_BACKUP_PREFIX=dev- # choose something unique for each environment
-# if you run this in a non-prod environment, you can (should!) disable DB and extract snapshots by setting them to
-# feb 31, i.e. never, thanks https://stackoverflow.com/a/13938099/1410035
+# if you run this in a non-prod environment, you can (should!) disable DB and
+# extract snapshots by setting them to feb 31, i.e. never, thanks
+# https://stackoverflow.com/a/13938099/1410035.
 #export DB_BACKUP_CRON_SCHEDULE='0 0 31 2 *'
-#export EXTRACTS_BACKUP_CRON_SCHEDULE='0 0 31 2 *'
 
 docker-compose up -d $@

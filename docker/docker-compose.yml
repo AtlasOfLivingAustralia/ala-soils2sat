@@ -1,27 +1,26 @@
 version: '3.7'
 services:
   app:
-    image: ternandsparrow/s2s-portal:${TAG:-dev}
+    image: ternandsparrow/s2s-portal:${TAG:-deploy}
     build: ..
     container_name: s2s_app
     restart: unless-stopped
     init: true
     environment:
       DBHOST: db
-      DBNAME: soils2sat
-      DBUSER: postgres
-      DBPASS: ${DB_PASS:-password}
+      DBNAME: ${DB_NAME}
+      DBUSER: ${DB_USER}
+      DBPASS: ${DB_PASS}
       GRAILS_ENV: production
       DISABLE_AUTO_RECOMPILE: 'true'
       TOMCAT_MAX_MEM_MB: 4096
       TOMCAT_MAX_PERM_MB: 512
       VIRTUAL_HOST: ${DOMAIN_NAME}
-      # DOI root URL cannot be configured via web UI, it must be done here
-      # DOI_S2S_ROOT_URL: ${DOI_S2S_ROOT_URL:-http://soils2satellites.org.au} # FIXME can't use this until it's
-      # registered with ANDS as a "registered top level domain". Otherwise we get the error MT014
-      DOI_S2S_ROOT_URL: ${DOI_S2S_ROOT_URL:-http://soils2sat.ala.org.au}
-      # AEKOS services URL value will populate the DB on first run, then you must change them via the web UI
-      DEFAULT_AEKOS_SERVICES_URL: ${DEFAULT_AEKOS_SERVICES_URL:-http://s2s-services.aekos.org.au:8080/s2s-services}
+      # DOI root URL cannot be configured via web UI, it must be done here.
+      DOI_S2S_ROOT_URL: ${DOI_S2S_ROOT_URL}
+      # AEKOS services URL value will populate the DB on first run, then you
+      #   must change it via the web UI.
+      DEFAULT_AEKOS_SERVICES_URL: ${DEFAULT_AEKOS_SERVICES_URL}
     volumes:
       - s2s-extracts:/data/soils2sat/extracts
     healthcheck:
@@ -31,6 +30,10 @@ services:
       retries: 2
       # yeah, it takes ages to start :'(
       start_period: 5m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
   nginxhelper:
     # creates some dynamic location config for nginx
@@ -45,32 +48,42 @@ services:
     volumes:
       - ./nginx-helper/entrypoint.sh:/entrypoint.sh:ro
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
   db:
     image: postgres:9.4
     container_name: s2s_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: soils2sat
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASS:-password}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - s2s-pgdata:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
   extractsbackups3:
-    image: silintl/sync-with-s3:1.2.0
+    image: vladgh/s3sync:0.4
+    command: sync
     container_name: s2s-extractsbackups3
     restart: unless-stopped
-    init: true
     environment:
-      ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
-      SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
-      CRON_SCHEDULE: ${EXTRACTS_BACKUP_CRON_SCHEDULE}
-      SOURCE_PATH: /data
-      DESTINATION_PATH: s3://${AWS_S3_BUCKET}/extracts
-      BUCKET_LOCATION: ap-southeast-2
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${S3_REGION}
+      S3PATH: s3://${AWS_S3_BUCKET}/extracts
     volumes:
-      - s2s-extracts:/data:ro
+      - s2s-extracts:/sync:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
   pgbackups3:
     image: schickling/postgres-backup-s3
@@ -84,11 +97,14 @@ services:
       S3_BUCKET: ${AWS_S3_BUCKET}
       S3_PREFIX: ${DB_BACKUP_PREFIX}s2s-backup
       POSTGRES_HOST: db
-      # these DB details must match the 'db' service
-      POSTGRES_DATABASE: soils2sat
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASS:-password}
+      POSTGRES_DATABASE: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_EXTRA_OPTS: '--schema=public --blobs'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
   nginx-proxy:
     image: jwilder/nginx-proxy:alpine-0.7.0
@@ -100,6 +116,10 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - s2s-nginx-vhostd:/etc/nginx/vhost.d
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
   autoheal: # thanks https://stackoverflow.com/a/48538213/1410035
     # will restart container with a failing healthcheck
@@ -110,6 +130,10 @@ services:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
 
 volumes:
   s2s-pgdata:
