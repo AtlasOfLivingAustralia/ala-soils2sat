@@ -46,7 +46,7 @@ We're running a number of docker containers.
   1. the S2S app using `grails run-app`, which uses tomcat
   1. Postgres
   1. a container to do periodic backups of the postgres database to AWS S3
-  1. a container to do periodic backups of the extracts directory to AWS S3
+  1. a container to do continuous backups of the extracts directory to AWS S3
   1. an nginx instance running as a reverse proxy
 
 # Useful commands

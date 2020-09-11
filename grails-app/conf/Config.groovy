@@ -84,8 +84,6 @@ spatialPortalRoot = "http://spatial.ala.org.au"
 biocacheServiceRoot = "http://biocache.ala.org.au/ws"
 
 doiS2SRoot = "http://soils2sat.ala.org.au"
-doiKeystorePath = "/resources/ternkeystore.bks"
-doiKeystorePassword = "mysecret"
 
 rest.https.cert.hostnameVerifier = 'BROWSER_COMPATIBLE'
 /** Enforce SSL Socket Factory */
@@ -124,7 +122,6 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
-    debug  'au.edu.aekos.shared.doiclient.service.DoiClientServiceImpl'  // DOI Generation XML
 }
 
 // Added by the Spring Security Core plugin:

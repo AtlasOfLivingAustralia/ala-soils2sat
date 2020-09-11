@@ -24,8 +24,6 @@ class SettingService {
     public static String OBSERVATION_FILTER_KEY = "ala.observation.taxonFilter"
     public static String LAYER_STYLES_KEY = "ala.layer.styles"
     public static String DOI_SERVICE_URL_KEY = "tern.doi.service.url.base"
-    public static String DOI_SERVICE_USERNAME_KEY = "tern.doi.service.username"
-    public static String DOI_SERVICE_APP_ID_KEY = "tern.doi.service.app.id"
     public static String RIFCS_DEFAULT_CITATION_NAME_KEY = "rifcs.default.citation.name"
     public static String SOILS2SAT_SERVICE_URL_KEY = "tern.soil2sat.service.url.base"
 
@@ -35,7 +33,7 @@ class SettingService {
     public String getDOIServiceUrl() {
         def setting = Setting.findByKey(DOI_SERVICE_URL_KEY)
         if (!setting) {
-            setting = new Setting(key: DOI_SERVICE_URL_KEY, value: "https://doi.tern.uq.edu.au/test/", comment: "The service url for the TERN DOI Minting service")
+            setting = new Setting(key: DOI_SERVICE_URL_KEY, value: "http://doi_facade:3000/mint", comment: "The service url for the TERN DOI Minting service")
             setting.save()
         }
         return setting.value
@@ -46,26 +44,6 @@ class SettingService {
         def setting = Setting.findByKey(SOILS2SAT_SERVICE_URL_KEY)
         if (!setting) {
             setting = new Setting(key: SOILS2SAT_SERVICE_URL_KEY, value: grailsApplication.config.aekosServiceRoot, comment: "The service url for the TERN Soils2Sat services (AEKOS)")
-            setting.save()
-        }
-        return setting.value
-    }
-
-    @S2SSetting
-    public String getDOIServiceUsername() {
-        def setting = Setting.findByKey(DOI_SERVICE_USERNAME_KEY)
-        if (!setting) {
-            setting = new Setting(key: DOI_SERVICE_USERNAME_KEY, value: "David.Baird@csiro.au", comment: "Name of a user registered to use the TERN DOI Minting service.")
-            setting.save()
-        }
-        return setting.value
-    }
-
-    @S2SSetting
-    public String getDOIServiceAppId() {
-        def setting = Setting.findByKey(DOI_SERVICE_APP_ID_KEY)
-        if (!setting) {
-            setting = new Setting(key: DOI_SERVICE_APP_ID_KEY, value: "4367305c3431f6ac3166953b56ea27e5", comment: "The APP ID to use when calling TERN DOI Minting service - must be affiliated with the DOI Minting Service Username setting.")
             setting.save()
         }
         return setting.value

@@ -16,8 +16,32 @@ export AWS_S3_BUCKET=some-bucket         # TODO change this
 # this password.
 export DB_PASS=somesecurepassword        # TODO change this
 
+# credentials for the TERN DOI minting service. Get them by logging into the
+# webapp and copying them from there. You can find this page at the base URL
+# that we use for minting DOIs.
+export DOI_USER=someone@somewhere.com               # TODO change this
+export DOI_APP_ID=1111111111111cbe3b8a06a40549c1c6  # TODO change this
+
+# the DOI minting server that we call. The default is the test server so
+# uncomment this line when you need to start using the prod server
+# export DOI_SERVER_URL=https://doi.tern.uq.edu.au/
+
+# A Sentry.io API key so we can report errors
+export SENTRY_DSN=https://1111111111111111111111111111111111111111.ingest.sentry.io/2222222 # TODO change this
+
 # note that we're specifying multiple names using a comma separator.
 export DOMAIN_NAME=dev.s2s.somehost.com,s2s.someother.host,11.22.33.44 # TODO change this
+
+# uncomment to enable more verbose logging in to the DOI facade container
+# export DOI_LOG_LEVEL=debug
+
+# The URL of the S2S server to use when minting DOIs. The DOI minting service
+# will hit the URL we pass to make sure it responds with a 200. Basically, it's
+# the public base URL of this server.
+#   FIXME can't use this URL until it's registered with ANDS as a "registered top
+#   level domain". Otherwise we get the error MT014.
+#   export DOI_S2S_ROOT_URL=http://soils2satellites.org.au
+export DOI_S2S_ROOT_URL=http://soils2sat.ala.org.au
 
 export DB_BACKUP_CRON_SCHEDULE='@daily'
 # Note: extracts are constantly backed up by a file system watcher

@@ -1,0 +1,26 @@
+{
+  "license": "MIT",
+  "scripts": {
+    "start": "LOG_LEVEL=debug node index.js | pino-pretty",
+    "start:debug": "LOG_LEVEL=debug node --inspect-brk index.js | pino-pretty",
+    "start:prod": "node index.js",
+    "start:watch": "nodemon --ext js,mjs,json --delay 2 --watch index.js --watch package.json --exec bash -c 'yarn start'",
+    "lint": "prettier --check index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@sentry/node": "^5.22.3",
+    "axios": "^0.20.0",
+    "dayjs": "^1.8.35",
+    "express": "^4.17.1",
+    "express-pino-logger": "^5.0.0",
+    "pino": "^6.5.1",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2",
+    "nodemon": "^2.0.4",
+    "pino-pretty": "^4.2.0",
+    "prettier": "^2.1.1"
+  }
+}

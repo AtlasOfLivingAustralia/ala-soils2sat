@@ -4,6 +4,7 @@ services:
     image: ternandsparrow/s2s-portal:${TAG:-deploy}
     build: ..
     container_name: s2s_app
+    init: true
     restart: unless-stopped
     init: true
     environment:
@@ -67,6 +68,22 @@ services:
       driver: "json-file"
       options:
         max-size: 100m
+
+  doi_facade:
+    build: ./doi-facade
+    image: ternandsparrow/doi-facade:deploy
+    container_name: s2s_doi_facade
+    restart: unless-stopped
+    environment:
+      SENTRY_DSN: ${SENTRY_DSN}
+      DOI_USER: ${DOI_USER}
+      DOI_APP_ID: ${DOI_APP_ID}
+      LOG_LEVEL: ${DOI_LOG_LEVEL}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
+
 
   extractsbackups3:
     image: vladgh/s3sync:0.4
