@@ -79,11 +79,11 @@ services:
       DOI_USER: ${DOI_USER}
       DOI_APP_ID: ${DOI_APP_ID}
       LOG_LEVEL: ${DOI_LOG_LEVEL}
+      DOI_URL: ${DOI_SERVER_URL}
     logging:
       driver: "json-file"
       options:
         max-size: 100m
-
 
   extractsbackups3:
     image: vladgh/s3sync:0.4
